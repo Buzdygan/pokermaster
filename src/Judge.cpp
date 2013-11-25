@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <ctime>
+#include <vector>
 
 #include "Poker.h"
 #include "Utils.h"
@@ -25,6 +26,6 @@ int main(int argc, char* argv[])
     players[1] = new DummyPlayer(1, p2_cash);
     Poker game(players[0], players[1]);
     game.play(p1_cash, p2_cash);
-
     return 0;
 }
+

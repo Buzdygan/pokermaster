@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "Player.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -29,6 +30,7 @@ class Poker
 
         /* Game variables */
         Player* players[2];
+        HandEvaluator *evaluator;
         int round_number;
         int pcash [2];
         vector<int> deck;
@@ -48,8 +50,6 @@ class Poker
         void finishRound();
         /* Progresses to the next phase */
         void nextPhase();
-        /* Gives the number of the other player */
-        int other(int player_number);
 };
 
 

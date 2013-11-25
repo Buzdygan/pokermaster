@@ -11,10 +11,11 @@ using namespace std;
 
 Poker::Poker(Player* player0, Player* player1)
 {
-    players[0] = player0; 
-    players[1] = player1; 
+    players[0] = player0;
+    players[1] = player1;
     for (int i = 1; i <= CARDS_NUMBER; i++)
         deck.push_back(i);
+    evaluator = new HandEvaluator();
 }
 
 void Poker::play(int p0_cash, int p1_cash)
@@ -24,14 +25,15 @@ void Poker::play(int p0_cash, int p1_cash)
     round_number = 0;
     nextRound(DRAW); // starting round
 
-    while (gameWinner() == GAME_IN_PROGRESS) // playing round 
+    while (gameWinner() == GAME_IN_PROGRESS) // playing rounds
     {
         players[0] -> startNewRound(playerCards(0));
         players[1] -> startNewRound(playerCards(1));
         int this_round_number = round_number;
-        while(round_number == this_round_number) // playing phase 
+        while(round_number == this_round_number) // playing phases
         {
-            int bet = -1;
+            printf("DEBUG: phase %d\n", phase);
+            int bet = (phase == 0) ? BIG_BLIND : 0;
             int this_phase_number = phase;
             for (int i = 0; i < PHASE_TABLE_CARDS[phase]; i ++) // dealing table cards
             {
@@ -98,7 +100,6 @@ int Poker::getTableCard()
         fprintf(stderr, "Drawing too many cards\n");
         throw;
     }
-    phase ++;
     return deck[table_card_index ++];
 }
 
@@ -135,6 +136,7 @@ void Poker::finishRound()
 
 void Poker::nextRound(int winner)
 {
+    printf("DEBUG: nextRound\n");
     if (winner != DRAW)
     {
         pcash[winner] += stake;
@@ -154,6 +156,7 @@ void Poker::nextRound(int winner)
 
 void Poker::nextPhase()
 {
+    printf("DEBUG: nextPhase, phase %d\n", phase);
     if (phase == LAST_PHASE_NUMBER) // end of Round
         nextRound(checkRoundWinner());
     else
@@ -169,19 +172,16 @@ int Poker::checkRoundWinner()
     vector<int> pCards[2];
     for (int p = 0; p < 2; p++)
     {
-        for (int i = 4; i < 9; i++)
-            pCards[p].push_back(deck[i]);
         pCards[p].push_back(deck[2 * p]);
         pCards[p].push_back(deck[2 * p + 1]);
+        for (int i = 4; i < 9; i++)
+            pCards[p].push_back(deck[i]);
     }
-    int score0 = evaluateCards(pCards[0]); 
-    int score1 = evaluateCards(pCards[1]); 
+    int score0 = evaluator->evaluateHand(pCards[0]);
+    int score1 = evaluator->evaluateHand(pCards[1]);
+    printf("DEBUG: checkRoundWInner, score0: %d, score1: %d\n", score0, score1);
     if (score0 == score1)
         return DRAW;
     return score0 > score1 ? 0 : 1;
 }
 
-int Poker::other(int player_number)
-{
-    return (player_number + 1) & 1;
-}
