@@ -6,6 +6,7 @@
 #include "Utils.h"
 #include "Player.h"
 #include "DummyPlayer.h"
+#include "HumanPlayer.h"
 
 int main(int argc, char* argv[])
 {
@@ -23,7 +24,7 @@ int main(int argc, char* argv[])
     }
     Player* players[2];
     players[0] = new DummyPlayer(0, p1_cash);
-    players[1] = new DummyPlayer(1, p2_cash);
+    players[1] = new HumanPlayer(1, p2_cash);
     Poker game(players[0], players[1]);
     game.play(p1_cash, p2_cash);
     return 0;

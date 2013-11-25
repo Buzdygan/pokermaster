@@ -142,6 +142,7 @@ void Poker::nextRound(int winner)
         pcash[winner] += stake;
         pcash[other(winner)] -= stake;
     }
+    printf("DEBUG: winner of the round is player %d\n", winner);
     players[0] -> announceRoundWinner(winner, stake);
     players[1] -> announceRoundWinner(winner, stake);
     round_number ++;

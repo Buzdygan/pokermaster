@@ -28,7 +28,7 @@ void DummyPlayer::showTableCard(int card)
 /* gets bet in this phase, given opponent's bet. Bet -1 signifies start of the phase */
 int DummyPlayer::getBet(int opponent_bet)
 {
-    return min(opponent_bet, cash);
+    return min(opponent_bet + rand() % 10, cash);
 }
 /* gives info on who won the round with what stake */
 void DummyPlayer::announceRoundWinner(int winner, int stake)
@@ -37,5 +37,5 @@ void DummyPlayer::announceRoundWinner(int winner, int stake)
         cash -= stake;
     if (winner == number)
         cash += stake;
-    printf("DEBUG: player %d, announceRoundWinner, cash: %d\n", number, cash);
+    printf("DEBUG: player %d, cash: %d\n", number, cash);
 }
