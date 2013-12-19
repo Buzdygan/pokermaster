@@ -12,6 +12,8 @@
 
 using namespace std;
 
+//TODO zmienić na wiele rozgrywek jedno rundowych
+
 class Poker
 {
     public:
@@ -25,6 +27,8 @@ class Poker
         int stake;
         int cur_player;
         int table_card_index;
+        int pcash [2];
+        int cash_won [2];
         int bets [2];
         bool table_draw_mode;
 
@@ -32,7 +36,6 @@ class Poker
         Player* players[2];
         HandEvaluator *evaluator;
         int round_number;
-        int pcash [2];
         vector<int> deck;
 
         /* Record current player's bet */

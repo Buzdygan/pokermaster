@@ -18,29 +18,24 @@ Poker::Poker(Player* player0, Player* player1)
     evaluator = new HandEvaluator();
 }
 
-void Poker::play(int p0_cash, int p1_cash)
+void Poker::play(int start_cash, int total_rounds_number)
 {
-    pcash[0] = p0_cash;
-    pcash[1] = p1_cash;
     round_number = 0;
+    cash_won[0] = cash_won[1] = 0;
     nextRound(DRAW); // starting round
-
-    while (gameWinner() == GAME_IN_PROGRESS) // playing rounds
+    while (round_number <= total_rounds_number)
     {
+        pcash[0] = start_cash;
+        pcash[1] = start_cash;
         players[0] -> startNewRound(playerCards(0));
         players[1] -> startNewRound(playerCards(1));
         int this_round_number = round_number;
+        nextPhase();
         while(round_number == this_round_number) // playing phases
         {
             printf("DEBUG: phase %d\n", phase);
             int bet = (phase == 0) ? BIG_BLIND : 0;
             int this_phase_number = phase;
-            for (int i = 0; i < PHASE_TABLE_CARDS[phase]; i ++) // dealing table cards
-            {
-                int card = getTableCard();
-                players[0] -> showTableCard(card);
-                players[1] -> showTableCard(card);
-            }
             while (phase == this_phase_number && round_number == this_round_number)
             {
                 bet = players[cur_player] -> getBet(bet);
@@ -49,7 +44,11 @@ void Poker::play(int p0_cash, int p1_cash)
         }
         printf("cash0: %d, cash1: %d\n", pcash[0], pcash[1]);
     }
-    printf("Winner of the game is player number %d\n", gameWinner());
+    int winner = gameWinner();
+    if (winner == GAME_DRAWN)
+        printf("Game has been drawn\n");
+    else
+        printf("Winner of the game is player number %d\n", winner);
 }
 
 /* bet_raise signifies amount by which current player want to raise the stake */
@@ -57,6 +56,7 @@ void Poker::makeBet(int bet_raise)
 {
     int oth_player = other(cur_player);
     int cur_bet = bets[oth_player];
+    printf("current player: %d, bet_raise: %d\n", cur_player, bet_raise);
     phase_move ++;
     if (stake + bet_raise > pcash[cur_player])
     {
@@ -112,25 +112,16 @@ pair<int, int> Poker::playerCards(int player_number)
 
 int Poker::gameWinner()
 {
-    if (phase == 0)
-    {
-        if (pcash[0] == 0)
-            return 1;
-        if (pcash[1] == 0)
-            return 0;
-    }
-    return GAME_IN_PROGRESS;
+    printf("cash_won 0: %d\n", cash_won[0]);
+    printf("cash_won 1: %d\n", cash_won[1]);
+    if (cash_won[0] == cash_won[1])
+        return GAME_DRAWN;
+    return (cash_won[0] > cash_won[1]) ? 0 : 1;
 }
 
 void Poker::finishRound()
 {
     // TODO show other players' cards
-    while (table_card_index < MAX_GAME_CARDS)
-    {
-        int card = deck[table_card_index ++];
-        players[0] -> showTableCard(card);
-        players[1] -> showTableCard(card);
-    }
     nextRound(checkRoundWinner());
 }
 
@@ -139,8 +130,10 @@ void Poker::nextRound(int winner)
     printf("DEBUG: nextRound\n");
     if (winner != DRAW)
     {
-        pcash[winner] += stake;
-        pcash[other(winner)] -= stake;
+        printf("cash won %d;\n", stake);
+        cash_won[winner] += stake;
+        printf("cash_won 0: %d\n", cash_won[0]);
+        printf("cash_won 1: %d\n", cash_won[1]);
     }
     printf("DEBUG: winner of the round is player %d\n", winner);
     players[0] -> announceRoundWinner(winner, stake);
@@ -162,6 +155,13 @@ void Poker::nextPhase()
         nextRound(checkRoundWinner());
     else
     {
+        for (int p = 0; p < 2; p++)
+        {
+            vector<int> cards;
+            for (int c = PHASE_TABLE_CARDS[p][phase][0]; c < PHASE_TABLE_CARDS[p][phase][1]; c++)
+                cards.push_back(deck[c]);
+            players[p] -> startNewPhase(cards);
+        }
         phase ++;
         bets[0] = bets[1] = phase_move = 0;
         cur_player = round_number & 1;

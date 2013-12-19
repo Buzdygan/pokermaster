@@ -1,6 +1,7 @@
 #include <utility>
 #include <cstdio>
 #include <cmath>
+#include <vector>
 #include "HumanPlayer.h"
 #include "Utils.h"
 
@@ -21,6 +22,14 @@ void HumanPlayer::startNewRound(pair<int, int> cards)
     printf("\n");
 }
 
+/* starts new phase with new cards */
+void HumanPlayer::startNewPhase(vector<int> cards)
+{
+    printf("NEXT PHASE: ");
+    for (int c = 0; c < cards.size(); c++)
+        printCard(cards[c]);
+}
+
 /* learns opponent cards */
 void HumanPlayer::showOpponentCards(pair<int, int> cards)
 {
@@ -31,13 +40,6 @@ void HumanPlayer::showOpponentCards(pair<int, int> cards)
     printf("\n");
 }
 
-/* deals one table card */
-void HumanPlayer::showTableCard(int card)
-{
-    printf("TABLE CARD: ");
-    printCard(card);
-    printf("\n");
-}
 /* gets bet in this phase, given opponent's bet. Bet -1 signifies start of the phase */
 int HumanPlayer::getBet(int opponent_bet)
 {
