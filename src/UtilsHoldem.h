@@ -18,8 +18,6 @@ const int GAME_IN_PROGRESS = 5;
 
 const int PHASE_TABLE_CARDS[2][4][2] = {{{0,2}, {4,7}, {7,8}, {8,9}}, {{2,4}, {4,7}, {7,8}, {8,9}}};
 
-int evaluateCards(vector<int> cards);
-
 int other(int player_number);
 
 class HandEvaluator

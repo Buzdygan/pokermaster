@@ -172,12 +172,10 @@ int Poker::checkRoundWinner()
 {
     vector<int> pCards[2];
     for (int p = 0; p < 2; p++)
-    {
-        pCards[p].push_back(deck[2 * p]);
-        pCards[p].push_back(deck[2 * p + 1]);
-        for (int i = 4; i < 9; i++)
-            pCards[p].push_back(deck[i]);
-    }
+        for (int phase = 0; phase <= LAST_PHASE_NUMBER; phase++)
+            for (int ind = PHASE_TABLE_CARDS[p][phase][0]; ind < PHASE_TABLE_CARDS[p][phase][1]; ind++)
+                pCards[p].push_back(deck[ind]);
+
     int score0 = evaluator->evaluateHand(pCards[0]);
     int score1 = evaluator->evaluateHand(pCards[1]);
     printf("DEBUG: checkRoundWInner, score0: %d, score1: %d\n", score0, score1);
