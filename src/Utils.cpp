@@ -15,7 +15,6 @@ HandEvaluator::HandEvaluator()
 /* Returns score between 0 and 5 */
 int HandEvaluator::evaluateHand(vector<int> cards)
 {
-    printf("CARDS: %d %d\n", cards[0], cards[1]);
     int c0 = (cards[0] + 1) / 2, c1 = (cards[1] + 1) / 2;
     if (c0 == c1)
         return 2 + c0;

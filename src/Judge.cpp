@@ -24,8 +24,8 @@ int main(int argc, char* argv[])
     Player* players[2];
     players[0] = new DummyPlayer(0, start_cash);
     players[1] = new DummyPlayer(1, start_cash);
-    Poker game(players[0], players[1]);
-    game.play(start_cash, rounds_number);
+    Poker game(players[0], players[1], start_cash);
+    game.play(rounds_number);
     return 0;
 }
 

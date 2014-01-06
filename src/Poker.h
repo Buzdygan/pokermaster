@@ -12,22 +12,21 @@
 
 using namespace std;
 
-//TODO zmienić na wiele rozgrywek jedno rundowych
 
 class Poker
 {
     public:
-        Poker(Player* player0, Player* player1);
-        void play(int p1_cash, int p2_cash);
+        Poker(Player* player0, Player* player1, int pcash);
+        void play(int rounds_number);
 
     protected:
         /* Round variables */
         int phase;
         int phase_move;
+        int pcash;
         int stake;
         int cur_player;
         int table_card_index;
-        int pcash [2];
         int cash_won [2];
         int bets [2];
         bool table_draw_mode;

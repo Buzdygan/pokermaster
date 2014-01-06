@@ -9,8 +9,9 @@
 
 using namespace std;
 
-Poker::Poker(Player* player0, Player* player1)
+Poker::Poker(Player* player0, Player* player1, int players_cash)
 {
+    pcash = players_cash;
     players[0] = player0;
     players[1] = player1;
     for (int i = 1; i <= CARDS_NUMBER; i++)
@@ -18,15 +19,13 @@ Poker::Poker(Player* player0, Player* player1)
     evaluator = new HandEvaluator();
 }
 
-void Poker::play(int start_cash, int total_rounds_number)
+void Poker::play(int total_rounds_number)
 {
     round_number = 0;
     cash_won[0] = cash_won[1] = 0;
     nextRound(DRAW); // starting round
     while (round_number <= total_rounds_number)
     {
-        pcash[0] = start_cash;
-        pcash[1] = start_cash;
         players[0] -> startNewRound(playerCards(0));
         players[1] -> startNewRound(playerCards(1));
         int this_round_number = round_number;
@@ -42,7 +41,7 @@ void Poker::play(int start_cash, int total_rounds_number)
                 makeBet(bet);
             }
         }
-        printf("cash0: %d, cash1: %d\n", pcash[0], pcash[1]);
+        printf("cash0: %d, cash1: %d\n", cash_won[0], cash_won[1]);
     }
     int winner = gameWinner();
     if (winner == GAME_DRAWN)
@@ -58,14 +57,14 @@ void Poker::makeBet(int bet_raise)
     int cur_bet = bets[oth_player];
     printf("current player: %d, bet_raise: %d\n", cur_player, bet_raise);
     phase_move ++;
-    if (stake + bet_raise > pcash[cur_player])
+    if (stake + bet_raise > pcash)
     {
         fprintf(stderr, "Raising more than the player has");
         throw;
     }
     if (bet_raise < cur_bet) // fold or all in
     {
-        if (stake + bet_raise == pcash[cur_player]) // all in
+        if (stake + bet_raise == pcash) // all in
         {
             stake += bet_raise;
             finishRound();
@@ -77,7 +76,7 @@ void Poker::makeBet(int bet_raise)
     if (phase_move > 1 && bet_raise == cur_bet) // call
     {
         stake += cur_bet;
-        if (stake == pcash[0] || stake == pcash[1]) // someone went all in
+        if (stake == pcash) // someone went all in
             finishRound();
         else
             nextPhase();
