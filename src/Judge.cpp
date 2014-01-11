@@ -2,11 +2,19 @@
 #include <ctime>
 #include <vector>
 
-#include "Poker.h"
+#include "GameAbstraction.h"
+#include "SimplePoker.h"
 #include "Utils.h"
 #include "Player.h"
 #include "DummyPlayer.h"
 #include "HumanPlayer.h"
+
+int get_random_action(dist distribution)
+{
+    // TODO
+    return -1;
+
+}
 
 int main(int argc, char* argv[])
 {
@@ -22,10 +30,39 @@ int main(int argc, char* argv[])
         rounds_number = atoi(argv[2]);
 
     Player* players[2];
-    players[0] = new DummyPlayer(0, start_cash);
-    players[1] = new DummyPlayer(1, start_cash);
-    Poker game(players[0], players[1], start_cash);
-    game.play(rounds_number);
+    players[0] = new DummyPlayer();
+    players[1] = new DummyPlayer();
+
+    for (int r = 0; r < rounds_number; r++)
+    {
+        /* new round */
+        GameAbstraction* game = new SimplePoker();
+        for (int p = 0; p < 2; p++)
+            players[p] -> startNewRound();
+
+        while (!game -> isFinal())
+        {
+            int pnum = game -> getPlayerId();
+            if (pnum == RANDOM_PLAYER_NR)
+            {
+                dist distr = game -> getActionDistribution();
+                int action_id = get_random_action(distr);
+                game -> makeAction(action_id);
+                for (int p = 0; p < 2; p++)
+                    players[p] -> annotateRandomAction(action_id);
+            }
+            else
+            {
+                int action_id = players[pnum] -> getAction(game -> getInformationSetId(),
+                                                           game -> getActionIds());
+                game -> makeAction(action_id);
+                players[other(pnum)] -> annotateOpponentAction(action_id);
+            }
+        }
+        utility round_result = game -> getUtility();
+        players[0] -> endRound(round_result.first);
+        players[1] -> endRound(round_result.second);
+    }
     return 0;
 }
 

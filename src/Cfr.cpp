@@ -1,11 +1,12 @@
 #include "Cfr.h"
+#include "GameAbstraction.h"
 
 using namespace std;
 
 const char* Cfr::DEFAULT_FILE = "cfr.strategy";
 const char Cfr::FILE_DELIM = '\n';
 
-Cfr::Cfr(CfrGameAbstraction* gm)
+Cfr::Cfr(GameAbstraction* gm)
 {
     srand(time(0));
     if (!loadFromFile(DEFAULT_FILE))
@@ -109,27 +110,20 @@ utility Cfr::walkTree(double probs[3])
 }
 
 
-int Cfr::getActionId()
+int Cfr::getActionId(int information_set_id)
 {
-    int is_id = game -> getInformationSetId();
     vector<int> action_ids = game -> getActionIds();
     double random_double = ((double) rand() / (RAND_MAX));
     double prob_sum = 0;
     for (int i = 0; i < action_ids.size(); i++)
     {
         int action_id = action_ids[i];
-        prob_sum += strategy[make_pair(is_id, action_id)];
+        prob_sum += strategy[make_pair(information_set_id, action_id)];
         if (random_double < prob_sum)
             return action_id;
     }
     return -1;
 }
-
-void Cfr::makeAction(int action_id)
-{
-    game -> makeAction(action_id);
-}
-
 
 bool Cfr::loadFromFile(const char* filename)
 {
