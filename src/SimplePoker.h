@@ -3,10 +3,11 @@
 
 #include "GameAbstraction.h"
 
-const int MAX_STAKE = 5;
-const int CARDS_NUMBER = 6;
-const int DRAW = -1;
-const int FINAL_RANDOM_PHASE = 2;
+/* RULES
+ * Each player is dealt one private card.
+ * Then there is bidding phase.
+ * Finally one shared card is dealt and another bidding phase before the end */
+
 
 class SimplePoker : public GameAbstraction
 {
@@ -30,9 +31,12 @@ class SimplePoker : public GameAbstraction
         int agreed_stake;
         int cur_stake;
         int random_phase;
+        int bidding_phase;
+        int bids_number;
         vector<int> deck;
         vector<int> player_cards[2];
 
+        void _endOfBiddingPhase();
         void endGame(int winner);
 };
 

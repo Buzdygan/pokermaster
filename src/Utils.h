@@ -13,6 +13,9 @@ const int LAST_PHASE_NUMBER = 1;
 const int DRAW = -1;
 const int GAME_DRAWN = 6;
 const int MAX_GAME_CARDS = 3;
+const int MAX_STAKE = 5;
+const int FINAL_RANDOM_PHASE = 2;
+const int FINAL_BIDDING_PHASE = 1;
 
 const int GAME_IN_PROGRESS = 5;
 
