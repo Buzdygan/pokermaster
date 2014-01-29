@@ -11,9 +11,15 @@
 
 int get_random_action(dist distribution)
 {
-    // TODO
-    return -1;
-
+    double r = (double) rand() / RAND_MAX;
+    double sum = 0.0;
+    for (int i = 0; i < distribution.size(); i ++)
+    {
+        sum += distribution[i].second;
+        if (r < sum)
+            return distribution[i].first;
+    }
+    return distribution[0].first;
 }
 
 int main(int argc, char* argv[])
@@ -48,8 +54,14 @@ int main(int argc, char* argv[])
                 dist distr = game -> getActionDistribution();
                 int action_id = get_random_action(distr);
                 game -> makeAction(action_id);
-                for (int p = 0; p < 2; p++)
-                    players[p] -> annotateRandomAction(action_id);
+                int seeing_player = game -> randomActionPlayer();
+                if (seeing_player == ALL_PLAYERS)
+                {
+                    for (int p = 0; p < 2; p++)
+                        players[p] -> annotateRandomAction(action_id);
+                }
+                else
+                    players[seeing_player] -> annotateRandomAction(action_id);
             }
             else
             {
@@ -62,6 +74,7 @@ int main(int argc, char* argv[])
         utility round_result = game -> getUtility();
         players[0] -> endRound(round_result.first);
         players[1] -> endRound(round_result.second);
+        delete game;
     }
     return 0;
 }
