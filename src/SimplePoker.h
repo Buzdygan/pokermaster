@@ -1,6 +1,7 @@
 #ifndef SIMPLE_POKER_H
 #define SIMPLE_POKER_H
 
+#include <stack>
 #include "GameAbstraction.h"
 
 /* RULES
@@ -8,6 +9,20 @@
  * Then there is bidding phase.
  * Finally one shared card is dealt and another bidding phase before the end */
 
+struct Backup
+{
+    Backup *prev;
+    int cur_player;
+    int agreed_stake;
+    int cur_stake;
+    int random_phase;
+    int bidding_phase;
+    int bids_number;
+    utility results;
+    bool is_final;
+    vector<int> deck;
+    vector<int> player_cards[2];
+};
 
 class SimplePoker : public GameAbstraction
 {
@@ -33,12 +48,21 @@ class SimplePoker : public GameAbstraction
         int random_phase;
         int bidding_phase;
         int bids_number;
+        /* results of each player after the round is finished */
+        utility results;
+        /* has the game ended yet */
+        bool is_final;
         vector<int> deck;
         vector<int> player_cards[2];
+        Backup *prev_backup;
 
         void _endOfBiddingPhase();
-        void endGame(int winner);
+        void _startOfBiddingPhase();
+        void _backup();
+        void _restore();
+        void _endGame(int winner);
 };
+
 
 
 #endif

@@ -12,13 +12,13 @@ HandEvaluator::HandEvaluator()
 {
 }
 
-/* Returns score between 0 and 5 */
-int HandEvaluator::evaluateHand(vector<int> cards)
+/* Returns score between 0 and 7 */
+int evaluateHand(vector<int> cards)
 {
     int c0 = (cards[0] + 1) / 2, c1 = (cards[1] + 1) / 2;
     if (c0 == c1)
-        return 2 + c0;
-    return c0 + c1 - 3;
+        return 4 + c0;
+    return c0 + c1 - 2;
 
 }
 

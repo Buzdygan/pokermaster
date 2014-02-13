@@ -32,7 +32,7 @@ void DummyPlayer::annotateOpponentAction(int action_id)
 /* Get player's action */
 int DummyPlayer::getAction(int information_set_id, vector<int> available_actions)
 {
-    return available_actions[0];
+    return available_actions[rand() % available_actions.size()];
 }
 
 /* gives info on who won the round with what stake */

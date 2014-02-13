@@ -25,17 +25,13 @@ int get_random_action(dist distribution)
 int main(int argc, char* argv[])
 {
     srand(time(0));
-
-    int start_cash = DEFAULT_INITIAL_CASH;
     int rounds_number = DEFAULT_ROUNDS_NUMBER;
 
     if (argc == 2)
-        start_cash = atoi(argv[1]);
-
-    if (argc == 3)
-        rounds_number = atoi(argv[2]);
+        rounds_number = atoi(argv[1]);
 
     Player* players[2];
+    int score[2];
     players[0] = new DummyPlayer();
     players[1] = new DummyPlayer();
 
@@ -53,8 +49,8 @@ int main(int argc, char* argv[])
             {
                 dist distr = game -> getActionDistribution();
                 int action_id = get_random_action(distr);
-                game -> makeAction(action_id);
                 int seeing_player = game -> randomActionPlayer();
+                game -> makeAction(action_id);
                 if (seeing_player == ALL_PLAYERS)
                 {
                     for (int p = 0; p < 2; p++)
@@ -62,11 +58,13 @@ int main(int argc, char* argv[])
                 }
                 else
                     players[seeing_player] -> annotateRandomAction(action_id);
+                printf("Card %d dealt to player %d\n", action_id, seeing_player);
             }
             else
             {
                 int action_id = players[pnum] -> getAction(game -> getInformationSetId(),
                                                            game -> getActionIds());
+                printf("Player %d bets %d\n", pnum, action_id);
                 game -> makeAction(action_id);
                 players[other(pnum)] -> annotateOpponentAction(action_id);
             }
@@ -74,6 +72,10 @@ int main(int argc, char* argv[])
         utility round_result = game -> getUtility();
         players[0] -> endRound(round_result.first);
         players[1] -> endRound(round_result.second);
+        score[0] += round_result.first;
+        score[1] += round_result.second;
+        printf("End of round %d, results: %1.f:%1.f, current score: %d:%d\n", r, round_result.first,
+                round_result.second, score[0], score[1]);
         delete game;
     }
     return 0;
