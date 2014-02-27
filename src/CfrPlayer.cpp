@@ -1,56 +1,34 @@
-
 #include <vector>
 #include "CfrPlayer.h"
 
-
 using namespace std;
 
-CfrPlayer::CfrPlayer(int p_number, int p_cash, int buckets_number, int max_stake)
+CfrPlayer::CfrPlayer(Cfr* stg)
+{
+    strategy = stg;
+}
+/* starts new round */
+void CfrPlayer::startNewRound()
 {
 
 }
-
-/* starts new round with two dealt cards */
-void CfrPlayer::startNewRound(pair<int, int> cards)
+/* Annotates random action */
+void CfrPlayer::annotateRandomAction(int action_id)
 {
 
 }
-
-/* starts new phase with new cards */
-void CfrPlayer::startNewPhase(vector<int> cards)
-{
-}
-
-/* learns opponent cards */
-void CfrPlayer::showOpponentCards(pair<int, int> cards)
+/* annotates opponent's action */
+void CfrPlayer::annotateOpponentAction(int action_id)
 {
 
 }
-
-/* gets bet in this phase, given opponent's bet. Bet -1 signifies start of the phase */
-int CfrPlayer::getBet(int opponent_bet)
+/* Get player's action */
+int CfrPlayer::getAction(int information_set_id, vector<int> available_actions)
 {
-    return opponent_bet;
-
+    return strategy -> getActionId(information_set_id, available_actions);
 }
-
 /* gives info on who won the round with what stake */
-void CfrPlayer::announceRoundWinner(int winner, int stake)
-{
-
-}
-
-void CfrPlayer::initFromFile(char* filename)
-{
-
-}
-
-void CfrPlayer::saveToFile(char* filename)
-{
-
-}
-
-void CfrPlayer::init()
+void CfrPlayer::endRound(double cash_change)
 {
 
 }

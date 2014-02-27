@@ -7,6 +7,7 @@
 #include "Utils.h"
 #include "Player.h"
 #include "DummyPlayer.h"
+#include "CfrPlayer.h"
 #include "HumanPlayer.h"
 
 int get_random_action(dist distribution)
@@ -33,7 +34,7 @@ int main(int argc, char* argv[])
     Player* players[2];
     int score[2];
     players[0] = new DummyPlayer();
-    players[1] = new DummyPlayer();
+    players[1] = new CfrPlayer(new Cfr(new SimplePoker()));
 
     for (int r = 0; r < rounds_number; r++)
     {

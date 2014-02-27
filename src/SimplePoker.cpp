@@ -10,7 +10,8 @@ SimplePoker::SimplePoker()
 {
     // 0 player always starts
     start_player = 0;
-    information_set_ids[0] = information_set_ids[1] = 1;
+    information_set_ids[0] = 1;
+    information_set_ids[1] = 2;
     cur_player = RANDOM_PLAYER_NR;
     cur_stake = agreed_stake = 1;
     bidding_phase = 0;
@@ -28,8 +29,9 @@ SimplePoker::~SimplePoker()
 
 int SimplePoker::getInformationSetId()
 {
-    //TODO
-    return -1;
+    if (cur_player == RANDOM_PLAYER_NR)
+        return -1;
+    return information_set_ids[cur_player];
 }
 
 utility SimplePoker::getUtility()
@@ -84,9 +86,11 @@ vector<int> SimplePoker::getActionIds()
 void SimplePoker::_endGame(int winner)
 {
     if (winner == 0)
-        results = make_pair(agreed_stake, 0.0);
+        results = make_pair(agreed_stake, -agreed_stake);
     else if (winner == 1)
-        results = make_pair(0.0, agreed_stake);
+        results = make_pair(-agreed_stake, agreed_stake);
+    else
+        results = make_pair(0.0, 0.0);
     is_final = true;
 }
 
@@ -182,7 +186,6 @@ void SimplePoker::_endOfBiddingPhase()
     {
         int strength0 = evaluateHand(player_cards[0]);
         int strength1 = evaluateHand(player_cards[1]);
-        printf("strength0: %d, strength1: %d\n", strength0, strength1);
         if (strength0 > strength1)
             _endGame(0);
         else if (strength1 > strength0)
@@ -220,6 +223,8 @@ void SimplePoker::_backup()
     backup -> deck = deck;
     backup -> player_cards[0] = player_cards[0];
     backup -> player_cards[1] = player_cards[1];
+    backup -> information_set_ids[0] = information_set_ids[0];
+    backup -> information_set_ids[1] = information_set_ids[1];
     backup -> prev = prev_backup;
     prev_backup = backup;
 }
@@ -237,6 +242,8 @@ void SimplePoker::_restore()
     deck = prev_backup -> deck;
     player_cards[0] = prev_backup -> player_cards[0];
     player_cards[1] = prev_backup -> player_cards[1];
+    information_set_ids[0] = prev_backup -> information_set_ids[0];
+    information_set_ids[1] = prev_backup -> information_set_ids[1];
     Backup* temp = prev_backup -> prev;
     delete prev_backup;
     prev_backup = temp;

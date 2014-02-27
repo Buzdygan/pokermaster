@@ -7,25 +7,30 @@
 #include "GameAbstraction.h"
 using namespace std;
 
+typedef map<pair<int, int>, double> Smap;
+typedef map<pair<int, int>, double>::iterator Sit;
+
 class Cfr
 {
     public:
         Cfr(GameAbstraction* game);
-        int getActionId(int information_set_id);
+        int getActionId(int information_set_id, vector<int> action_ids);
 
     private:
         static const char* DEFAULT_FILE;
         static const char FILE_DELIM;
+        static const int ITERATIONS;
         GameAbstraction* game;
         bool initialized;
 
-        map<pair<int, int>, double> strategy;
-        map<pair<int, int>, double> R;
-        map<pair<int, int>, double> S;
+        Smap strategy;
+        Smap R;
+        Smap S;
 
         bool loadFromFile(const char* filename);
         void saveToFile(const char* filename);
 
+        void recomputeStrategy(Smap &r);
         void computeVanillaCfr();
         utility walkTree(double probs[3]);
 };

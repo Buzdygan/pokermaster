@@ -22,6 +22,7 @@ struct Backup
     bool is_final;
     vector<int> deck;
     vector<int> player_cards[2];
+    int information_set_ids[2];
 };
 
 class SimplePoker : public GameAbstraction
