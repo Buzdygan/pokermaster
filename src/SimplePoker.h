@@ -54,6 +54,7 @@ class SimplePoker : public GameAbstraction
         bool is_final;
         vector<int> deck;
         vector<int> player_cards[2];
+        int information_set_ids[2];
         Backup *prev_backup;
 
         void _endOfBiddingPhase();
@@ -61,6 +62,7 @@ class SimplePoker : public GameAbstraction
         void _backup();
         void _restore();
         void _endGame(int winner);
+        void _logAction(int action_id, int seeing_player);
 };
 
 

@@ -8,7 +8,9 @@
 
 SimplePoker::SimplePoker()
 {
-    start_player = rand() % 2;
+    // 0 player always starts
+    start_player = 0;
+    information_set_ids[0] = information_set_ids[1] = 1;
     cur_player = RANDOM_PLAYER_NR;
     cur_stake = agreed_stake = 1;
     bidding_phase = 0;
@@ -26,6 +28,7 @@ SimplePoker::~SimplePoker()
 
 int SimplePoker::getInformationSetId()
 {
+    //TODO
     return -1;
 }
 
@@ -71,8 +74,7 @@ vector<int> SimplePoker::getActionIds()
         if (bids_number >= MAX_BIDS_NUMBER)
             max_bet = cur_stake;
         vector<int> action_ids;
-        // TODO, add fold
-        //action_ids.push_back(0);
+        action_ids.push_back(0);
         for (int i = cur_stake; i <= max_bet; i++)
             action_ids.push_back(i);
         return action_ids;
@@ -104,13 +106,20 @@ void SimplePoker::makeAction(int action_id)
         /* card for both players */
         if (seeing_player == ALL_PLAYERS)
         {
-            player_cards[0].push_back(card_id);
-            player_cards[1].push_back(card_id);
+            for (int p = 0; p < 2; p++)
+            {
+                player_cards[0].push_back(card_id);
+                player_cards[1].push_back(card_id);
+                _logAction(card_id - 1, p);
+            }
             _startOfBiddingPhase();
         }
         /* card for single player */
         else
+        {
             player_cards[seeing_player].push_back(card_id);
+            _logAction(card_id - 1, seeing_player);
+        }
         random_phase ++;
         if (random_phase == FINAL_RANDOM_PHASE)
             _startOfBiddingPhase();
@@ -119,6 +128,8 @@ void SimplePoker::makeAction(int action_id)
     {
         bids_number ++;
         int bet = action_id;
+        _logAction(bet, 0);
+        _logAction(bet, 1);
         if (bet > MAX_STAKE)
         {
             fprintf(stderr, "ERROR: Betting %d: more than MAX_STAKE=%d\n", bet, MAX_STAKE);
@@ -229,4 +240,13 @@ void SimplePoker::_restore()
     Backup* temp = prev_backup -> prev;
     delete prev_backup;
     prev_backup = temp;
+}
+
+void SimplePoker::_logAction(int action_id, int seeing_player)
+{
+    int base = CARDS_NUMBER;
+    if (MAX_STAKE + 1 > base)
+        base = MAX_STAKE + 1;
+    information_set_ids[seeing_player] *= base;
+    information_set_ids[seeing_player] += action_id;
 }
