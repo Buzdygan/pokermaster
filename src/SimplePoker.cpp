@@ -186,6 +186,7 @@ void SimplePoker::_endOfBiddingPhase()
     {
         int strength0 = evaluateHand(player_cards[0]);
         int strength1 = evaluateHand(player_cards[1]);
+        printf("strength0: %d, strength1: %d\n", strength0, strength1);
         if (strength0 > strength1)
             _endGame(0);
         else if (strength1 > strength0)

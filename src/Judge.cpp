@@ -10,6 +10,8 @@
 #include "CfrPlayer.h"
 #include "HumanPlayer.h"
 
+//TODO switch starting player
+
 int get_random_action(dist distribution)
 {
     double r = (double) rand() / RAND_MAX;
