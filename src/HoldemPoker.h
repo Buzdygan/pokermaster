@@ -1,13 +1,12 @@
-#ifndef SIMPLE_POKER_H
-#define SIMPLE_POKER_H
+#ifndef __HOLDEM_POKER_H
+#define __HOLDEM_POKER_H
 
 #include <stack>
 #include "GameAbstraction.h"
 
 /* RULES
- * Each player is dealt one private card.
- * Then there is bidding phase.
- * Finally one shared card is dealt and another bidding phase before the end */
+ * TODO
+ */
 
 struct Backup
 {
@@ -25,7 +24,16 @@ struct Backup
     int information_set_ids[2];
 };
 
-class SimplePoker : public GameAbstraction
+class HandEvaluator
+{
+    public:
+        HandEvaluator();
+        int evaluateHand(vector<int> cards);
+    private:
+        int HR[32487834];
+};
+
+class HoldemPoker : public GameAbstraction
 {
     public:
         int getInformationSetId();
@@ -39,8 +47,8 @@ class SimplePoker : public GameAbstraction
         vector<int> getActionIds();
         void makeAction(int action_id);
         void unmakeAction(int action_id);
-        ~SimplePoker();
-        SimplePoker();
+        ~HoldemPoker();
+        HoldemPoker();
 
         static const int DEFAULT_INITIAL_CASH;
         static const int SMALL_BLIND;
@@ -52,12 +60,9 @@ class SimplePoker : public GameAbstraction
         static const int MAX_GAME_CARDS;
         static const int MAX_STAKE;
         static const int BLIND_RANDOM_PHASES;
-        static const int FINAL_RANDOM_PHASE;
         static const int FINAL_BIDDING_PHASE;
         static const int MAX_BIDS_NUMBER;
         static const int GAME_IN_PROGRESS;
-        static const int PHASE_TABLE_CARDS[2][2][2];
-
     private:
         int start_player;
         int cur_player;
@@ -74,6 +79,7 @@ class SimplePoker : public GameAbstraction
         vector<int> player_cards[2];
         int information_set_ids[2];
         Backup *prev_backup;
+        HandEvaluator evaluator;
 
         int _evaluateHand(vector<int> cards);
         void _endOfBiddingPhase();
@@ -82,6 +88,7 @@ class SimplePoker : public GameAbstraction
         void _restore();
         void _endGame(int winner);
         void _logAction(int action_id, int seeing_player);
+        void _logCards(int seeing_player, int ind0, int ind1);
 };
 
 

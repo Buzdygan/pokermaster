@@ -2,58 +2,48 @@
 #include <cstdio>
 #include <cmath>
 #include <vector>
-#include "HumanPlayer.h"
 #include "Utils.h"
+#include "HumanPlayer.h"
 
 using namespace std;
 
-HumanPlayer::HumanPlayer(int p_number, int p_cash)
+HumanPlayer::HumanPlayer()
 {
-    number = p_number;
-    cash = p_cash;
 }
-/* starts new round with two dealt cards */
-void HumanPlayer::startNewRound(pair<int, int> cards)
+
+/* starts new round */
+void HumanPlayer::startNewRound()
 {
-    printf("STARTING NEW ROUND WITH CARDS: ");
-    printCard(cards.first);
-    printf(", ");
-    printCard(cards.second);
+    printf("HUMAN: Starting new round\n");
+}
+/* Annotates random action */
+void HumanPlayer::annotateRandomAction(int action_id)
+{
+    printf("HUMAN: CARD ");
+    printCard(action_id);
+    printf("dealt\n", action_id);
+
+}
+/* annotates opponent's action */
+void HumanPlayer::annotateOpponentAction(int action_id)
+{
+    printf("HUMAN: Opponent bets %d\n", action_id);
+}
+
+/* Get player's action */
+int HumanPlayer::getAction(int information_set_id, vector<int> available_actions)
+{
+    printf("HUMAN: Select action from: ");
+    for (int i = 0; i < available_actions.size(); i++)
+        printf("%d ", available_actions[i]);
     printf("\n");
-}
-
-/* starts new phase with new cards */
-void HumanPlayer::startNewPhase(vector<int> cards)
-{
-    printf("NEXT PHASE: ");
-    for (int c = 0; c < cards.size(); c++)
-        printCard(cards[c]);
-}
-
-/* learns opponent cards */
-void HumanPlayer::showOpponentCards(pair<int, int> cards)
-{
-    printf("OPPONENTS CARDS: ");
-    printCard(cards.first);
-    printf(", ");
-    printCard(cards.second);
-    printf("\n");
-}
-
-/* gets bet in this phase, given opponent's bet. Bet -1 signifies start of the phase */
-int HumanPlayer::getBet(int opponent_bet)
-{
-    printf("OPPONENT BET: %d\nWRITE YOURS\n", opponent_bet);
-    int bet;
-    scanf("%d", &bet);
-    return bet;
+    int action_id;
+    scanf("%d", &action_id);
+    return action_id;
 }
 /* gives info on who won the round with what stake */
-void HumanPlayer::announceRoundWinner(int winner, int stake)
+void HumanPlayer::endRound(double cash_change)
 {
-    if (winner == other(number))
-        cash -= stake;
-    if (winner == number)
-        cash += stake;
-    printf("DEBUG: human player %d, cash: %d\n", number, cash);
+    printf("HUMAN: Your score: %.1lf\n", cash_change);
 }
+

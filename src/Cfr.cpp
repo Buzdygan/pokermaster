@@ -5,38 +5,40 @@ using namespace std;
 
 const char* Cfr::DEFAULT_FILE = "cfr.strategy";
 const char Cfr::FILE_DELIM = '\n';
-const int Cfr::ITERATIONS = 1000;
+const int Cfr::ITERATIONS = 2000;
 
-Cfr::Cfr(GameAbstraction* gm)
+Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file)
 {
-    printf("Init Cfr\n");
+    printf("Init Cfr, iterations: %d\n", iterations);
     game = gm;
-    if (!loadFromFile(DEFAULT_FILE))
+    if (!loadFromFile(strategy_file))
     {
         srand(time(0));
-        computeVanillaCfr();
-        saveToFile(DEFAULT_FILE);
+        computeVanillaCfr(iterations);
+        saveToFile(strategy_file);
     }
 }
 
-void Cfr::computeVanillaCfr()
+void Cfr::computeVanillaCfr(int iterations)
 {
     printf("Computing CFR strategy\n");
     initialized = false;
-    for (int i = 0; i < ITERATIONS; i++)
+    double sum = 0.0;
+    for (int i = 0; i < iterations; i++)
     {
         printf("Iteration %d\n", i);
         double probs [3] = {1.0, 1.0, 1.0};
         walkTree(probs);
         initialized = true;
-        recomputeStrategy(R);
+        double it_err = recomputeStrategy(R) / (i + 1);
+        sum += it_err;
+        printf("It err: %0.5f Err: %0.5f\n", it_err, sum / (i+1));
     }
     recomputeStrategy(S);
 }
 
 utility Cfr::walkTree(double probs[3])
 {
-    //printf("BEFORE: probs0: %f, probs1: %f, probs2: %f\n", probs[0], probs[1], probs[2]);
     if (game -> isFinal())
     {
         return game -> getUtility();
@@ -80,18 +82,11 @@ utility Cfr::walkTree(double probs[3])
             }
         }
 
-        double prob_mult = probs[2];
-        for (int i = 0; i < 2; i ++)
-            if (p != i)
-                prob_mult *= probs[i];
-
-        double psum = 0.0;
+        double prob_mult = probs[2] * probs[(p + 1) & 1];
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
         {
             pair<int, int> decision_id = make_pair(is_id, *a_id);
             double action_prob = strategy[decision_id];
-            psum += action_prob;
-            //printf("action_prob: %f\n", action_prob);
             double backup_prob = probs[p];
             probs[p] *= action_prob;
 
@@ -107,8 +102,6 @@ utility Cfr::walkTree(double probs[3])
             final_util.second += temp_util.second * action_prob;
             S[decision_id] += probs[p] * action_prob;
         }
-        if (psum < 0.999)
-            printf("PSUM TOO SMALL: %f\n", psum);
 
         double add = prob_mult;
         if (p == 0)
@@ -117,13 +110,8 @@ utility Cfr::walkTree(double probs[3])
             add *= final_util.second;
 
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
-        {
-            pair<int, int> decision_id = make_pair(is_id, *a_id);
-            //printf("ADD: %f\n", add);
-            R[decision_id] -= add;
-        }
+            R[make_pair(is_id, *a_id)] -= add;
     }
-    //printf("AFTER: probs0: %f, probs1: %f, probs2: %f\n", probs[0], probs[1], probs[2]);
     return final_util;
 }
 
@@ -132,41 +120,49 @@ int Cfr::getActionId(int information_set_id, vector<int> action_ids)
 {
     double random_double = ((double) rand() / (RAND_MAX));
     double prob_sum = 0;
+    int choice = -1;
     for (int i = 0; i < action_ids.size(); i++)
     {
         int action_id = action_ids[i];
         double prob = strategy[make_pair(information_set_id, action_id)];
         prob_sum += prob;
-        printf("Prob of action %d: %0.3f\n", action_id, prob);
-        if (random_double < prob_sum)
-            return action_id;
+        //printf("Prob of action %d: %0.3f\n", action_id, prob);
+        if (choice == -1 && random_double < prob_sum)
+        {
+            choice = action_id;
+        }
     }
-    return -1;
+    return choice;
 }
 
-void Cfr::recomputeStrategy(Smap &reg)
+double Cfr::recomputeStrategy(Smap &reg)
 {
     map<int, double> is_r_sums;
     map<int, double> is_r_cnt;
-    int zero_cnt = 0, nonzero_cnt = 0;
+    int zero_cnt = 0, nonzero_cnt = 0, proportional_cnt = 0;
     for (Sit iter = reg.begin(); iter != reg.end(); iter++)
     {
         int is_id = iter -> first.first;
         double val = max(iter -> second, 0.0);
+
         if (!is_r_sums.count(is_id))
             is_r_sums[is_id] = val;
         else
             is_r_sums[is_id] = is_r_sums[is_id] + val;
+
         if (!is_r_cnt.count(is_id))
             is_r_cnt[is_id] = 1.0;
         else
             is_r_cnt[is_id] = is_r_cnt[is_id] + 1.0;
     }
+
+    double max_regret = 0.0;
     for (Sit iter = reg.begin(); iter != reg.end(); iter++)
     {
         int is_id = iter -> first.first;
         int a_id = iter -> first.second;
         double val = max(iter -> second, 0.0);
+        max_regret = max(val, max_regret);
         double sum = is_r_sums[is_id];
         if (sum > 0.0)
         {
@@ -179,10 +175,11 @@ void Cfr::recomputeStrategy(Smap &reg)
         else
         {
             strategy[iter -> first] = 1.0 / is_r_cnt[is_id];
-            nonzero_cnt ++;
+            proportional_cnt ++;
         }
     }
-    printf("ZERO CNT: %d, NON ZERO CNT: %d\n", zero_cnt, nonzero_cnt);
+    printf("ZERO CNT: %d, NON ZERO CNT: %d PROPORTIONAL_CNT: %d\n", zero_cnt, nonzero_cnt, proportional_cnt);
+    return max_regret;
 }
 
 

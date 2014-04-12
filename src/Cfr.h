@@ -13,7 +13,7 @@ typedef map<pair<int, int>, double>::iterator Sit;
 class Cfr
 {
     public:
-        Cfr(GameAbstraction* game);
+        Cfr(GameAbstraction* game, int iterations=ITERATIONS, const char* strategy_file=DEFAULT_FILE);
         int getActionId(int information_set_id, vector<int> action_ids);
 
     private:
@@ -30,8 +30,8 @@ class Cfr
         bool loadFromFile(const char* filename);
         void saveToFile(const char* filename);
 
-        void recomputeStrategy(Smap &r);
-        void computeVanillaCfr();
+        double recomputeStrategy(Smap &r);
+        void computeVanillaCfr(int iterations);
         utility walkTree(double probs[3]);
 };
 

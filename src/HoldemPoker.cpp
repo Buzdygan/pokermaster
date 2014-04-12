@@ -2,25 +2,24 @@
 #include <cstdlib>
 #include <stack>
 #include <algorithm>
-#include "SimplePoker.h"
+#include "HoldemPoker.h"
 #include "Utils.h"
 
-const int SimplePoker::DEFAULT_INITIAL_CASH = 100;
-const int SimplePoker::SMALL_BLIND = 4;
-const int SimplePoker::BIG_BLIND = 8;
-const int SimplePoker::CARDS_NUMBER = 6;
-const int SimplePoker::LAST_PHASE_NUMBER = 1;
-const int SimplePoker::DRAW = -1;
-const int SimplePoker::GAME_DRAWN = 6;
-const int SimplePoker::MAX_GAME_CARDS = 3;
-const int SimplePoker::MAX_STAKE = 5;
-const int SimplePoker::FINAL_BIDDING_PHASE = 1;
-const int SimplePoker::FINAL_RANDOM_PHASE = 2;
-const int SimplePoker::MAX_BIDS_NUMBER = 2;
-const int SimplePoker::GAME_IN_PROGRESS = 5;
-const int SimplePoker::PHASE_TABLE_CARDS[2][2][2] = {{{0,1}, {2,3}}, {{1,2}, {2,3}}};
+const int HoldemPoker::DEFAULT_INITIAL_CASH = 100;
+const int HoldemPoker::SMALL_BLIND = 4;
+const int HoldemPoker::BIG_BLIND = 8;
+const int HoldemPoker::CARDS_NUMBER = 52;
+const int HoldemPoker::LAST_PHASE_NUMBER = 1;
+const int HoldemPoker::DRAW = -1;
+const int HoldemPoker::GAME_DRAWN = 6;
+const int HoldemPoker::MAX_GAME_CARDS = 3;
+const int HoldemPoker::MAX_STAKE = 5;
+const int HoldemPoker::BLIND_RANDOM_PHASES = 4;
+const int HoldemPoker::FINAL_BIDDING_PHASE = 3;
+const int HoldemPoker::MAX_BIDS_NUMBER = 2;
+const int HoldemPoker::GAME_IN_PROGRESS = 5;
 
-SimplePoker::SimplePoker()
+HoldemPoker::HoldemPoker()
 {
     // 0 player always starts
     start_player = 0;
@@ -37,28 +36,28 @@ SimplePoker::SimplePoker()
         deck.push_back(c);
 }
 
-SimplePoker::~SimplePoker()
+HoldemPoker::~HoldemPoker()
 {
 }
 
-int SimplePoker::getInformationSetId()
+int HoldemPoker::getInformationSetId()
 {
     if (cur_player == RANDOM_PLAYER_NR)
         return -1;
     return information_set_ids[cur_player];
 }
 
-utility SimplePoker::getUtility()
+utility HoldemPoker::getUtility()
 {
     return results;
 }
 
-int SimplePoker::getPlayerId()
+int HoldemPoker::getPlayerId()
 {
     return cur_player;
 }
 
-dist SimplePoker::getActionDistribution()
+dist HoldemPoker::getActionDistribution()
 {
     dist d;
     double prob = 1.0 / deck.size();
@@ -68,19 +67,19 @@ dist SimplePoker::getActionDistribution()
 }
 
 /* returns player that sees the random action.*/
-int SimplePoker::randomActionPlayer()
+int HoldemPoker::randomActionPlayer()
 {
-    if (random_phase < FINAL_RANDOM_PHASE)
-        return random_phase;
+    if (random_phase < BLIND_RANDOM_PHASES)
+        return random_phase & 1;
     return ALL_PLAYERS;
 }
 
-bool SimplePoker::isFinal()
+bool HoldemPoker::isFinal()
 {
     return is_final;
 }
 
-vector<int> SimplePoker::getActionIds()
+vector<int> HoldemPoker::getActionIds()
 {
     if (cur_player == RANDOM_PLAYER_NR)
         return deck;
@@ -97,7 +96,7 @@ vector<int> SimplePoker::getActionIds()
     }
 }
 
-void SimplePoker::_endGame(int winner)
+void HoldemPoker::_endGame(int winner)
 {
     if (winner == 0)
         results = make_pair(agreed_stake, -agreed_stake);
@@ -108,7 +107,7 @@ void SimplePoker::_endGame(int winner)
     is_final = true;
 }
 
-void SimplePoker::makeAction(int action_id)
+void HoldemPoker::makeAction(int action_id)
 {
     _backup();
     /* if it's random player turn, action_id = dealt card id
@@ -125,22 +124,32 @@ void SimplePoker::makeAction(int action_id)
         if (seeing_player == ALL_PLAYERS)
         {
             for (int p = 0; p < 2; p++)
-            {
-                player_cards[0].push_back(card_id);
-                player_cards[1].push_back(card_id);
-                _logAction(card_id - 1, p);
-            }
-            _startOfBiddingPhase();
+                player_cards[p].push_back(card_id);
         }
         /* card for single player */
         else
-        {
             player_cards[seeing_player].push_back(card_id);
-            _logAction(card_id - 1, seeing_player);
-        }
+
         random_phase ++;
-        if (random_phase == FINAL_RANDOM_PHASE)
+        if (random_phase == 4 || random_phase >= 7)
+        {
+            if (random_phase == 4)
+            {
+                _logCards(0, 0, 1);
+                _logCards(1, 0, 1);
+            }
+            else if (random_phase == 7)
+            {
+                _logCards(0, 2, 4);
+                _logCards(1, 2, 4);
+            }
+            else
+            {
+                _logCards(0, random_phase - 3, random_phase - 3);
+                _logCards(1, random_phase - 3, random_phase - 3);
+            }
             _startOfBiddingPhase();
+        }
     }
     else
     {
@@ -181,18 +190,18 @@ void SimplePoker::makeAction(int action_id)
         }
     }
 }
-void SimplePoker::unmakeAction(int action_id)
+void HoldemPoker::unmakeAction(int action_id)
 {
     _restore();
 }
 
-void SimplePoker::_startOfBiddingPhase()
+void HoldemPoker::_startOfBiddingPhase()
 {
     cur_player = start_player;
     bids_number = 0;
 }
 
-void SimplePoker::_endOfBiddingPhase()
+void HoldemPoker::_endOfBiddingPhase()
 {
     agreed_stake = cur_stake;
     bidding_phase ++;
@@ -200,7 +209,7 @@ void SimplePoker::_endOfBiddingPhase()
     {
         int strength0 = _evaluateHand(player_cards[0]);
         int strength1 = _evaluateHand(player_cards[1]);
-        //printf("strength0: %d, strength1: %d\n", strength0, strength1);
+        printf("strength0: %d, strength1: %d\n", strength0, strength1);
         if (strength0 > strength1)
             _endGame(0);
         else if (strength1 > strength0)
@@ -215,16 +224,12 @@ void SimplePoker::_endOfBiddingPhase()
     }
 }
 
-int SimplePoker::_evaluateHand(vector<int> cards)
+int HoldemPoker::_evaluateHand(vector<int> cards)
 {
-    int c0 = (cards[0] + 1) / 2, c1 = (cards[1] + 1) / 2;
-    if (c0 == c1)
-        return 4 + c0;
-    return c0 + c1 - 2;
-
+    return evaluator.evaluateHand(cards);
 }
 
-void SimplePoker::_backup()
+void HoldemPoker::_backup()
 {
     Backup *backup = new Backup();
     backup -> cur_player = cur_player;
@@ -244,7 +249,7 @@ void SimplePoker::_backup()
     prev_backup = backup;
 }
 
-void SimplePoker::_restore()
+void HoldemPoker::_restore()
 {
     cur_player = prev_backup -> cur_player;
     agreed_stake = prev_backup -> agreed_stake;
@@ -264,11 +269,36 @@ void SimplePoker::_restore()
     prev_backup = temp;
 }
 
-void SimplePoker::_logAction(int action_id, int seeing_player)
+void HoldemPoker::_logAction(int action_id, int seeing_player)
 {
     int base = CARDS_NUMBER;
     if (MAX_STAKE + 1 > base)
         base = MAX_STAKE + 1;
     information_set_ids[seeing_player] *= base;
     information_set_ids[seeing_player] += action_id;
+}
+
+void HoldemPoker::_logCards(int seeing_player, int ind0, int ind1)
+{
+
+}
+
+HandEvaluator::HandEvaluator()
+{
+	memset(HR, 0, sizeof(HR));
+	FILE * fin = fopen("../data/HandRanks.dat", "rb");
+	size_t bytesread = fread(HR, sizeof(HR), 1, fin);	// get the HandRank Array
+	fclose(fin);
+}
+
+int HandEvaluator::evaluateHand(vector<int> cards)
+{
+    int ind = 0;
+    int p = HR[53 + cards[ind++]];
+    p = HR[p + cards[ind++]];
+    p = HR[p + cards[ind++]];
+    p = HR[p + cards[ind++]];
+    p = HR[p + cards[ind++]];
+    p = HR[p + cards[ind++]];
+    return HR[p + cards[ind++]];
 }

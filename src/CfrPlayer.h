@@ -3,12 +3,13 @@
 
 #include "Player.h"
 #include "Cfr.h"
+#include "GameAbstraction.h"
 using namespace std;
 
 class CfrPlayer : public Player
 {
     public:
-        CfrPlayer(Cfr* stg);
+        CfrPlayer(Cfr* strategy);
         /* starts new round */
         void startNewRound();
         /* Annotates random action */
@@ -21,6 +22,7 @@ class CfrPlayer : public Player
         void endRound(double cash_change);
     private:
         Cfr* strategy;
+        GameAbstraction* game;
 };
 
 #endif

@@ -2,24 +2,25 @@
 #define HUMAN_PLAYER_H
 
 #include "Player.h"
+#include "GameAbstraction.h"
 using namespace std;
 
 class HumanPlayer : public Player
 {
     public:
-        HumanPlayer(int p_number, int p_cash);
-        /* starts new round with two dealt cards */
-        void startNewRound(pair<int, int> cards);
-        /* starts new phase with new cards */
-        void startNewPhase(vector<int> cards);
-        /* learns opponent cards */
-        void showOpponentCards(pair<int, int> cards);
-        /* gets bet in this phase, given opponent's bet. Bet -1 signifies start of the phase */
-        int getBet(int opponent_bet);
+        HumanPlayer();
+        /* starts new round */
+        void startNewRound();
+        /* Annotates random action */
+        void annotateRandomAction(int action_id);
+        /* annotates opponent's action */
+        void annotateOpponentAction(int action_id);
+        /* Get player's action */
+        int getAction(int information_set_id, vector<int> available_actions);
         /* gives info on who won the round with what stake */
-        void announceRoundWinner(int winner, int stake);
+        void endRound(double cash_change);
     private:
-        int number, cash;
+        GameAbstraction* game;
 };
 
 #endif
