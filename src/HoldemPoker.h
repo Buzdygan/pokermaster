@@ -3,6 +3,7 @@
 
 #include <stack>
 #include "GameAbstraction.h"
+#include "Utils.h"
 
 /* RULES
  * TODO
@@ -24,14 +25,6 @@ struct Backup
     int information_set_ids[2];
 };
 
-class HandEvaluator
-{
-    public:
-        HandEvaluator();
-        int evaluateHand(vector<int> cards);
-    private:
-        int HR[32487834];
-};
 
 class HoldemPoker : public GameAbstraction
 {
@@ -48,7 +41,7 @@ class HoldemPoker : public GameAbstraction
         void makeAction(int action_id);
         void unmakeAction(int action_id);
         ~HoldemPoker();
-        HoldemPoker();
+        HoldemPoker(HandEvaluator* evaluator);
 
         static const int DEFAULT_INITIAL_CASH;
         static const int SMALL_BLIND;
@@ -79,7 +72,7 @@ class HoldemPoker : public GameAbstraction
         vector<int> player_cards[2];
         int information_set_ids[2];
         Backup *prev_backup;
-        HandEvaluator evaluator;
+        HandEvaluator* evaluator;
 
         int _evaluateHand(vector<int> cards);
         void _endOfBiddingPhase();

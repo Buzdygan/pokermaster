@@ -40,15 +40,16 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
+    HandEvaluator evaluator;
     //Cfr *cfr_strategy = new Cfr(new SimplePoker(), 2000, "cfr.strategy2000");
     //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");
 
     for (int r = 0; r < rounds_number; r++)
     {
-        /* new round */
-        GameAbstraction* game = new HoldemPoker();
+        // new round
+        GameAbstraction* game = new HoldemPoker(&evaluator);
         players[r & 1] = new DummyPlayer();
-        players[(r + 1) & 1] = new DummyPlayer();
+        players[(r + 1) & 1] = new HumanPlayer();
         //players[r & 1] = new CfrPlayer(cfr_strategy);
         //players[(r + 1) & 1] = new CfrPlayer(cfr_strategy2);
         vector<int> players_cards[2];

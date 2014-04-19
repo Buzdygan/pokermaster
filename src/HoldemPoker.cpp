@@ -19,7 +19,7 @@ const int HoldemPoker::FINAL_BIDDING_PHASE = 3;
 const int HoldemPoker::MAX_BIDS_NUMBER = 2;
 const int HoldemPoker::GAME_IN_PROGRESS = 5;
 
-HoldemPoker::HoldemPoker()
+HoldemPoker::HoldemPoker(HandEvaluator* eval)
 {
     // 0 player always starts
     start_player = 0;
@@ -34,6 +34,7 @@ HoldemPoker::HoldemPoker()
     results = make_pair(0.0, 0.0);
     for (int c = 1; c <= CARDS_NUMBER; c++)
         deck.push_back(c);
+    evaluator = eval;
 }
 
 HoldemPoker::~HoldemPoker()
@@ -226,7 +227,7 @@ void HoldemPoker::_endOfBiddingPhase()
 
 int HoldemPoker::_evaluateHand(vector<int> cards)
 {
-    return evaluator.evaluateHand(cards);
+    return evaluator -> evaluateHand(cards);
 }
 
 void HoldemPoker::_backup()
@@ -283,22 +284,3 @@ void HoldemPoker::_logCards(int seeing_player, int ind0, int ind1)
 
 }
 
-HandEvaluator::HandEvaluator()
-{
-	memset(HR, 0, sizeof(HR));
-	FILE * fin = fopen("../data/HandRanks.dat", "rb");
-	size_t bytesread = fread(HR, sizeof(HR), 1, fin);	// get the HandRank Array
-	fclose(fin);
-}
-
-int HandEvaluator::evaluateHand(vector<int> cards)
-{
-    int ind = 0;
-    int p = HR[53 + cards[ind++]];
-    p = HR[p + cards[ind++]];
-    p = HR[p + cards[ind++]];
-    p = HR[p + cards[ind++]];
-    p = HR[p + cards[ind++]];
-    p = HR[p + cards[ind++]];
-    return HR[p + cards[ind++]];
-}
