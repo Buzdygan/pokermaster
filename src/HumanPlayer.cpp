@@ -27,7 +27,7 @@ void HumanPlayer::annotateRandomAction(int action_id)
 /* annotates opponent's action */
 void HumanPlayer::annotateOpponentAction(int action_id)
 {
-    printf("HUMAN: Opponent bets %d\n", action_id);
+    printf("HUMAN: Opponent plays %d\n", action_id);
 }
 
 /* Get player's action */

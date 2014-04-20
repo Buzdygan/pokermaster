@@ -18,13 +18,18 @@ const int HoldemPoker::BLIND_RANDOM_PHASES = 4;
 const int HoldemPoker::FINAL_BIDDING_PHASE = 3;
 const int HoldemPoker::MAX_BIDS_NUMBER = 2;
 const int HoldemPoker::GAME_IN_PROGRESS = 5;
+const int HoldemPoker::ACTIONS_NUMBER = 3;
+const int HoldemPoker::ACTION_FOLD = 0;
+const int HoldemPoker::ACTION_CALL = 1;
+const int HoldemPoker::ACTION_RAISE = 2;
 
 HoldemPoker::HoldemPoker(HandEvaluator* eval)
 {
     // 0 player always starts
     start_player = 0;
-    information_set_ids[0] = 1;
-    information_set_ids[1] = 2;
+    information_set_ids[0] = 0;
+    information_set_ids[1] = 0;
+    is_mults[0] = is_mults[1] = 1;
     cur_player = RANDOM_PLAYER_NR;
     cur_stake = agreed_stake = 1;
     bidding_phase = 0;
@@ -86,13 +91,11 @@ vector<int> HoldemPoker::getActionIds()
         return deck;
     else
     {
-        int max_bet = MAX_STAKE;
-        if (bids_number >= MAX_BIDS_NUMBER)
-            max_bet = cur_stake;
         vector<int> action_ids;
-        action_ids.push_back(0);
-        for (int i = cur_stake; i <= max_bet; i++)
-            action_ids.push_back(i);
+        action_ids.push_back(ACTION_FOLD);
+        action_ids.push_back(ACTION_CALL);
+        if (bids_number < MAX_BIDS_NUMBER)
+            action_ids.push_back(ACTION_RAISE);
         return action_ids;
     }
 }
@@ -154,29 +157,23 @@ void HoldemPoker::makeAction(int action_id)
     }
     else
     {
+        _updateInformationSet(cur_player, action_id, ACTIONS_NUMBER);
         bids_number ++;
-        int bet = action_id;
-        _logAction(bet, 0);
-        _logAction(bet, 1);
-        if (bet > MAX_STAKE)
-        {
-            fprintf(stderr, "ERROR: Betting %d: more than MAX_STAKE=%d\n", bet, MAX_STAKE);
-            throw 1;
-        }
         /* player looses */
-        else if (bet < cur_stake)
+        if (action_id == ACTION_FOLD)
         {
             _endGame(other(cur_player));
         }
-        else if (bet == cur_stake)
+        else if (action_id == ACTION_CALL)
         {
+            agreed_stake = cur_stake;
             /* Second player agrees */
             if (bids_number >= 2)
                 _endOfBiddingPhase();
             else
                 cur_player = other(cur_player);
         }
-        if (bet > cur_stake)
+        else if (action_id == ACTION_RAISE)
         {
             if (bids_number > MAX_BIDS_NUMBER)
             {
@@ -185,7 +182,8 @@ void HoldemPoker::makeAction(int action_id)
             }
             else
             {
-                cur_stake = bet;
+                agreed_stake = cur_stake;
+                cur_stake *= 2 ;
                 cur_player = other(cur_player);
             }
         }
@@ -204,13 +202,11 @@ void HoldemPoker::_startOfBiddingPhase()
 
 void HoldemPoker::_endOfBiddingPhase()
 {
-    agreed_stake = cur_stake;
     bidding_phase ++;
     if (bidding_phase > FINAL_BIDDING_PHASE)
     {
         int strength0 = _evaluateHand(player_cards[0]);
         int strength1 = _evaluateHand(player_cards[1]);
-        printf("strength0: %d, strength1: %d\n", strength0, strength1);
         if (strength0 > strength1)
             _endGame(0);
         else if (strength1 > strength0)
@@ -246,6 +242,10 @@ void HoldemPoker::_backup()
     backup -> player_cards[1] = player_cards[1];
     backup -> information_set_ids[0] = information_set_ids[0];
     backup -> information_set_ids[1] = information_set_ids[1];
+    backup -> is_mults[0] = is_mults[0];
+    backup -> is_mults[1] = is_mults[1];
+    backup -> current_basket[0] = current_basket[0];
+    backup -> current_basket[1] = current_basket[1];
     backup -> prev = prev_backup;
     prev_backup = backup;
 }
@@ -265,22 +265,31 @@ void HoldemPoker::_restore()
     player_cards[1] = prev_backup -> player_cards[1];
     information_set_ids[0] = prev_backup -> information_set_ids[0];
     information_set_ids[1] = prev_backup -> information_set_ids[1];
+    is_mults[0] = prev_backup -> is_mults[0];
+    is_mults[1] = prev_backup -> is_mults[1];
+    current_basket[0] = prev_backup -> current_basket[0];
+    current_basket[1] = prev_backup -> current_basket[1];
     Backup* temp = prev_backup -> prev;
     delete prev_backup;
     prev_backup = temp;
 }
 
-void HoldemPoker::_logAction(int action_id, int seeing_player)
-{
-    int base = CARDS_NUMBER;
-    if (MAX_STAKE + 1 > base)
-        base = MAX_STAKE + 1;
-    information_set_ids[seeing_player] *= base;
-    information_set_ids[seeing_player] += action_id;
-}
-
 void HoldemPoker::_logCards(int seeing_player, int ind0, int ind1)
 {
+    vector<int> cards;
+    for (int i = ind0; i <= ind1; i++)
+        cards.push_back(player_cards[seeing_player][i]);
+    int basket_number = evaluator -> getNextBasket(bidding_phase,
+                                                   current_basket[seeing_player],
+                                                   evaluator -> cardsCode(cards));
+    _updateInformationSet(seeing_player,
+                          basket_number,
+                          evaluator -> getBasketsNumber(bidding_phase));
+}
 
+void HoldemPoker::_updateInformationSet(int player, int action_id, int total_actions)
+{
+    information_set_ids[player] += action_id * is_mults[player];
+    is_mults[player] *= total_actions;
 }
 

@@ -22,6 +22,7 @@ class HandEvaluator
         HandEvaluator();
         int evaluateHand(vector<int> cards);
         int getNextBasket(int stage, int current, int cards_code);
+        int getBasketsNumber(int stage);
         int cardsCode(vector<int> cards);
         bool loadTransitions();
         void saveTransitions();

@@ -53,7 +53,7 @@ HandEvaluator::HandEvaluator()
 	fclose(fin);
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
-        basket_sizes[b] = MAX_BASKETS_NUMBER;
+        basket_sizes[b] = 5;
     _computeCC();
     if (!loadTransitions())
     {
@@ -131,7 +131,23 @@ bool HandEvaluator::loadTransitions()
 
 void HandEvaluator::computeTransitions()
 {
+    for (int i = 0; i < TWO_CARD_CODES; i++)
+        PF[i] = i % basket_sizes[0];
 
+    double val = 1.0 / (basket_sizes[0] * THREE_CARD_CODES * basket_sizes[1]);
+    for (int b1 = 0; b1 < basket_sizes[0]; b1++)
+        for (int cc = 0; cc < THREE_CARD_CODES; cc++)
+            for (int b2 = 0; b2 < basket_sizes[1]; b2++)
+                F[b1][cc][b2] = val;
+
+    for (int i = 0; i < 2; i++)
+    {
+        double val = 1.0 / (ONE_CARD_CODES * basket_sizes[1 + i] * basket_sizes[2 + i]);
+        for (int b1 = 0; b1 < basket_sizes[1 + i]; b1++)
+            for (int cc = 0; cc < ONE_CARD_CODES; cc++)
+                for (int b2 = 0; b2 < basket_sizes[2 + i]; b2++)
+                    TR[i][b1][cc][b2] = val;
+    }
 }
 
 int HandEvaluator::cardsCode(vector<int> cards)
@@ -143,6 +159,11 @@ int HandEvaluator::cardsCode(vector<int> cards)
     if (n == 2)
         return cards[0] + cards[1] * 53;
     return CC[cards[0]][cards[1]] + cards[2] - cards[1] - 1;
+}
+
+int HandEvaluator::getBasketsNumber(int stage)
+{
+    return basket_sizes[stage];
 }
 
 int HandEvaluator::getNextBasket(int stage, int current, int cards_code)

@@ -23,6 +23,8 @@ struct Backup
     vector<int> deck;
     vector<int> player_cards[2];
     int information_set_ids[2];
+    int is_mults[2];
+    int current_basket[2];
 };
 
 
@@ -56,6 +58,10 @@ class HoldemPoker : public GameAbstraction
         static const int FINAL_BIDDING_PHASE;
         static const int MAX_BIDS_NUMBER;
         static const int GAME_IN_PROGRESS;
+        static const int ACTIONS_NUMBER;
+        static const int ACTION_FOLD;
+        static const int ACTION_CALL;
+        static const int ACTION_RAISE;
     private:
         int start_player;
         int cur_player;
@@ -71,6 +77,8 @@ class HoldemPoker : public GameAbstraction
         vector<int> deck;
         vector<int> player_cards[2];
         int information_set_ids[2];
+        int current_basket[2];
+        int is_mults[2];
         Backup *prev_backup;
         HandEvaluator* evaluator;
 
@@ -82,6 +90,7 @@ class HoldemPoker : public GameAbstraction
         void _endGame(int winner);
         void _logAction(int action_id, int seeing_player);
         void _logCards(int seeing_player, int ind0, int ind1);
+        void _updateInformationSet(int player, int action_id, int total_actions);
 };
 
 

@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     score[0] = 0;
     score[1] = 0;
     HandEvaluator evaluator;
-    //Cfr *cfr_strategy = new Cfr(new SimplePoker(), 2000, "cfr.strategy2000");
+    Cfr *cfr_strategy = new Cfr(new HoldemPoker(&evaluator), 2, "cfr.strategy2");
     //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");
 
     for (int r = 0; r < rounds_number; r++)
