@@ -127,7 +127,10 @@ void HoldemPokerAbstraction::logAction(int pnum, int action_id, int phase_id)
 void HoldemPokerAbstraction::logCards(int pnum, vector<int> cards, int random_phase)
 {
     int cards_code = manager -> cardsCode(cards);
-    logAction(pnum, cards_code, random_phase);
+    int bnum = manager -> getNextBasket(random_phase,
+                                                 player_basket[pnum],
+                                                 cards_code);
+    logAction(pnum, bnum, random_phase);
 }
 
 void HoldemPokerAbstraction::_backup()

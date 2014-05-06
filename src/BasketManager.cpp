@@ -16,6 +16,7 @@ BasketManager::BasketManager(int bs[4])
     for (int b = 0; b < 4; b++)
         basket_sizes[b] = bs[b];
     _computeCC();
+    _computeBasketsDistribution();
 }
 
 BasketManager::BasketManager()
@@ -29,12 +30,28 @@ BasketManager::BasketManager()
         computeTransitions();
         saveTransitions();
     }
+    _computeBasketsDistribution();
+}
+
+void BasketManager::_computeBasketsDistribution()
+{
+    for(int stage = 0; stage < 4; stage ++)
+    {
+        int bnum = basket_sizes[stage];
+        double prob = 1.0 / (bnum * bnum);
+        for (int b1 = 0; b1 < bnum; b1++)
+            for (int b2 = 0; b2 < bnum; b2++)
+            {
+                int pair_id = b2 * MAX_BASKETS_NUMBER + b1;
+                default_distribution[stage].push_back(make_pair(pair_id,
+                                                                prob));
+            }
+    }
 }
 
 dist BasketManager::getBasketPairsDistribution(int stage, int basket0, int basket1)
 {
-    dist v;
-    return v;
+    return default_distribution[stage];
 }
 
 void BasketManager::saveTransitions()
@@ -143,6 +160,8 @@ int BasketManager::getBasketsNumber(int stage)
 
 int BasketManager::getNextBasket(int stage, int current, int cards_code)
 {
+    // todo remove that and fix
+    return rand() % basket_sizes[stage];
     if (stage == 0) // pre flop
         return PF[cards_code];
     double* baskets_distribution;

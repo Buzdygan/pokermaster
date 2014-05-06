@@ -25,6 +25,7 @@ class CfrPlayer : public Player
         void endRound(double cash_change);
         void _logBid(int bid);
     private:
+        int cur_stake;
         int player_num;
         int random_phase;
         bool first_action;

@@ -51,15 +51,17 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
+    int basket_sizes[4] = {3,3,3,3};
     HandEvaluator evaluator;
-    //Cfr *cfr_strategy = new Cfr(new HoldemPoker(&evaluator), 2, "cfr.strategy2");
+    BasketManager mng(basket_sizes);
+    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), 5, "cfr.strategy100000");
     //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");
 
     for (int r = 0; r < rounds_number; r++)
     {
         // new round
         GameAbstraction* game = new HoldemPoker(&evaluator);
-        int game_type = 0;
+        int game_type = 2;
         if (game_type == 0)
         {
             players[r & 1] = new DummyPlayer();
@@ -70,11 +72,16 @@ int main(int argc, char* argv[])
             players[r & 1] = new HumanPlayer(r & 1);
             players[(r + 1) & 1] = new HumanPlayer((r + 1) & 1);
         }
-        //players[r & 1] = new CfrPlayer(cfr_strategy);
-        //players[(r + 1) & 1] = new CfrPlayer(cfr_strategy2);
+        if (game_type == 2)
+        {
+            players[r & 1] = new CfrPlayer(r & 1,
+                                           cfr_strategy,
+                                           new HoldemPokerAbstraction(&mng));
+            players[(r + 1) & 1] = new DummyPlayer();
+        }
         vector<int> players_cards[2];
 
-        printf("Human: %d, Dummy: %d\n", r & 1, (r+1) & 1);
+        printf("CFR: %d, Dummy: %d\n", r & 1, (r+1) & 1);
         while (!game -> isFinal())
         {
             int pnum = game -> getPlayerId();
@@ -104,6 +111,7 @@ int main(int argc, char* argv[])
             else
             {
                 int action_id = players[pnum] -> getAction(game -> getActionIds());
+                log("Player %d tries to bet %d\n", pnum, action_id);
                 game -> makeAction(action_id);
                 players[other(pnum)] -> annotateOpponentAction(action_id);
                 players[pnum] -> annotatePlayerAction(action_id);

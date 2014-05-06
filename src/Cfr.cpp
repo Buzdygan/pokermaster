@@ -1,3 +1,4 @@
+#include <set>
 #include "Cfr.h"
 #include "GameAbstraction.h"
 
@@ -30,18 +31,18 @@ void Cfr::computeVanillaCfr(int iterations)
     {
         printf("Iteration %d\n", i);
         double probs [3] = {1.0, 1.0, 1.0};
+        cnt = 0;
         walkTree(probs);
         initialized = true;
         double it_err = recomputeStrategy(R) / (i + 1);
         sum += it_err;
-        printf("It err: %0.5f Err: %0.5f\n", it_err, sum / (i+1));
+        printf("It err: %0.5f Err: %0.5f Cnt: %d\n", it_err, sum / (i+1), cnt);
     }
     recomputeStrategy(S);
 }
 
 utility Cfr::walkTree(double probs[3])
 {
-    printf("%d\n", cnt++);
     if (game -> isFinal())
     {
         return game -> getUtility();
@@ -49,23 +50,50 @@ utility Cfr::walkTree(double probs[3])
     int p = game -> getPlayerId();
     utility final_util = make_pair(0.0, 0.0);
     //printf("%d\n", R.size());
+    cnt ++;
 
     /* If it is a turn of a chance player */
     if (p == RANDOM_PLAYER_NR)
     {
         dist action_distr = game -> getActionDistribution();
-        for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
+        double backup_prob = probs[RANDOM_PLAYER_NR];
+
+        const bool SAMPLED = false;
+
+        if (SAMPLED)
         {
-            double backup_prob = probs[RANDOM_PLAYER_NR];
-            probs[RANDOM_PLAYER_NR] *= iter -> second;
+            double r = (double) rand() / RAND_MAX;
+            double sum = 0.0;
+            for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
+            {
+                probs[RANDOM_PLAYER_NR] *= iter -> second;
+                sum += iter -> second;
 
-            game -> makeAction(iter -> first);
-            utility res_util = walkTree(probs);
-            game -> unmakeAction(iter -> first);
+                if (r < sum + 1e-9)
+                {
+                    game -> makeAction(iter -> first);
+                    utility res_util = walkTree(probs);
+                    game -> unmakeAction(iter -> first);
+                    probs[RANDOM_PLAYER_NR] = backup_prob;
+                    final_util.first += res_util.first * iter -> second;
+                    final_util.second += res_util.second * iter -> second;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
+            {
+                probs[RANDOM_PLAYER_NR] *= iter -> second;
+                game -> makeAction(iter -> first);
+                utility res_util = walkTree(probs);
+                game -> unmakeAction(iter -> first);
 
-            probs[RANDOM_PLAYER_NR] = backup_prob;
-            final_util.first += res_util.first * iter -> second;
-            final_util.second += res_util.second * iter -> second;
+                probs[RANDOM_PLAYER_NR] = backup_prob;
+                final_util.first += res_util.first * iter -> second;
+                final_util.second += res_util.second * iter -> second;
+            }
         }
     }
     else
@@ -87,11 +115,11 @@ utility Cfr::walkTree(double probs[3])
         }
 
         double prob_mult = probs[2] * probs[(p + 1) & 1];
+        double backup_prob = probs[p];
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
         {
             pair<int, int> decision_id = make_pair(is_id, *a_id);
             double action_prob = strategy[decision_id];
-            double backup_prob = probs[p];
             probs[p] *= action_prob;
 
             game -> makeAction(*a_id);
@@ -164,9 +192,11 @@ double Cfr::recomputeStrategy(Smap &reg)
     }
 
     double max_regret = 0.0;
+    set<int> isets;
     for (Sit iter = reg.begin(); iter != reg.end(); iter++)
     {
         int is_id = iter -> first.first;
+        isets.insert(is_id);
         int a_id = iter -> first.second;
         double val = max(iter -> second, 0.0);
         max_regret = max(val, max_regret);
@@ -185,7 +215,11 @@ double Cfr::recomputeStrategy(Smap &reg)
             proportional_cnt ++;
         }
     }
-    printf("ZERO CNT: %d, NON ZERO CNT: %d PROPORTIONAL_CNT: %d\n", zero_cnt, nonzero_cnt, proportional_cnt);
+    printf("TOTAL_SIZE: %d, IS_SIZE: %d ZERO CNT: %d, NON ZERO CNT: %d PROPORTIONAL_CNT: %d\n", (int)reg.size(),
+                                                                                                (int)isets.size(),
+                                                                                                zero_cnt,
+                                                                                                nonzero_cnt,
+                                                                                                proportional_cnt);
     return max_regret;
 }
 

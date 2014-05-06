@@ -26,6 +26,8 @@ class BasketManager
     private:
         int* basket_sizes;
         void _computeCC();
+        void _computeBasketsDistribution();
+        dist default_distribution[4];
 };
 
 #endif
