@@ -4,25 +4,34 @@
 #include "Player.h"
 #include "Cfr.h"
 #include "GameAbstraction.h"
+#include "HoldemPokerAbstraction.h"
 using namespace std;
 
 class CfrPlayer : public Player
 {
     public:
-        CfrPlayer(Cfr* strategy);
-        /* starts new round */
-        void startNewRound();
+        CfrPlayer(int player_num,
+                  Cfr* strategy,
+                  HoldemPokerAbstraction* game);
         /* Annotates random action */
         void annotateRandomAction(int action_id);
+        /* annotates this player's action */
+        void annotatePlayerAction(int action_id);
         /* annotates opponent's action */
         void annotateOpponentAction(int action_id);
         /* Get player's action */
-        int getAction(int information_set_id, vector<int> available_actions);
+        int getAction(vector<int> available_actions);
         /* gives info on who won the round with what stake */
         void endRound(double cash_change);
+        void _logBid(int bid);
     private:
+        int player_num;
+        int random_phase;
+        bool first_action;
+        int bids_number;
+        vector<int> new_cards;
         Cfr* strategy;
-        GameAbstraction* game;
+        HoldemPokerAbstraction* game;
 };
 
 #endif

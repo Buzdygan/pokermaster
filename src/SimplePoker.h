@@ -39,6 +39,7 @@ class SimplePoker : public GameAbstraction
         vector<int> getActionIds();
         void makeAction(int action_id);
         void unmakeAction(int action_id);
+        int bidsNumber();
         ~SimplePoker();
         SimplePoker();
 

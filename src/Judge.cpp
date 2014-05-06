@@ -11,6 +11,17 @@
 #include "HumanPlayer.h"
 
 const int DEFAULT_ROUNDS_NUMBER = 1;
+const int DEBUG = true;
+
+int log(const char* format, ...)
+{
+    if (!DEBUG)
+        return 0;
+    va_list vl;
+    va_start(vl, format);
+    vprintf(format, vl);
+    va_end(vl);
+}
 
 int get_random_action(dist distribution)
 {
@@ -41,23 +52,29 @@ int main(int argc, char* argv[])
     score[0] = 0;
     score[1] = 0;
     HandEvaluator evaluator;
-    Cfr *cfr_strategy = new Cfr(new HoldemPoker(&evaluator), 2, "cfr.strategy2");
+    //Cfr *cfr_strategy = new Cfr(new HoldemPoker(&evaluator), 2, "cfr.strategy2");
     //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");
 
     for (int r = 0; r < rounds_number; r++)
     {
         // new round
         GameAbstraction* game = new HoldemPoker(&evaluator);
-        players[r & 1] = new DummyPlayer();
-        players[(r + 1) & 1] = new HumanPlayer();
+        int game_type = 0;
+        if (game_type == 0)
+        {
+            players[r & 1] = new DummyPlayer();
+            players[(r + 1) & 1] = new DummyPlayer();
+        }
+        if (game_type == 1)
+        {
+            players[r & 1] = new HumanPlayer(r & 1);
+            players[(r + 1) & 1] = new HumanPlayer((r + 1) & 1);
+        }
         //players[r & 1] = new CfrPlayer(cfr_strategy);
         //players[(r + 1) & 1] = new CfrPlayer(cfr_strategy2);
         vector<int> players_cards[2];
 
         printf("Human: %d, Dummy: %d\n", r & 1, (r+1) & 1);
-        for (int p = 0; p < 2; p++)
-            players[p] -> startNewRound();
-
         while (!game -> isFinal())
         {
             int pnum = game -> getPlayerId();
@@ -82,16 +99,15 @@ int main(int argc, char* argv[])
                     // to keep the other player's game tree
                     players_cards[seeing_player].push_back(action_id);
                 }
-                //printf("Card %d dealt to player %d\n", action_id, seeing_player);
+                log("Card %d dealt to player %d\n", action_id, seeing_player);
             }
             else
             {
-                // TODO (jest zle teraz, bo gracze nie dostaja wszystkich losowych akcji)
-                // zrob tak, że przekazujemy nieznaną akcję losową
-                int action_id = players[pnum] -> getAction(game -> getInformationSetId(), game -> getActionIds());
-                //printf("Player %d bets %d\n", pnum, action_id);
+                int action_id = players[pnum] -> getAction(game -> getActionIds());
                 game -> makeAction(action_id);
                 players[other(pnum)] -> annotateOpponentAction(action_id);
+                players[pnum] -> annotatePlayerAction(action_id);
+                log("Player %d bets %d\n", pnum, action_id);
             }
         }
         utility round_result = game -> getUtility();

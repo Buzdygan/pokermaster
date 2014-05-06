@@ -15,6 +15,7 @@ struct Backup
     int cur_player;
     int agreed_stake;
     int cur_stake;
+    int cards_dealt;
     int random_phase;
     int bidding_phase;
     int bids_number;
@@ -22,27 +23,25 @@ struct Backup
     bool is_final;
     vector<int> deck;
     vector<int> player_cards[2];
-    int information_set_ids[2];
-    int is_mults[2];
-    int current_basket[2];
 };
 
 
 class HoldemPoker : public GameAbstraction
 {
     public:
-        int getInformationSetId();
+        virtual int getInformationSetId();
+        virtual dist getActionDistribution();
+        virtual vector<int> getActionIds();
+        virtual void makeAction(int action_id);
         utility getUtility();
         int getPlayerId();
-        dist getActionDistribution();
         /* returns player that sees the random action.
          * -1 means all players */
         int randomActionPlayer();
         bool isFinal();
-        vector<int> getActionIds();
-        void makeAction(int action_id);
         void unmakeAction(int action_id);
         ~HoldemPoker();
+        HoldemPoker();
         HoldemPoker(HandEvaluator* evaluator);
 
         static const int DEFAULT_INITIAL_CASH;
@@ -59,14 +58,13 @@ class HoldemPoker : public GameAbstraction
         static const int MAX_BIDS_NUMBER;
         static const int GAME_IN_PROGRESS;
         static const int ACTIONS_NUMBER;
-        static const int ACTION_FOLD;
-        static const int ACTION_CALL;
-        static const int ACTION_RAISE;
-    private:
+        static const int RANDOM_PHASE_CARDS_NUMBER[4];
+    protected:
         int start_player;
         int cur_player;
         int agreed_stake;
         int cur_stake;
+        int cards_dealt;
         int random_phase;
         int bidding_phase;
         int bids_number;
@@ -74,23 +72,19 @@ class HoldemPoker : public GameAbstraction
         utility results;
         /* has the game ended yet */
         bool is_final;
-        vector<int> deck;
-        vector<int> player_cards[2];
-        int information_set_ids[2];
-        int current_basket[2];
-        int is_mults[2];
-        Backup *prev_backup;
-        HandEvaluator* evaluator;
 
-        int _evaluateHand(vector<int> cards);
+        virtual void _backup();
+        virtual void _restore();
+        virtual int _evaluateHand(int player_number);
+        virtual void _init();
         void _endOfBiddingPhase();
         void _startOfBiddingPhase();
-        void _backup();
-        void _restore();
         void _endGame(int winner);
-        void _logAction(int action_id, int seeing_player);
-        void _logCards(int seeing_player, int ind0, int ind1);
-        void _updateInformationSet(int player, int action_id, int total_actions);
+    private:
+        vector<int> deck;
+        vector<int> player_cards[2];
+        Backup *prev_backup;
+        HandEvaluator* evaluator;
 };
 
 

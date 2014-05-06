@@ -7,6 +7,8 @@ const char* Cfr::DEFAULT_FILE = "cfr.strategy";
 const char Cfr::FILE_DELIM = '\n';
 const int Cfr::ITERATIONS = 2000;
 
+int cnt = 0;
+
 Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file)
 {
     printf("Init Cfr, iterations: %d\n", iterations);
@@ -39,12 +41,14 @@ void Cfr::computeVanillaCfr(int iterations)
 
 utility Cfr::walkTree(double probs[3])
 {
+    printf("%d\n", cnt++);
     if (game -> isFinal())
     {
         return game -> getUtility();
     }
     int p = game -> getPlayerId();
     utility final_util = make_pair(0.0, 0.0);
+    //printf("%d\n", R.size());
 
     /* If it is a turn of a chance player */
     if (p == RANDOM_PLAYER_NR)
@@ -124,7 +128,10 @@ int Cfr::getActionId(int information_set_id, vector<int> action_ids)
     for (int i = 0; i < action_ids.size(); i++)
     {
         int action_id = action_ids[i];
-        double prob = strategy[make_pair(information_set_id, action_id)];
+        double prob = 0.0;
+        pair<int,int> pair_id = make_pair(information_set_id, action_id);
+        if (strategy.count(pair_id))
+            prob = strategy[pair_id];
         prob_sum += prob;
         //printf("Prob of action %d: %0.3f\n", action_id, prob);
         if (choice == -1 && random_double < prob_sum)

@@ -80,6 +80,11 @@ bool SimplePoker::isFinal()
     return is_final;
 }
 
+int SimplePoker::bidsNumber()
+{
+    return bids_number;
+}
+
 vector<int> SimplePoker::getActionIds()
 {
     if (cur_player == RANDOM_PLAYER_NR)

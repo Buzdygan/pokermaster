@@ -4,12 +4,12 @@
 #include <vector>
 #include <map>
 #include <cstdlib>
+#include "Utils.h"
 using namespace std;
 
 const int RANDOM_PLAYER_NR = 2;
 const int ALL_PLAYERS = -1;
 typedef pair<double, double> utility;
-typedef vector<pair<int, double> > dist;
 
 typedef vector<int>::iterator vi_it;
 typedef map<pair<int,int>, double>::iterator stg_it;

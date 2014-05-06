@@ -7,33 +7,36 @@
 
 using namespace std;
 
-HumanPlayer::HumanPlayer()
+HumanPlayer::HumanPlayer(int p)
 {
+    pnum = p;
 }
 
-/* starts new round */
-void HumanPlayer::startNewRound()
-{
-    printf("HUMAN: Starting new round\n");
-}
 /* Annotates random action */
 void HumanPlayer::annotateRandomAction(int action_id)
 {
-    printf("HUMAN: CARD ");
+    printf("HUMAN %d: CARD ", pnum);
     printCard(action_id);
     printf("dealt\n", action_id);
 
 }
+
+/* annotates this player's action */
+void HumanPlayer::annotatePlayerAction(int action_id)
+{
+    printf("HUMAN %d: You play %d\n", pnum, action_id);
+}
+
 /* annotates opponent's action */
 void HumanPlayer::annotateOpponentAction(int action_id)
 {
-    printf("HUMAN: Opponent plays %d\n", action_id);
+    printf("HUMAN %d: Opponent plays %d\n", pnum, action_id);
 }
 
 /* Get player's action */
-int HumanPlayer::getAction(int information_set_id, vector<int> available_actions)
+int HumanPlayer::getAction(vector<int> available_actions)
 {
-    printf("HUMAN: Select action from: ");
+    printf("HUMAN %d: Select action from: ", pnum);
     for (int i = 0; i < available_actions.size(); i++)
         printf("%d ", available_actions[i]);
     printf("\n");
@@ -44,6 +47,6 @@ int HumanPlayer::getAction(int information_set_id, vector<int> available_actions
 /* gives info on who won the round with what stake */
 void HumanPlayer::endRound(double cash_change)
 {
-    printf("HUMAN: Your score: %.1lf\n", cash_change);
+    printf("HUMAN %d: Your score: %.1lf\n", pnum, cash_change);
 }
 

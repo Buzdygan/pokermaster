@@ -1,0 +1,15 @@
+
+Zwykły poker przyjmuje jako action_id karty i stawki
+
+W Abstrakcji action_id to albo id przebicia albo zakodowana para koszyków (w jakimś systemie dwudziestkowym albo coś)
+
+Potrzebujemy prawdopodobieństwa przejść między parami koszyków
+Potrzebujemy prawdopodobieństw przejścia z koszyka do koszyka po danej karcie
+Potrzebujemy prawdopodobieństw wygrania koszyka z koszykiem
+
+Ale logujemy pojedyncze koszyki
+
+W CFR Player powinniśmy tłumaczyć action_id które dostajemy od strategii na zagrywkę w prawdziwej grze
+
+powinno dać się jedynie logować zagrywki bez przeprowadzania całej rozgrywki - żeby dostać zbiór informacyjny
+bez wiedzy o kartach przeciwnika
