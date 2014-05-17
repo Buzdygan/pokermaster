@@ -3,8 +3,8 @@
 
 #include "BasketManager.h"
 
-const char* TRANSITIONS_FILENAME = "basket_transitions.txt";
-const char* DISTRIBUTION_FILENAME = "basket_distribution.txt";
+const char* TRANSITIONS_FILENAME = "basket_transitions.stg";
+const char* DISTRIBUTION_FILENAME = "basket_distribution.stg";
 
 int CC[55][55];
 int PF[TWO_CARD_CODES + 5]; // pre flop basket
@@ -61,7 +61,9 @@ void BasketManager::_init()
 
 void BasketManager::_computeBasketsDistribution()
 {
-    int DIST[MAX_BASKETS_NUMBER * MAX_BASKETS_NUMBER];
+    const int M = MAX_BASKETS_NUMBER * MAX_BASKETS_NUMBER;
+    int DIST[M];
+    memset(DIST, 0, M);
     int n = ONE_CARD_CODES;
 
     // stage 0 distribution
@@ -85,12 +87,22 @@ void BasketManager::_computeBasketsDistribution()
                                 sum ++;
                             }
     dist distribution0;
-    for (int i = 0; i < MAX_BASKETS_NUMBER * MAX_BASKETS_NUMBER; i++)
+    for (int b0 = 0; b0 < basket_sizes[0]; b0++)
     {
-        if (DIST[i] > 0)
-            distribution0.push_back(make_pair(i, double(DIST[i]) / sum));
+        for(int b1 = 0; b1 < basket_sizes[0]; b1++)
+        {
+            int bpair = encode_basket_pair(b0, b1);
+            printf("DIST: %d sum: %d\n", DIST[bpair], sum);
+            if (DIST[bpair] > 0)
+                distribution0.push_back(make_pair(bpair, double(DIST[bpair]) / sum));
+        }
     }
     BASKET_DISTRIBUTION[0][0] = distribution0;
+
+    double DD[M][M];
+    double SUM[M];
+    memset(DD, 0, M * M);
+    memset(SUM, 0, M);
 
     // stage 1 distribution
     for (int c0 = 0; c0 < n; c0++)
@@ -104,30 +116,62 @@ void BasketManager::_computeBasketsDistribution()
                         cards.push_back(c1);
                         cards.push_back(c2);
                         int cards_code = cardsCode(cards);
-                        for (int a0 = 0; a0 < basket_sizes[1]; a0++)
-                            for (int a1 = 0; a1 < basket_sizes[1]; a1++)
-                                for (int b0 = 0; b0 < basket_sizes[2]; b0++)
-                                    for (int b1 = 0; b1 < basket_sizes[2]; b1++)
+                        for (int a0 = 0; a0 < basket_sizes[0]; a0++)
+                            for (int a1 = 0; a1 < basket_sizes[0]; a1++)
+                                for (int b0 = 0; b0 < basket_sizes[1]; b0++)
+                                    for (int b1 = 0; b1 < basket_sizes[1]; b1++)
                                     {
                                         int apair = encode_basket_pair(a0, a1);
                                         int bpair = encode_basket_pair(b0, b1);
                                         double prob = F[a0][cards_code][b0] * F[a1][cards_code][b1];
-                                        BASKET_DISTRIBUTION[1][apair].push_back(make_pair(bpair, prob));
+                                        SUM[apair] += prob;
+                                        DD[apair][bpair] += prob;
                                     }
                     }
+    for (int a0 = 0; a0 < basket_sizes[0]; a0++)
+        for (int a1 = 0; a1 < basket_sizes[0]; a1++)
+            for (int b0 = 0; b0 < basket_sizes[1]; b0++)
+                for (int b1 = 0; b1 < basket_sizes[1]; b1++)
+                {
+                    int apair = encode_basket_pair(a0, a1);
+                    int bpair = encode_basket_pair(b0, b1);
+                    if (SUM[apair] > 0.0 && DD[apair][bpair] > 0.0)
+                    {
+                        double prob = DD[apair][bpair] / SUM[apair];
+                        BASKET_DISTRIBUTION[1][apair].push_back(make_pair(bpair, prob));
+                    }
+                }
 
     for(int stage = 2; stage < 4; stage ++)
+    {
+        memset(DD, 0, M * M);
+        memset(SUM, 0, M);
         for (int c = 0; c < n; c++)
-            for (int a0 = 0; a0 < basket_sizes[1]; a0++)
-                for (int a1 = 0; a1 < basket_sizes[1]; a1++)
-                    for (int b0 = 0; b0 < basket_sizes[2]; b0++)
-                        for (int b1 = 0; b1 < basket_sizes[2]; b1++)
+            for (int a0 = 0; a0 < basket_sizes[stage - 1]; a0++)
+                for (int a1 = 0; a1 < basket_sizes[stage - 1]; a1++)
+                    for (int b0 = 0; b0 < basket_sizes[stage]; b0++)
+                        for (int b1 = 0; b1 < basket_sizes[stage]; b1++)
                         {
                             int apair = encode_basket_pair(a0, a1);
                             int bpair = encode_basket_pair(b0, b1);
                             double prob = TR[stage - 2][a0][c][b0] * TR[stage-2][a1][c][b1];
+                            SUM[apair] += prob;
+                            DD[apair][bpair] += prob;
+                        }
+        for (int a0 = 0; a0 < basket_sizes[stage - 1]; a0++)
+            for (int a1 = 0; a1 < basket_sizes[stage - 1]; a1++)
+                for (int b0 = 0; b0 < basket_sizes[stage]; b0++)
+                    for (int b1 = 0; b1 < basket_sizes[stage]; b1++)
+                    {
+                        int apair = encode_basket_pair(a0, a1);
+                        int bpair = encode_basket_pair(b0, b1);
+                        if (SUM[apair] > 0.0 && DD[apair][bpair] > 0.0)
+                        {
+                            double prob = DD[apair][bpair] / SUM[apair];
                             BASKET_DISTRIBUTION[stage][apair].push_back(make_pair(bpair, prob));
                         }
+                    }
+        }
 }
 
 void BasketManager::_saveDistribution()

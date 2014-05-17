@@ -41,10 +41,10 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {3,3,3,3};
+    int basket_sizes[4] = {2,2,2,2};
     HandEvaluator evaluator;
     BasketManager mng(basket_sizes);
-    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), 5, "cfr.strategy5");
+    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), 1000, "cfr.strategy1000");
     //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");
 
     for (int r = 0; r < rounds_number; r++)

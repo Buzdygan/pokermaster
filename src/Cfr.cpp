@@ -4,7 +4,7 @@
 
 using namespace std;
 
-const char* Cfr::DEFAULT_FILE = "cfr.strategy";
+const char* Cfr::DEFAULT_FILE = "cfr.stg";
 const char Cfr::FILE_DELIM = '\n';
 const int Cfr::ITERATIONS = 2000;
 
@@ -55,6 +55,7 @@ utility Cfr::walkTree(double probs[3])
     /* If it is a turn of a chance player */
     if (p == RANDOM_PLAYER_NR)
     {
+        log(2, "walkTree: cnt: %d\n", cnt);
         dist action_distr = game -> getActionDistribution();
         double backup_prob = probs[RANDOM_PLAYER_NR];
 
@@ -83,6 +84,7 @@ utility Cfr::walkTree(double probs[3])
         }
         else
         {
+            //printf("RAND ACTIONS: %d\n", (int)action_distr.size());
             for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
             {
                 probs[RANDOM_PLAYER_NR] *= iter -> second;

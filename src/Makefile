@@ -16,3 +16,6 @@ Tests: Player.o GameAbstraction.o Utils.o BasketManager.o SimplePoker.o HoldemPo
 
 clean:
 	rm *.o
+
+clean_strategy:
+	rm *.stg
