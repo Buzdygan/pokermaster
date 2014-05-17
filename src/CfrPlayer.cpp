@@ -23,10 +23,10 @@ void CfrPlayer::annotateRandomAction(int card_id)
     /* We end the random phase */
     if (new_cards.size() == CARDS_FOR_PHASE[random_phase])
     {
-        random_phase ++;
         game -> logCards(player_num, new_cards, random_phase);
         new_cards.clear();
         bids_number = 0;
+        random_phase ++;
     }
 }
 

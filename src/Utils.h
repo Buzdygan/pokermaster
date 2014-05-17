@@ -9,6 +9,7 @@ typedef vector<pair<int, double> > dist;
 int other(int player_number);
 void printCard(int card);
 void printHand(vector<int> cards);
+int log(int level, const char* format, ...);
 
 
 class HandEvaluator

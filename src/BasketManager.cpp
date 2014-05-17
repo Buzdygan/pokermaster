@@ -3,20 +3,32 @@
 
 #include "BasketManager.h"
 
-const char* TRANSITIONS_FILENAME = "transitions.txt";
+const char* TRANSITIONS_FILENAME = "basket_transitions.txt";
+const char* DISTRIBUTION_FILENAME = "basket_distribution.txt";
 
 int CC[55][55];
 int PF[TWO_CARD_CODES + 5]; // pre flop basket
 double F[MAX_BASKETS_NUMBER][THREE_CARD_CODES + 10][MAX_BASKETS_NUMBER]; // flop basket transistions
 double TR[2][MAX_BASKETS_NUMBER][ONE_CARD_CODES + 5][MAX_BASKETS_NUMBER]; // turn and river basket transitions
 
+dist BASKET_DISTRIBUTION[5][MAX_BASKETS_NUMBER * MAX_BASKETS_NUMBER];
+
+pair<int, int> decode_basket_pair(int action_id)
+{
+    return make_pair(action_id % MAX_BASKETS_NUMBER, action_id / MAX_BASKETS_NUMBER);
+}
+
+int encode_basket_pair(int basket0, int basket1)
+{
+    return basket0 + basket1 * MAX_BASKETS_NUMBER;
+}
+
 BasketManager::BasketManager(int bs[4])
 {
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
         basket_sizes[b] = bs[b];
-    _computeCC();
-    _computeBasketsDistribution();
+    _init();
 }
 
 BasketManager::BasketManager()
@@ -24,37 +36,173 @@ BasketManager::BasketManager()
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
         basket_sizes[b] = 5;
+    _init();
+}
+
+void BasketManager::_init()
+{
     _computeCC();
-    if (!loadTransitions())
+    if (!_loadTransitions())
     {
-        computeTransitions();
-        saveTransitions();
+        _computeTransitions();
+        _saveTransitions();
+        _computeBasketsDistribution();
+        _saveDistribution();
     }
-    _computeBasketsDistribution();
+    else
+    {
+        if(!_loadDistribution())
+        {
+            _computeBasketsDistribution();
+            _saveDistribution();
+        }
+    }
 }
 
 void BasketManager::_computeBasketsDistribution()
 {
-    for(int stage = 0; stage < 4; stage ++)
+    int DIST[MAX_BASKETS_NUMBER * MAX_BASKETS_NUMBER];
+    int n = ONE_CARD_CODES;
+
+    // stage 0 distribution
+    int sum = 0;
+    for (int c0 = 0; c0 < n; c0++)
+        for (int c1 = 0; c1 < n; c1++)
+            if (c1 != c0)
+                for (int c2 = 0; c2 < n; c2++)
+                    if (c2 != c0 && c2 != c1)
+                        for (int c3 = 0; c3 < n; c3++)
+                            if (c3 != c0 && c3 != c1 && c3 != c2)
+                            {
+                                vector<int> cards0, cards1;
+                                cards0.push_back(c0);
+                                cards0.push_back(c1);
+                                cards1.push_back(c2);
+                                cards1.push_back(c3);
+                                int b0 = getNextBasket(0, 0, cardsCode(cards0));
+                                int b1 = getNextBasket(0, 0, cardsCode(cards1));
+                                DIST[encode_basket_pair(b0, b1)] ++;
+                                sum ++;
+                            }
+    dist distribution0;
+    for (int i = 0; i < MAX_BASKETS_NUMBER * MAX_BASKETS_NUMBER; i++)
     {
-        int bnum = basket_sizes[stage];
-        double prob = 1.0 / (bnum * bnum);
-        for (int b1 = 0; b1 < bnum; b1++)
-            for (int b2 = 0; b2 < bnum; b2++)
+        if (DIST[i] > 0)
+            distribution0.push_back(make_pair(i, double(DIST[i]) / sum));
+    }
+    BASKET_DISTRIBUTION[0][0] = distribution0;
+
+    // stage 1 distribution
+    for (int c0 = 0; c0 < n; c0++)
+        for (int c1 = 0; c1 < n; c1++)
+            if (c1 != c0)
+                for (int c2 = 0; c2 < n; c2++)
+                    if (c2 != c0 && c2 != c1)
+                    {
+                        vector<int> cards;
+                        cards.push_back(c0);
+                        cards.push_back(c1);
+                        cards.push_back(c2);
+                        int cards_code = cardsCode(cards);
+                        for (int a0 = 0; a0 < basket_sizes[1]; a0++)
+                            for (int a1 = 0; a1 < basket_sizes[1]; a1++)
+                                for (int b0 = 0; b0 < basket_sizes[2]; b0++)
+                                    for (int b1 = 0; b1 < basket_sizes[2]; b1++)
+                                    {
+                                        int apair = encode_basket_pair(a0, a1);
+                                        int bpair = encode_basket_pair(b0, b1);
+                                        double prob = F[a0][cards_code][b0] * F[a1][cards_code][b1];
+                                        BASKET_DISTRIBUTION[1][apair].push_back(make_pair(bpair, prob));
+                                    }
+                    }
+
+    for(int stage = 2; stage < 4; stage ++)
+        for (int c = 0; c < n; c++)
+            for (int a0 = 0; a0 < basket_sizes[1]; a0++)
+                for (int a1 = 0; a1 < basket_sizes[1]; a1++)
+                    for (int b0 = 0; b0 < basket_sizes[2]; b0++)
+                        for (int b1 = 0; b1 < basket_sizes[2]; b1++)
+                        {
+                            int apair = encode_basket_pair(a0, a1);
+                            int bpair = encode_basket_pair(b0, b1);
+                            double prob = TR[stage - 2][a0][c][b0] * TR[stage-2][a1][c][b1];
+                            BASKET_DISTRIBUTION[stage][apair].push_back(make_pair(bpair, prob));
+                        }
+}
+
+void BasketManager::_saveDistribution()
+{
+    FILE *f = fopen(DISTRIBUTION_FILENAME, "w");
+    dist d = BASKET_DISTRIBUTION[0][0];
+    fprintf(f, "%d\n", (int) d.size());
+    for (int i = 0; i < d.size(); i++)
+        fprintf(f, "%d %lf\n", d[i].first, d[i].second);
+    for (int stage = 1; stage < 4; stage++)
+    {
+        fprintf(f, "%d\n", basket_sizes[stage] * basket_sizes[stage]);
+        for (int b0 = 0; b0 < basket_sizes[stage]; b0++)
+            for (int b1 = 0; b1 < basket_sizes[stage]; b1++)
             {
-                int pair_id = b2 * MAX_BASKETS_NUMBER + b1;
-                default_distribution[stage].push_back(make_pair(pair_id,
-                                                                prob));
+                fprintf(f, "%d %d\n", b0, b1);
+                dist d = BASKET_DISTRIBUTION[stage][encode_basket_pair(b0, b1)];
+                fprintf(f, "%d\n", (int) d.size());
+                for (int i = 0; i < d.size(); i++)
+                    fprintf(f, "%d %lf\n", d[i].first, d[i].second);
             }
+    }
+    fclose(f);
+}
+
+bool BasketManager::_loadDistribution()
+{
+    try
+    {
+        FILE *f = fopen(DISTRIBUTION_FILENAME, "r");
+        int n, bnum;
+        double prob;
+        // read distribution size
+        fscanf(f, "%d\n", &n);
+        for (int i = 0; i < n; i++)
+        {
+            fscanf(f, "%d %lf\n", &bnum, &prob);
+            BASKET_DISTRIBUTION[0][0].push_back(make_pair(bnum, prob));
+        }
+        for (int stage = 1; stage < 4; stage++)
+        {
+            int m;
+            // read basket pairs size
+            fscanf(f, "%d\n", &m);
+            for (int i = 0; i < m; i++)
+            {
+                int b0, b1;
+                // read basket pair
+                fscanf(f, "%d %d\n", &b0, &b1);
+                int bpair = encode_basket_pair(b0, b1);
+                // read dist size
+                fscanf(f, "%d\n", &n);
+                for (int j = 0; j < n; j++)
+                {
+                    fscanf(f, "%d %lf\n", &bnum, &prob);
+                    BASKET_DISTRIBUTION[stage][bpair].push_back(make_pair(bnum, prob));
+                }
+            }
+        }
+        fclose(f);
+    }
+    catch (int e)
+    {
+        return false;
     }
 }
 
 dist BasketManager::getBasketPairsDistribution(int stage, int basket0, int basket1)
 {
-    return default_distribution[stage];
+    if (stage == 0)
+        return BASKET_DISTRIBUTION[0][0];
+    return BASKET_DISTRIBUTION[stage][encode_basket_pair(basket0, basket1)];
 }
 
-void BasketManager::saveTransitions()
+void BasketManager::_saveTransitions()
 {
     FILE *f = fopen(TRANSITIONS_FILENAME, "w");
     fprintf(f, "%d\n", TWO_CARD_CODES);
@@ -78,7 +226,7 @@ void BasketManager::saveTransitions()
     fclose(f);
 }
 
-bool BasketManager::loadTransitions()
+bool BasketManager::_loadTransitions()
 {
     try {
         FILE *f = fopen(TRANSITIONS_FILENAME, "r");
@@ -121,8 +269,9 @@ bool BasketManager::loadTransitions()
     }
 }
 
-void BasketManager::computeTransitions()
+void BasketManager::_computeTransitions()
 {
+    // TODO zrób to
     for (int i = 0; i < TWO_CARD_CODES; i++)
         PF[i] = i % basket_sizes[0];
 
@@ -160,23 +309,22 @@ int BasketManager::getBasketsNumber(int stage)
 
 int BasketManager::getNextBasket(int stage, int current, int cards_code)
 {
-    // todo remove that and fix
-    return rand() % basket_sizes[stage];
+    log(1, "stage: %d, current: %d, cards_code: %d\n", stage, current, cards_code);
     if (stage == 0) // pre flop
         return PF[cards_code];
-    double* baskets_distribution;
-    if (stage == 1)
-        baskets_distribution = F[current][cards_code];
-    if (stage > 1)
-        baskets_distribution = TR[stage - 2][current][cards_code];
-    int n = basket_sizes[stage]; // number of baskets in this stage
 
-    // now choose the basket according to the distribution
+    double *dist;
+    if (stage == 1)
+        dist = F[current][cards_code];
+    if (stage > 1)
+        dist = TR[stage - 2][current][cards_code];
+
+    int n = basket_sizes[stage]; // number of baskets in this stage
     double r = (double) rand() / RAND_MAX;
     double sum = 0.0;
     for (int i = 0; i < n; i ++)
     {
-        sum += baskets_distribution[i];
+        sum += dist[i];
         if (r < sum)
             return i;
     }

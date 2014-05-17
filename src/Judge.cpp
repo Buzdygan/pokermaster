@@ -11,17 +11,7 @@
 #include "HumanPlayer.h"
 
 const int DEFAULT_ROUNDS_NUMBER = 1;
-const int DEBUG = true;
 
-int log(const char* format, ...)
-{
-    if (!DEBUG)
-        return 0;
-    va_list vl;
-    va_start(vl, format);
-    vprintf(format, vl);
-    va_end(vl);
-}
 
 int get_random_action(dist distribution)
 {
@@ -54,7 +44,7 @@ int main(int argc, char* argv[])
     int basket_sizes[4] = {3,3,3,3};
     HandEvaluator evaluator;
     BasketManager mng(basket_sizes);
-    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), 5, "cfr.strategy100000");
+    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), 5, "cfr.strategy5");
     //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");
 
     for (int r = 0; r < rounds_number; r++)
@@ -106,16 +96,15 @@ int main(int argc, char* argv[])
                     // to keep the other player's game tree
                     players_cards[seeing_player].push_back(action_id);
                 }
-                log("Card %d dealt to player %d\n", action_id, seeing_player);
+                log(0, "Card %d dealt to player %d\n", action_id, seeing_player);
             }
             else
             {
                 int action_id = players[pnum] -> getAction(game -> getActionIds());
-                log("Player %d tries to bet %d\n", pnum, action_id);
                 game -> makeAction(action_id);
                 players[other(pnum)] -> annotateOpponentAction(action_id);
                 players[pnum] -> annotatePlayerAction(action_id);
-                log("Player %d bets %d\n", pnum, action_id);
+                log(0, "Player %d bets %d\n", pnum, action_id);
             }
         }
         utility round_result = game -> getUtility();

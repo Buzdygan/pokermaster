@@ -5,6 +5,18 @@
 
 int HR[32487834];
 
+const int DEBUG_LEVEL = 1;
+
+int log(int level, const char* format, ...)
+{
+    if (level >= DEBUG_LEVEL)
+        return 0;
+    va_list vl;
+    va_start(vl, format);
+    vprintf(format, vl);
+    va_end(vl);
+}
+
 int other(int player_number)
 {
     return (player_number + 1) & 1;

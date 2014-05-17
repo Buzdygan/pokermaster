@@ -26,6 +26,7 @@ void HoldemPokerAbstraction::_init()
     results = make_pair(0.0, 0.0);
     is_id[0] = 0;
     is_id[1] = 1;
+    player_basket[0] = player_basket[1] = 0;
     mults[0] = mults[1] = 2;
 }
 
@@ -50,8 +51,10 @@ void HoldemPokerAbstraction::makeAction(int action_id)
     _backup();
     if (cur_player == RANDOM_PLAYER_NR)
     {
-        player_basket[0] = action_id % MAX_BASKETS_NUMBER;
-        player_basket[1] = action_id / MAX_BASKETS_NUMBER;
+        pair<int, int> basket_pair = decode_basket_pair(action_id);
+        player_basket[0] = basket_pair.first;
+        player_basket[1] = basket_pair.second;
+        log(1, "HPA:makeAction: action_id: %d, pb[0]: %d, pb[1]: %d\n", action_id, player_basket[0], player_basket[1]);
         logAction(0, player_basket[0], random_phase);
         logAction(1, player_basket[1], random_phase);
         random_phase ++;
@@ -128,8 +131,13 @@ void HoldemPokerAbstraction::logCards(int pnum, vector<int> cards, int random_ph
 {
     int cards_code = manager -> cardsCode(cards);
     int bnum = manager -> getNextBasket(random_phase,
-                                                 player_basket[pnum],
-                                                 cards_code);
+                                        player_basket[pnum],
+                                        cards_code);
+    log(1, "HPA: logCards: bnum: %d, random_phase: %d, player_basket[%d]: %d\n", bnum,
+                                                                              random_phase,
+                                                                              pnum,
+                                                                              player_basket[pnum]);
+    player_basket[pnum] = bnum;
     logAction(pnum, bnum, random_phase);
 }
 
