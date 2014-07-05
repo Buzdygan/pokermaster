@@ -390,15 +390,15 @@ int BasketManager::_computeFirstBasket(int c1, int c2)
             F[o2] ++;
             int cnt = 0;
             for (int t1 = 0; t1 < FIGS; t1 ++)
-                if (F[t1] <= 4)
+                if (F[t1] < 4)
                 {
                     F[t1] ++;
                     for (int t2 = t1; t2 < FIGS; t2 ++)
-                        if(F[t2] <= 4)
+                        if(F[t2] < 4)
                         {
                             F[t2] ++;
                             for (int t3 = t2; t3 < FIGS; t3++)
-                                if (F[t3] <= 4)
+                                if (F[t3] < 4)
                                 {
                                     int co1 = 1 + o1 * 4, co2 = 1 + o2 * 4, ct1 = 1 + t1 * 4, ct2 = 1 + t2 * 4, ct3 = 1 + t3 * 4;
 
@@ -448,21 +448,122 @@ int BasketManager::_computeFirstBasket(int c1, int c2)
     return _determineBasket(0, double(wins) / all);
 }
 
+inline int _inc_vars(int ahead, int tied, int behind, int sc)
+{
+    ahead += int(sc == AHEAD);
+    tied += int(sc == TIED);
+    behind += int(sc == BEHIND);
+    return sc;
+}
+
+double BasketManager::_EHS(int pc1, int pc2, int tc1, int tc2, int tc3, int tc4, int tc5)
+{
+    int F[FIGS + 2];
+    memset(F, 0, sizeof(F));
+    F[(pc1 - 1) / 4] ++;
+    F[(pc2 - 1) / 4] ++;
+    if(tc1)
+        F[(tc1 - 1) / 4] ++;
+    if(tc2)
+        F[(tc2 - 1) / 4] ++;
+    if(tc3)
+        F[(tc3 - 1) / 4] ++;
+    if(tc4)
+        F[(tc4 - 1) / 4] ++;
+    if(tc5)
+        F[(tc5 - 1) / 4] ++;
+
+    int ahead = 0, tied = 0, behind = 0;
+    int HP[3][3];
+    memset(HP, 0, sizeof(HP));
+    int HPTotal[3] = {0, 0, 0};
+    for (int o1 = 0; o1 < FIGS; o1 ++)
+        for (int o2 = o1; o2 < FIGS; o2 ++)
+        {
+            F[o1] ++; F[o2] ++;
+            if (F[o1] <= 4 && F[o2] <= 4)
+            {
+                int oc1 = 4 * o1 + 1, oc2 = 4 * o2 + 1;
+                // TODO zastanów się czy nie należy zwiększać o inną wartość niż 1
+                int index = _inc_vars(ahead, tied, behind, _evaluateCards(pc1, pc2, oc1, oc2 + 1, tc1, tc2, tc3, tc4, tc5));
+                HPTotal[index] ++;
+                _computePotential(HP[index], F, pc1, pc2, oc1, oc2 + 1, tc1, tc2, tc3, tc4, tc5);
+                if (o1 != o2)
+                {
+                    int index = _inc_vars(ahead, tied, behind, _evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5));
+                    HPTotal[index] ++;
+                    _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
+                }
+            }
+            F[o1] --; F[o2] --;
+        }
+    return (double(ahead) + tied / 2.0) / (ahead + tied + behind);
+}
+
+void BasketManager::_computePotential(int HP[3], int F[FIGS + 2], int pc1, int pc2, int oc1, int oc2, int tc1, int tc2, int tc3, int tc4, int tc5)
+{
+    for (int t1 = 0; t1 < FIGS; t1++)
+        for (int t2 = t1; t2 < FIGS; t2++)
+            for (int t3 = t2; t3 < FIGS; t3++)
+                for (int t4 = 0; t4 < FIGS; t4++)
+                    for (int t5 = 0; t5 < FIGS; t5++)
+                    {
+                        F[t1] += int(!tc1); F[t2] += int(!tc2); F[t3] += int(!tc3);
+                        F[t4] += int(!tc4); F[t5] += int(!tc5);
+                        bool good = true;
+                        for (int f = 0; f < FIGS; f++)
+                            if(F[f] > 4)
+                            {
+                                good = false;
+                                break;
+                            }
+                        if (good)
+                        {
+
+                        }
+                        F[t1] -= int(!tc1); F[t2] -= int(!tc2); F[t3] -= int(!tc3);
+                        F[t4] -= int(!tc4); F[t5] -= int(!tc5);
+                    }
+}
+
+void BasketManager::_evaluateBoard(int stage, int HP[3], int pc1, int pc2, int oc1, int oc2, int t1, int t2, int t3, int t4, int t5,
+                                   int tc1, int tc2, int tc3, int tc4, int tc5)
+{
+    if (stage == 2)
+        HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5 ? tc5 : (4 * t5 + 1))] ++;
+    else if (stage == 1)
+        _evaluateBoard(stage + 1, HP, pc1, pc2, oc1, oc2, t1, t2, t3, t4, t5, tc1, tc2, tc3, tc4 ? tc4 : (4 * t4 + 1), tc5);
+
+    tc4 = tc4 ? tc4 : 4 * t4 + 1;
+    tc5 = tc5 ? tc5 : 4 * t5 + 1;
+    if (tc1 != 0) // mamy podane karty z flopa
+        HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5)] ++;
+    else
+    {
+        tc1 = 4 * t1 + 1;
+        tc2 = 4 * t2 + 1;
+        tc3 = 4 * t3 + 1;
+
+
+    }
+}
+
+
 int BasketManager::_evaluateCards(int p1, int p2, int o1, int o2, int t1, int t2, int t3, int t4, int t5)
 {
     int pscore = evaluator -> evaluateHand(p1, p2, t1, t2, t3, t4, t5);
     int oppscore = evaluator -> evaluateHand(o1, o2, t1, t2, t3, t4, t5);
     if (pscore > oppscore)
-        return 1;
+        return AHEAD;
     if (pscore == oppscore)
-        return 0;
+        return TIED;
     if (pscore < oppscore)
-        return -1;
+        return BEHIND;
 }
 
 
 /* returns basket based on the stage and probability of win */
-int BasketManager::_determineBasket(int stage, double win_prob)
+int BasketManager::_determineBasket(int stage, double ehs)
 {
     // TODO
     return 0;

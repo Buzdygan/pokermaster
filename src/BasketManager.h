@@ -10,6 +10,9 @@ const int MAX_BASKETS_NUMBER = 10;
 const int ONE_CARD_CODES = 52;
 const int TWO_CARD_CODES = 3000;
 const int THREE_CARD_CODES = 22100;
+const int BEHIND = 0;
+const int TIED = 1;
+const int AHEAD = 2;
 
 const int DEFAULT_BASKET_SIZES [4] = {5, 5, 5, 5};
 
@@ -43,6 +46,10 @@ class BasketManager
         int _computeFirstBasket(int c1, int c2);
         int _determineBasket(int stage, double win_prob);
         int _evaluateCards(int p1, int p2, int o1, int o2, int t1, int t2, int t3, int t4=0, int t5=0);
+        double _EHS(int pc1, int pc2, int tc1=0, int tc2=0, int tc3=0, int tc4=0, int tc5=0);
+        void _computePotential(int* HP, int* F, int pc1, int pc2, int oc1, int oc2, int tc1, int tc2, int tc3, int tc4, int tc5);
+        void _evaluateBoard(int stage, int HP[3], int pc1, int pc2, int oc1, int oc2, int t1, int t2, int t3, int t4, int t5,
+                                   int tc1, int tc2, int tc3, int tc4, int tc5);
 };
 
 #endif
