@@ -50,12 +50,26 @@ HandEvaluator::HandEvaluator()
 
 int HandEvaluator::evaluateHand(vector<int> cards)
 {
-    int ind = 0;
-    int p = HR[53 + cards[ind++]];
-    p = HR[p + cards[ind++]];
-    p = HR[p + cards[ind++]];
-    p = HR[p + cards[ind++]];
-    p = HR[p + cards[ind++]];
-    p = HR[p + cards[ind++]];
-    return HR[p + cards[ind++]];
+    int p = HR[53 + cards[0]];
+    for (int i = 1; i < cards.size(); i++)
+        p = HR[p + cards[i]];
+    if (cards.size() < 7)
+        return HR[p];
+    else
+        return p;
 }
+
+int HandEvaluator::evaluateHand(int c1, int c2, int c3, int c4, int c5, int c6, int c7)
+{
+    int p = HR[53 + c1];
+    p = HR[p + c2];
+    p = HR[p + c3];
+    p = HR[p + c4];
+    p = HR[p + c5];
+    if (c6 > 0)
+        p = HR[p + c6];
+    if (c7 > 0)
+        return HR[p + c7];
+    return HR[p];
+}
+

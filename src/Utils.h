@@ -17,6 +17,7 @@ class HandEvaluator
     public:
         HandEvaluator();
         int evaluateHand(vector<int> cards);
+        int evaluateHand(int c1, int c2, int c3, int c4, int c5, int c6=0, int c7=0);
 };
 
 

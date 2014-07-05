@@ -29,6 +29,26 @@ int get_random_action(dist distribution)
     return distribution[0].first;
 }
 
+void test_cards(HandEvaluator *evaluator)
+{
+    while(1)
+    {
+        printf("Podaj karty\n");
+        int c = 1;
+        vector<int> cards;
+        while (c >= 0)
+        {
+            scanf("%d", &c);
+            if (c < 0)
+                break;
+            cards.push_back(c);
+        }
+        printHand(cards);
+        int score = evaluator -> evaluateHand(cards);
+        printf("score: %d, cat: %d\n", score, score >> 12);
+    }
+}
+
 int main(int argc, char* argv[])
 {
     srand(time(NULL));
@@ -43,8 +63,9 @@ int main(int argc, char* argv[])
     score[1] = 0;
     int basket_sizes[4] = {2,2,2,2};
     HandEvaluator evaluator;
-    BasketManager mng(basket_sizes);
-    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), 1000, "cfr.strategy1000");
+    //test_cards(&evaluator);
+    BasketManager mng(basket_sizes, &evaluator);
+    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), 10, "cfr.strategy10.stg");
     //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");
 
     for (int r = 0; r < rounds_number; r++)

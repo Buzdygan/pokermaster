@@ -1,6 +1,7 @@
 #include<algorithm>
 #include<vector>
 
+#include "Utils.h"
 #include "BasketManager.h"
 
 const char* TRANSITIONS_FILENAME = "basket_transitions.stg";
@@ -23,19 +24,21 @@ int encode_basket_pair(int basket0, int basket1)
     return basket0 + basket1 * MAX_BASKETS_NUMBER;
 }
 
-BasketManager::BasketManager(int bs[4])
+BasketManager::BasketManager(int bs[4], HandEvaluator* ev)
 {
+    evaluator = ev;
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
         basket_sizes[b] = bs[b];
     _init();
 }
 
-BasketManager::BasketManager()
+BasketManager::BasketManager(HandEvaluator* ev)
 {
+    evaluator = ev;
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
-        basket_sizes[b] = 5;
+        basket_sizes[b] = DEFAULT_BASKET_SIZES[b];
     _init();
 }
 
@@ -313,11 +316,18 @@ bool BasketManager::_loadTransitions()
     }
 }
 
+/*
+ * Plan:
+ * Pierwsza faza - liczymy prawdopodobieństwa dla dwóch kart, przeglądamy wszystkie możliwe kombinacje dwójek
+ * naszych i przeciwnika i trójek na flopie. Dla każdej dwójki liczymy prawdopodobieństwo wygrania na podstawie 5 kart
+ * Przydzielamy koszyki.
+ * Potem będzi
+ */
+
 void BasketManager::_computeTransitions()
 {
-    // TODO zrób to
-    for (int i = 0; i < TWO_CARD_CODES; i++)
-        PF[i] = i % basket_sizes[0];
+
+    _computeFirstBasket();
 
     double val = 1.0 / basket_sizes[1];
     for (int b1 = 0; b1 < basket_sizes[0]; b1++)
@@ -335,6 +345,129 @@ void BasketManager::_computeTransitions()
     }
 }
 
+void BasketManager::_computeFirstBasket()
+{
+    printf("Computing first basket\n");
+    for (int p1 = 1; p1 <= 4 * FIGS; p1 += 4)
+        for (int p2 = p1; p2 <= 4 * FIGS; p2 += 4)
+        {
+            if (p1 == p2) // the same figure/number
+            {
+                int basket = _computeFirstBasket(p1, p2 + 1);
+                for (int c0 = p1; c0 < p1 + 4; c0 ++)
+                    for (int c1 = c0 + 1; c1 < p1 + 4; c1 ++)
+                        PF[_cardsCode(c0, c1)] = basket;
+            }
+            else // different figure/number
+            {
+                // for the same coloured cards
+                int basket = _computeFirstBasket(p1, p2);
+                for (int i = 0; i < 4; i++)
+                    PF[_cardsCode(p1 + i, p2 + i)] = basket;
+
+                // for the differently coloured cards
+                basket = _computeFirstBasket(p1, p2 + 1);
+                for (int c0 = p1; c0 < p1 + 4; c0 ++)
+                    for (int c1 = p2; c1 < p2 + 4; c1 ++)
+                        if ((c0 % 4) != (c1 % 4))
+                            PF[_cardsCode(c0, c1)] = basket;
+            }
+        }
+}
+
+int BasketManager::_computeFirstBasket(int c1, int c2)
+{
+    int F[FIGS + 2];
+    memset(F, 0, sizeof(F));
+    F[(c1 - 1) / 4] ++;
+    F[(c2 - 1) / 4] ++;
+    int wins = 0;
+    int all = 0;
+    for (int o1 = 0; o1 < FIGS; o1 ++)
+        for (int o2 = o1; o2 < FIGS; o2 ++)
+        {
+            F[o1] ++;
+            F[o2] ++;
+            int cnt = 0;
+            for (int t1 = 0; t1 < FIGS; t1 ++)
+                if (F[t1] <= 4)
+                {
+                    F[t1] ++;
+                    for (int t2 = t1; t2 < FIGS; t2 ++)
+                        if(F[t2] <= 4)
+                        {
+                            F[t2] ++;
+                            for (int t3 = t2; t3 < FIGS; t3++)
+                                if (F[t3] <= 4)
+                                {
+                                    int co1 = 1 + o1 * 4, co2 = 1 + o2 * 4, ct1 = 1 + t1 * 4, ct2 = 1 + t2 * 4, ct3 = 1 + t3 * 4;
+
+                                    cnt += _evaluateCards(c1, c2, co1, co2 + 1, ct1, ct2 + 1, ct3 + 2);
+                                    if (t1 != t2)
+                                    {
+                                        cnt += _evaluateCards(c1, c2, co1, co2 + 1, ct1, ct2, ct3 + 1);
+                                        if (t2 != t3)
+                                        {
+                                            cnt += _evaluateCards(c1, c2, co1, co2 + 1, ct1, ct2, ct3);
+                                        }
+                                    }
+                                    if (t2 != t3)
+                                        cnt += _evaluateCards(c1, c2, co1, co2 + 1, ct1 + 1, ct2, ct3);
+                                    if (t1 != t3)
+                                        cnt += _evaluateCards(c1, c2, co1, co2 + 1, ct1, ct2 + 1, ct3);
+
+                                    if (o1 != o2)
+                                    {
+                                        cnt += _evaluateCards(c1, c2, co1, co2, ct1, ct2 + 1, ct3 + 2);
+                                        if (t1 != t2)
+                                        {
+                                            cnt += _evaluateCards(c1, c2, co1, co2, ct1, ct2, ct3 + 1);
+                                            if (t2 != t3)
+                                            {
+                                                cnt += _evaluateCards(c1, c2, co1, co2, ct1, ct2, ct3);
+                                            }
+                                        }
+                                        if (t2 != t3)
+                                            cnt += _evaluateCards(c1, c2, co1, co2, ct1 + 1, ct2, ct3);
+                                        if (t1 != t3)
+                                            cnt += _evaluateCards(c1, c2, co1, co2, ct1, ct2 + 1, ct3);
+                                    }
+                                }
+                            F[t2] --;
+                        }
+                    F[t1] --;
+                }
+            F[o1] --;
+            F[o2] --;
+            //printf("cnt: %d\n", cnt);
+            if (cnt > 0)
+                wins ++;
+            all ++;
+        }
+    printf("wins: %d, all: %d\n", wins, all);
+    return _determineBasket(0, double(wins) / all);
+}
+
+int BasketManager::_evaluateCards(int p1, int p2, int o1, int o2, int t1, int t2, int t3, int t4, int t5)
+{
+    int pscore = evaluator -> evaluateHand(p1, p2, t1, t2, t3, t4, t5);
+    int oppscore = evaluator -> evaluateHand(o1, o2, t1, t2, t3, t4, t5);
+    if (pscore > oppscore)
+        return 1;
+    if (pscore == oppscore)
+        return 0;
+    if (pscore < oppscore)
+        return -1;
+}
+
+
+/* returns basket based on the stage and probability of win */
+int BasketManager::_determineBasket(int stage, double win_prob)
+{
+    // TODO
+    return 0;
+}
+
 int BasketManager::cardsCode(vector<int> cards)
 {
     int n = cards.size();
@@ -344,6 +477,17 @@ int BasketManager::cardsCode(vector<int> cards)
     if (n == 2)
         return cards[0] + cards[1] * 53;
     return CC[cards[0]][cards[1]] + cards[2] - cards[1] - 1;
+}
+
+int BasketManager::_cardsCode(int c0, int c1)
+{
+    return c0 < c1 ? c0 + c1 * 53 : c1 + c0 * 53;
+}
+
+/* cards should be given in increasing order */
+int BasketManager::_cardsCode(int c0, int c1, int c2)
+{
+    return CC[c0][c1] + c2 - c1 - 1;
 }
 
 int BasketManager::getBasketsNumber(int stage)
