@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {2,2,2,2};
+    int basket_sizes[4] = {4,4,4,4};
     HandEvaluator evaluator;
     //test_cards(&evaluator);
     BasketManager mng(basket_sizes, &evaluator);

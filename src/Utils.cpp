@@ -1,11 +1,17 @@
 #include<algorithm>
 #include<vector>
+#include <cmath>
 
 #include "Utils.h"
 
 int HR[32487834];
 
-const int DEBUG_LEVEL = 1;
+const int DEBUG_LEVEL = 0;
+
+int iabs(int x)
+{
+    return x > 0 ? x : -x;
+}
 
 int log(int level, const char* format, ...)
 {
@@ -61,15 +67,24 @@ int HandEvaluator::evaluateHand(vector<int> cards)
 
 int HandEvaluator::evaluateHand(int c1, int c2, int c3, int c4, int c5, int c6, int c7)
 {
-    int p = HR[53 + c1];
-    p = HR[p + c2];
-    p = HR[p + c3];
-    p = HR[p + c4];
-    p = HR[p + c5];
-    if (c6 > 0)
-        p = HR[p + c6];
-    if (c7 > 0)
-        return HR[p + c7];
-    return HR[p];
+    if (c3 > 0)
+    {
+        int p = HR[53 + c1];
+        p = HR[p + c2];
+        p = HR[p + c3];
+        p = HR[p + c4];
+        p = HR[p + c5];
+        if (c6 > 0)
+            p = HR[p + c6];
+        if (c7 > 0)
+            return HR[p + c7];
+        return HR[p];
+    }
+    else
+    {
+        int f1 = (c1 - 1) / 4, f2 = (c2 - 1) / 4;
+        int diff = max(0, 3 - iabs(f1 - f2));
+        return diff * 200 + max(f1, f2) * 13 + min(f1, f2);
+    }
 }
 
