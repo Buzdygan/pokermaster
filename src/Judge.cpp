@@ -61,9 +61,10 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {4,4,4,4};
+    int basket_sizes[4] = {6,5,4,3};
     HandEvaluator evaluator;
     //test_cards(&evaluator);
+    //TODO invalidate when the basket sizes change
     BasketManager mng(basket_sizes, &evaluator);
     Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), 10, "cfr.strategy10.stg");
     //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");

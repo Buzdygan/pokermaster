@@ -5,10 +5,10 @@
 #include "Utils.h"
 using namespace std;
 
-//const int FIGS = 13;
-//const int DFIGS = 26;
-const int FIGS = 6;
-const int DFIGS = 12;
+const int FIGS = 13;
+const int DFIGS = 26;
+//const int FIGS = 6;
+//const int DFIGS = 12;
 const int MAX_BASKETS_NUMBER = 10;
 const int ONE_CARD_CODES = 52;
 const int TWO_CARD_CODES = 3000;
@@ -51,6 +51,7 @@ class BasketManager
         int* basket_sizes;
         int _cardsCode(int c0, int c1);
         int _cardsCode(int c0, int c1, int c2);
+        int _cardsCode2(int c0, int c1, int c2);
         bool _loadTransitions();
         void _saveTransitions();
         bool _loadDistribution();
