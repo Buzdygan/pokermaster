@@ -6,7 +6,7 @@
 
 int HR[32487834];
 
-const int DEBUG_LEVEL = 0;
+const int DEBUG_LEVEL = 1;
 
 int iabs(int x)
 {

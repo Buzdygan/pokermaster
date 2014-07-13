@@ -163,7 +163,7 @@ int Cfr::getActionId(int information_set_id, vector<int> action_ids)
         if (strategy.count(pair_id))
             prob = strategy[pair_id];
         prob_sum += prob;
-        //printf("Prob of action %d: %0.3f\n", action_id, prob);
+        printf("is_id: %d a_id: %d, prob: %lf\n", information_set_id, action_id, prob);
         if (choice == -1 && random_double < prob_sum)
         {
             choice = action_id;

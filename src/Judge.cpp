@@ -11,6 +11,7 @@
 #include "HumanPlayer.h"
 
 const int DEFAULT_ROUNDS_NUMBER = 1;
+const int DEFAULT_STRATEGY_REPETITIONS = 10;
 
 
 int get_random_action(dist distribution)
@@ -53,20 +54,27 @@ int main(int argc, char* argv[])
 {
     srand(time(NULL));
     int rounds_number = DEFAULT_ROUNDS_NUMBER;
+    int strategy_repetitions = DEFAULT_STRATEGY_REPETITIONS;
 
-    if (argc == 2)
+    if (argc >= 2)
         rounds_number = atoi(argv[1]);
+
+    if (argc >= 3)
+        strategy_repetitions = atoi(argv[2]);
+
+    char strategy_filename [100];
+    sprintf(strategy_filename, "cfr.strategy%d.stg", strategy_repetitions);
 
     Player* players[2];
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {6,5,4,3};
+    int basket_sizes[4] = {4,3,2,2};
     HandEvaluator evaluator;
     //test_cards(&evaluator);
     //TODO invalidate when the basket sizes change
     BasketManager mng(basket_sizes, &evaluator);
-    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), 10, "cfr.strategy10.stg");
+    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), strategy_repetitions, strategy_filename);
     //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");
 
     for (int r = 0; r < rounds_number; r++)
@@ -105,6 +113,8 @@ int main(int argc, char* argv[])
                 game -> makeAction(action_id);
                 if (seeing_player == ALL_PLAYERS)
                 {
+                    printCard(action_id);
+                    log(0, " dealt to player %d\n", seeing_player);
                     for (int p = 0; p < 2; p++)
                     {
                         players[p] -> annotateRandomAction(action_id);
@@ -113,20 +123,21 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
+                    printCard(action_id);
+                    log(0, " dealt to player %d\n", seeing_player);
                     players[seeing_player] -> annotateRandomAction(action_id);
                     // the player shouldn't see the real action but it's needed
                     // to keep the other player's game tree
                     players_cards[seeing_player].push_back(action_id);
                 }
-                log(0, "Card %d dealt to player %d\n", action_id, seeing_player);
             }
             else
             {
                 int action_id = players[pnum] -> getAction(game -> getActionIds());
+                log(0, "Player %d bets %d\n", pnum, action_id);
                 game -> makeAction(action_id);
                 players[other(pnum)] -> annotateOpponentAction(action_id);
                 players[pnum] -> annotatePlayerAction(action_id);
-                log(0, "Player %d bets %d\n", pnum, action_id);
             }
         }
         utility round_result = game -> getUtility();

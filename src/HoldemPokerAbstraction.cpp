@@ -72,6 +72,7 @@ void HoldemPokerAbstraction::makeAction(int action_id)
         }
         if (action_id == ACTION_CALL)
         {
+            agreed_stake = cur_stake;
             /* Second player agrees */
             if (bids_number >= 2)
                 _endOfBiddingPhase();
@@ -116,6 +117,11 @@ int HoldemPokerAbstraction::getInformationSetId()
     return is_id[cur_player];
 }
 
+int HoldemPokerAbstraction::getInformationSetId(int pnum)
+{
+    return is_id[pnum];
+}
+
 dist HoldemPokerAbstraction::getActionDistribution()
 {
     return manager -> getBasketPairsDistribution(random_phase, player_basket[0], player_basket[1]);
@@ -123,8 +129,18 @@ dist HoldemPokerAbstraction::getActionDistribution()
 
 void HoldemPokerAbstraction::logAction(int pnum, int action_id, int phase_id)
 {
+    //printf("is_id before: %d | ", is_id[pnum]);
     is_id[pnum] += (action_id + 1) * mults[pnum];
+    //printf("logging action %d by %d in phase %d, is_id: %d, mults: %d\n", action_id, pnum,
+    //                                                    phase_id, is_id[pnum], mults[pnum]);
     mults[pnum] *= (phase_actions[phase_id] + 1);
+}
+
+int HoldemPokerAbstraction::getBasketNumber(int pnum, vector<int> cards)
+{
+    return manager -> getNextBasket(random_phase,
+                                        player_basket[pnum],
+                                        manager -> cardsCode(cards));
 }
 
 void HoldemPokerAbstraction::logCards(int pnum, vector<int> cards, int random_phase)

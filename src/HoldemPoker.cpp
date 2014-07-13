@@ -164,6 +164,7 @@ void HoldemPoker::makeAction(int action_id)
         }
         else if (bet == cur_stake)
         {
+            agreed_stake = cur_stake;
             /* Second player agrees */
             if (bids_number >= 2)
                 _endOfBiddingPhase();

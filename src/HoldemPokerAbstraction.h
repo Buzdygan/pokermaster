@@ -27,12 +27,14 @@ class HoldemPokerAbstraction : public HoldemPoker
         ~HoldemPokerAbstraction();
 
         int getInformationSetId();
+        int getInformationSetId(int pnum);
         dist getActionDistribution();
         vector<int> getActionIds();
         vector<int> getActionIds(int bids_num);
         void makeAction(int action_id);
         void logAction(int pnum, int action_id, int phase_id);
         void logCards(int pnum, vector<int> cards, int random_phase);
+        int getBasketNumber(int pnum, vector<int> cards);
 
         static const int ACTION_FOLD;
         static const int ACTION_CALL;

@@ -59,6 +59,7 @@ class BasketManager
         void _computeTransitions();
         void _init();
         void _computeCC();
+        dist _normalizeDistribution(dist d);
         void _computeBasketsDistribution();
         int _computeBasket(int stage, int* F, int pc1, int pc2, int tc1=0, int tc2=0, int tc3=0, int tc4=0, int tc5=0);
         int _determineBasket(int stage, double win_prob);

@@ -23,7 +23,7 @@ class CfrPlayer : public Player
         int getAction(vector<int> available_actions);
         /* gives info on who won the round with what stake */
         void endRound(double cash_change);
-        void _logBid(int bid);
+        int _logBid(int bid);
     private:
         int cur_stake;
         int player_num;
