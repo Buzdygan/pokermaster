@@ -1,5 +1,6 @@
-#include<algorithm>
-#include<vector>
+#include <algorithm>
+#include <vector>
+#include <map>
 
 #include "Utils.h"
 #include "BasketManager.h"
@@ -28,6 +29,7 @@ int EHS_DIST[4][102];
 
 // thresholds for the given baskets, THR[2][0] = 0.3 means that ehs < 0.3 in round 2 => basket0
 double THR[4][MAX_BASKETS_NUMBER + 2];
+map<int, int> CARD_CODES_MAP[4];
 
 dist BASKET_DISTRIBUTION[5][MAX_BASKETS_NUMBER * MAX_BASKETS_NUMBER];
 
@@ -81,6 +83,8 @@ void BasketManager::_init()
     }
     else
     {
+        if(!_loadEHS())
+            _computeEHS();
         if(!_loadDistribution())
         {
             printf("computing Distribution\n");
@@ -351,6 +355,13 @@ void BasketManager::_saveEHS()
         for (int p = 0; p <= 100; p++)
             fprintf(f, "%d\n", EHS_DIST[st][p]);
 
+    for (int st = 0; st < 4; st++)
+    {
+        fprintf(f, "%d\n", (int)CARD_CODES_MAP[st].size());
+        for (map<int, int>::iterator it = CARD_CODES_MAP[st].begin(); it != CARD_CODES_MAP[st].end(); it ++)
+            fprintf(f, "%d %d\n", it -> first, it -> second);
+    }
+
     for (int i1 = 0; i1 < EHS_SIZE1; i1++)
         fprintf(f, "%lf\n", EHS1[i1]);
 
@@ -371,7 +382,7 @@ void BasketManager::_saveEHS()
     fclose(f);
 }
 
-void BasketManager::_loadEHS()
+bool BasketManager::_loadEHS()
 {
     try
     {
@@ -382,6 +393,17 @@ void BasketManager::_loadEHS()
             for (int st = 0; st < 4; st++)
                 for (int p = 0; p <= 100; p++)
                     fscanf(f, "%d\n", &EHS_DIST[st][p]);
+
+            for (int st = 0; st < 4; st++)
+            {
+                int cc, index, n;
+                fscanf(f, "%d\n", &n);
+                for (int i = 0; i < n; i++)
+                {
+                    fscanf(f, "%d %d\n", &cc, &index);
+                    CARD_CODES_MAP[st][cc] = index;
+                }
+            }
 
             for (int i1 = 0; i1 < EHS_SIZE1; i1++)
                 fscanf(f, "%lf\n", &EHS1[i1]);
@@ -402,12 +424,29 @@ void BasketManager::_loadEHS()
                             fscanf(f, "%lf\n", &EHS4[i4][i3][i2][i1]);
 
             fclose(f);
-            ehs_read = true;
+            return true;
         }
     }
     catch (int e)
     {
+        return false;
     }
+}
+
+void BasketManager::_computeCardCodesMap()
+{
+    for (int i = 0; i < v1.size(); i++)
+        for (int j = 0; j < v1[i].second.size(); j++)
+            CARD_CODES_MAP[0][v1[i].second[j]] = i;
+    for (int i = 0; i < v2.size(); i++)
+        for (int j = 0; j < v2[i].second.size(); j++)
+            CARD_CODES_MAP[1][v2[i].second[j]] = i;
+    for (int i = 0; i < v3.size(); i++)
+        for (int j = 0; j < v3[i].second.size(); j++)
+            CARD_CODES_MAP[2][v3[i].second[j]] = i;
+    for (int i = 0; i < v4.size(); i++)
+        for (int j = 0; j < v4[i].second.size(); j++)
+            CARD_CODES_MAP[3][v4[i].second[j]] = i;
 }
 
 void BasketManager::_computeCardCombinations()
@@ -524,6 +563,7 @@ void BasketManager::_computeCardCombinations()
             cards.push_back(4 * t5 + i);
         v4.push_back(make_pair(c, cards));
     }
+    _computeCardCodesMap();
 }
 
 int _perc(double e)
@@ -625,8 +665,8 @@ void BasketManager::_computeEHSDistribution()
 void BasketManager::_computeTransitions()
 {
     _computeCardCombinations();
-    _loadEHS();
-    if (!ehs_read)
+    // TODO jeszcze raz poprawić wczytywanie i zapisywanie CARD_CODES_MAP
+    if(!_loadEHS())
         _computeEHS();
     _computeEHSDistribution();
 
@@ -911,6 +951,24 @@ int BasketManager::_cardsCode2(int c0, int c1, int c2)
 int BasketManager::getBasketsNumber(int stage)
 {
     return basket_sizes[stage];
+}
+
+
+int BasketManager::getBasket(int stage, vector<int> cards)
+{
+    int n = cards.size();
+    int i1 = CARD_CODES_MAP[0][_cardsCode(cards[0], cards[1])];
+    if(n <= 2)
+        return _determineBasket(0, EHS1[i1]);
+    int i2 = CARD_CODES_MAP[1][_cardsCode2(cards[2], cards[3], cards[3])];
+    if(n <= 5)
+        return _determineBasket(1, EHS2[i2][i1]);
+    int i3 = CARD_CODES_MAP[2][cards[4]];
+    if(n <= 6)
+        return _determineBasket(2, EHS3[i3][i2][i1]);
+    int i4 = CARD_CODES_MAP[3][cards[5]];
+    printf("i1: %d, i2: %d, i3: %d, i4: %d\n", i1, i2, i3, i4);
+    return _determineBasket(3, EHS4[i4][i3][i2][i1]);
 }
 
 int BasketManager::getNextBasket(int stage, int current, int cards_code)

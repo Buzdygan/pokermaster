@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int CARDS_FOR_PHASE[4] = {2,3,1,1};
+int CARDS_FOR_PHASE[4] = {2,5,6,7};
 
 CfrPlayer::CfrPlayer(int pnum, Cfr* stg, HoldemPokerAbstraction* g)
 {
@@ -19,18 +19,18 @@ CfrPlayer::CfrPlayer(int pnum, Cfr* stg, HoldemPokerAbstraction* g)
 /* Annotates dealt card */
 void CfrPlayer::annotateRandomAction(int card_id)
 {
-    new_cards.push_back(card_id);
+    all_cards.push_back(card_id);
     /* We end the random phase */
-    if (new_cards.size() == CARDS_FOR_PHASE[random_phase])
+    if (all_cards.size() == CARDS_FOR_PHASE[random_phase])
     {
-        int bnum = game -> getBasketNumber(player_num, new_cards);
+        int bnum = game -> getBasketNumber(player_num, all_cards);
+        printf("Player basket: %d\n", bnum);
         int action_id;
         if (player_num == 0)
             action_id = encode_basket_pair(bnum, 0);
         else
             action_id = encode_basket_pair(0, bnum);
         game -> makeAction(action_id);
-        new_cards.clear();
         random_phase ++;
     }
 }

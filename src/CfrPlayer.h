@@ -30,7 +30,7 @@ class CfrPlayer : public Player
         int random_phase;
         bool first_action;
         int bids_number;
-        vector<int> new_cards;
+        vector<int> all_cards;
         Cfr* strategy;
         HoldemPokerAbstraction* game;
 };
