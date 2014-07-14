@@ -83,8 +83,12 @@ int HandEvaluator::evaluateHand(int c1, int c2, int c3, int c4, int c5, int c6, 
     else
     {
         int f1 = (c1 - 1) / 4, f2 = (c2 - 1) / 4;
+        int same_color_bonus = (c1 % 4) == (c2 % 4) ? 1 : 0;
         int diff = max(0, 3 - iabs(f1 - f2));
-        return diff * 200 + max(f1, f2) * 13 + min(f1, f2);
+        if (diff > 1)
+            return diff * 400 + same_color_bonus * 200 + max(f1, f2) * 13 + min(f1, f2);
+        else
+            return diff * 100 + same_color_bonus * 200 + max(f1, f2) * 13 + min(f1, f2);
     }
 }
 

@@ -52,10 +52,15 @@ class BasketManager
         int _cardsCode(int c0, int c1);
         int _cardsCode(int c0, int c1, int c2);
         int _cardsCode2(int c0, int c1, int c2);
+        void _loadEHS();
+        void _saveEHS();
         bool _loadTransitions();
         void _saveTransitions();
         bool _loadDistribution();
         void _saveDistribution();
+        void _computeCardCombinations();
+        void _computeEHS();
+        void _computeEHSDistribution();
         void _computeTransitions();
         void _init();
         void _computeCC();
