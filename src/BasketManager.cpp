@@ -84,7 +84,12 @@ void BasketManager::_init()
     else
     {
         if(!_loadEHS())
+        {
+            printf("computing EHS\n");
+            _computeCardCombinations();
+            _computeCardCodesMap();
             _computeEHS();
+        }
         if(!_loadDistribution())
         {
             printf("computing Distribution\n");
@@ -387,45 +392,44 @@ bool BasketManager::_loadEHS()
     try
     {
         FILE *f = fopen(EHS_FILENAME, "r");
-        if (f != NULL)
+        if (f == NULL)
+            return false;
+        // EHS_DIST
+        for (int st = 0; st < 4; st++)
+            for (int p = 0; p <= 100; p++)
+                fscanf(f, "%d\n", &EHS_DIST[st][p]);
+
+        for (int st = 0; st < 4; st++)
         {
-            // EHS_DIST
-            for (int st = 0; st < 4; st++)
-                for (int p = 0; p <= 100; p++)
-                    fscanf(f, "%d\n", &EHS_DIST[st][p]);
-
-            for (int st = 0; st < 4; st++)
+            int cc, index, n;
+            fscanf(f, "%d\n", &n);
+            for (int i = 0; i < n; i++)
             {
-                int cc, index, n;
-                fscanf(f, "%d\n", &n);
-                for (int i = 0; i < n; i++)
-                {
-                    fscanf(f, "%d %d\n", &cc, &index);
-                    CARD_CODES_MAP[st][cc] = index;
-                }
+                fscanf(f, "%d %d\n", &cc, &index);
+                CARD_CODES_MAP[st][cc] = index;
             }
+        }
 
+        for (int i1 = 0; i1 < EHS_SIZE1; i1++)
+            fscanf(f, "%lf\n", &EHS1[i1]);
+
+        for (int i2 = 0; i2 < EHS_SIZE2; i2++)
             for (int i1 = 0; i1 < EHS_SIZE1; i1++)
-                fscanf(f, "%lf\n", &EHS1[i1]);
+                fscanf(f, "%lf\n", &EHS2[i2][i1]);
 
+        for (int i3 = 0; i3 < EHS_SIZE3; i3++)
             for (int i2 = 0; i2 < EHS_SIZE2; i2++)
                 for (int i1 = 0; i1 < EHS_SIZE1; i1++)
-                    fscanf(f, "%lf\n", &EHS2[i2][i1]);
+                    fscanf(f, "%lf\n", &EHS3[i3][i2][i1]);
 
+        for (int i4 = 0; i4 < EHS_SIZE4; i4++)
             for (int i3 = 0; i3 < EHS_SIZE3; i3++)
                 for (int i2 = 0; i2 < EHS_SIZE2; i2++)
                     for (int i1 = 0; i1 < EHS_SIZE1; i1++)
-                        fscanf(f, "%lf\n", &EHS3[i3][i2][i1]);
+                        fscanf(f, "%lf\n", &EHS4[i4][i3][i2][i1]);
 
-            for (int i4 = 0; i4 < EHS_SIZE4; i4++)
-                for (int i3 = 0; i3 < EHS_SIZE3; i3++)
-                    for (int i2 = 0; i2 < EHS_SIZE2; i2++)
-                        for (int i1 = 0; i1 < EHS_SIZE1; i1++)
-                            fscanf(f, "%lf\n", &EHS4[i4][i3][i2][i1]);
-
-            fclose(f);
-            return true;
-        }
+        fclose(f);
+        return true;
     }
     catch (int e)
     {
@@ -563,7 +567,6 @@ void BasketManager::_computeCardCombinations()
             cards.push_back(4 * t5 + i);
         v4.push_back(make_pair(c, cards));
     }
-    _computeCardCodesMap();
 }
 
 int _perc(double e)
@@ -667,7 +670,10 @@ void BasketManager::_computeTransitions()
     _computeCardCombinations();
     // TODO jeszcze raz poprawić wczytywanie i zapisywanie CARD_CODES_MAP
     if(!_loadEHS())
+    {
+        _computeCardCodesMap();
         _computeEHS();
+    }
     _computeEHSDistribution();
 
     int F[ONE_CARD_CODES + 3];
