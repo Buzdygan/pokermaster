@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {4,3,2,2};
+    int basket_sizes[4] = {6,5,5,5};
     HandEvaluator evaluator;
     //test_cards(&evaluator);
     //TODO invalidate when the basket sizes change

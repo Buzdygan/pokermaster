@@ -973,7 +973,6 @@ int BasketManager::getBasket(int stage, vector<int> cards)
     if(n <= 6)
         return _determineBasket(2, EHS3[i3][i2][i1]);
     int i4 = CARD_CODES_MAP[3][cards[5]];
-    printf("i1: %d, i2: %d, i3: %d, i4: %d\n", i1, i2, i3, i4);
     return _determineBasket(3, EHS4[i4][i3][i2][i1]);
 }
 

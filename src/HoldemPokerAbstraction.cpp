@@ -54,7 +54,6 @@ void HoldemPokerAbstraction::makeAction(int action_id)
         pair<int, int> basket_pair = decode_basket_pair(action_id);
         player_basket[0] = basket_pair.first;
         player_basket[1] = basket_pair.second;
-        log(1, "HPA:makeAction: action_id: %d, pb[0]: %d, pb[1]: %d\n", action_id, player_basket[0], player_basket[1]);
         logAction(0, player_basket[0], random_phase);
         logAction(1, player_basket[1], random_phase);
         random_phase ++;
@@ -81,17 +80,9 @@ void HoldemPokerAbstraction::makeAction(int action_id)
         }
         if (action_id == ACTION_RAISE)
         {
-            if (bids_number > MAX_BIDS_NUMBER)
-            {
-                fprintf(stderr, "ERROR: Raising the stake not allowed after 2 bets, there were %d bets\n", bids_number);
-                throw 2;
-            }
-            else
-            {
-                agreed_stake = cur_stake;
-                cur_stake *= 2;
-                cur_player = other(cur_player);
-            }
+            agreed_stake = cur_stake;
+            cur_stake *= 2;
+            cur_player = other(cur_player);
         }
     }
 }

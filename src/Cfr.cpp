@@ -30,9 +30,12 @@ void Cfr::computeVanillaCfr(int iterations)
     for (int i = 0; i < iterations; i++)
     {
         printf("Iteration %d\n", i);
-        double probs [3] = {1.0, 1.0, 1.0};
-        cnt = 0;
-        walkTree(probs);
+        for (int j = 0; j < 100; j++)
+        {
+            double probs [3] = {1.0, 1.0, 1.0};
+            cnt = 0;
+            walkTree(probs);
+        }
         initialized = true;
         double it_err = recomputeStrategy(R) / (i + 1);
         sum += it_err;
@@ -59,7 +62,7 @@ utility Cfr::walkTree(double probs[3])
         dist action_distr = game -> getActionDistribution();
         double backup_prob = probs[RANDOM_PLAYER_NR];
 
-        const bool SAMPLED = false;
+        const bool SAMPLED = true;
 
         if (SAMPLED)
         {
@@ -115,6 +118,7 @@ utility Cfr::walkTree(double probs[3])
                     S[decision_id] = 0.0;
             }
         }
+        //TODO przemyśl to czy dobrze aktualizuje przy samplowaniu - initialized
 
         double prob_mult = probs[2] * probs[(p + 1) & 1];
         double backup_prob = probs[p];
