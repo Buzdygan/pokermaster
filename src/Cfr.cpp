@@ -1,4 +1,5 @@
 #include <set>
+#include <fstream>
 #include "Cfr.h"
 #include "GameAbstraction.h"
 

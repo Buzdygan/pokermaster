@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <cstdio>
 
 #include "GameAbstraction.h"
 #include "HoldemPoker.h"

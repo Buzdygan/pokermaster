@@ -4,6 +4,7 @@
 #include <fstream>
 #include <cstdio>
 #include <cstdarg>
+#include <cstring>
 
 #include "Utils.h"
 

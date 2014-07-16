@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <stack>
 #include <algorithm>
+#include <fstream>
 #include "HoldemPoker.h"
 #include "Utils.h"
 

@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <vector>
 #include <map>
+#include <cstring>
+#include <fstream>
 
 #include "Utils.h"
 #include "BasketManager.h"

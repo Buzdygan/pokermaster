@@ -1,4 +1,5 @@
 #include <vector>
+#include <cstdio>
 #include "CfrPlayer.h"
 #include "BasketManager.h"
 
