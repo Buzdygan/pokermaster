@@ -64,12 +64,17 @@ utility Cfr::walkTree(double probs[3])
         {
             double r = (double) rand() / RAND_MAX;
             double sum = 0.0;
+            int l = 0;
             for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
             {
                 sum += iter -> second;
 
                 if (r < sum + 1e-9)
                 {
+                    printf("%d / %d |", l, (int)action_distr.size());
+                    for (dist_it iter2 = action_distr.begin(); iter2 != action_distr.end(); iter2++)
+                        printf("%d : %lf,", iter2 -> first, iter2 -> second);
+                    printf("\n");
                     probs[RANDOM_PLAYER_NR] *= iter -> second;
                     game -> makeAction(iter -> first);
                     utility res_util = walkTree(probs);
@@ -79,6 +84,7 @@ utility Cfr::walkTree(double probs[3])
                     final_util.second = res_util.second;
                     break;
                 }
+                l ++;
             }
         }
         else
@@ -106,7 +112,10 @@ utility Cfr::walkTree(double probs[3])
             if (!strategy.count(decision_id))
                 strategy[decision_id] = 1.0 / action_ids.size();
             if (!R.count(decision_id))
+            {
+                //printf("R: is_id: %d, R.size: %d\n", is_id, (int)R.size());
                 R[decision_id] = 0.0;
+            }
             if (!S.count(decision_id))
                 S[decision_id] = 0.0;
         }
