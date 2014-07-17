@@ -71,10 +71,6 @@ utility Cfr::walkTree(double probs[3])
 
                 if (r < sum + 1e-9)
                 {
-                    printf("%d / %d |", l, (int)action_distr.size());
-                    for (dist_it iter2 = action_distr.begin(); iter2 != action_distr.end(); iter2++)
-                        printf("%d : %lf,", iter2 -> first, iter2 -> second);
-                    printf("\n");
                     probs[RANDOM_PLAYER_NR] *= iter -> second;
                     game -> makeAction(iter -> first);
                     utility res_util = walkTree(probs);

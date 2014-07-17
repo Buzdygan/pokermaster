@@ -676,8 +676,8 @@ void BasketManager::_computeTransitions()
     {
         _computeCardCodesMap();
         _computeEHS();
-        _computeEHSDistribution();
     }
+    _computeEHSDistribution();
 
     int F[ONE_CARD_CODES + 3];
     memset(F, 0, sizeof(F));
