@@ -36,7 +36,7 @@ void Cfr::computeVanillaCfr(int iterations)
         walkTree(probs);
         double it_err = recomputeStrategy(newR) / (i + 1);
         sum += it_err;
-        printf("It err: %0.5f Err: %0.5f Cnt: %d\n", it_err, sum / (i+1), cnt);
+        printf("It err: %0.5f Err: %0.5f\n", it_err, sum / (i+1));
     }
     recomputeStrategy(S);
 }
@@ -50,7 +50,6 @@ utility Cfr::walkTree(double probs[3])
     int p = game -> getPlayerId();
     utility final_util = make_pair(0.0, 0.0);
     //printf("%d\n", R.size());
-    cnt ++;
 
     /* If it is a turn of a chance player */
     if (p == RANDOM_PLAYER_NR)
@@ -67,17 +66,17 @@ utility Cfr::walkTree(double probs[3])
             double sum = 0.0;
             for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
             {
-                probs[RANDOM_PLAYER_NR] *= iter -> second;
                 sum += iter -> second;
 
                 if (r < sum + 1e-9)
                 {
+                    probs[RANDOM_PLAYER_NR] *= iter -> second;
                     game -> makeAction(iter -> first);
                     utility res_util = walkTree(probs);
                     game -> unmakeAction(iter -> first);
                     probs[RANDOM_PLAYER_NR] = backup_prob;
-                    final_util.first += res_util.first * iter -> second;
-                    final_util.second += res_util.second * iter -> second;
+                    final_util.first = res_util.first;
+                    final_util.second = res_util.second;
                     break;
                 }
             }
@@ -91,7 +90,6 @@ utility Cfr::walkTree(double probs[3])
                 game -> makeAction(iter -> first);
                 utility res_util = walkTree(probs);
                 game -> unmakeAction(iter -> first);
-
                 probs[RANDOM_PLAYER_NR] = backup_prob;
                 final_util.first += res_util.first * iter -> second;
                 final_util.second += res_util.second * iter -> second;
@@ -113,7 +111,7 @@ utility Cfr::walkTree(double probs[3])
                 S[decision_id] = 0.0;
         }
 
-        double prob_mult = probs[2] * probs[(p + 1) & 1];
+        double prob_mult = probs[RANDOM_PLAYER_NR] * probs[(p + 1) & 1];
         double backup_prob = probs[p];
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
         {
@@ -208,7 +206,7 @@ double Cfr::recomputeStrategy(Smap &reg)
         else
             strategy[iter -> first] = 1.0 / is_r_cnt[is_id];
     }
-    printf("TOTAL_SIZE: %d, IS_SIZE: %d\n", (int)reg.size(), (int)isets.size());
+    printf("TOTAL_SIZE: %d, IS_SIZE: %d\n", (int)R.size(), (int)isets.size());
     return max_regret;
 }
 
