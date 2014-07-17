@@ -39,8 +39,8 @@ struct TP
 class BasketManager
 {
     public:
-        BasketManager(int basket_sizes[4], HandEvaluator*);
-        BasketManager(HandEvaluator*);
+        BasketManager(int index, int basket_sizes[4], HandEvaluator*);
+        BasketManager(int index, HandEvaluator*);
         int getNextBasket(int stage, int current, int cards_code);
         int getBasket(vector<int> cards);
         int getBasketsNumber(int stage);
@@ -49,6 +49,9 @@ class BasketManager
         void test();
     private:
         HandEvaluator* evaluator;
+        int index;
+        char TRANSITIONS_FILENAME [100];
+        char DISTRIBUTION_FILENAME [100];
         int* basket_sizes;
         int _cardsCode(int c0, int c1);
         int _cardsCode(int c0, int c1, int c2);

@@ -85,6 +85,7 @@ int main(int argc, char* argv[])
     srand(time(NULL));
     int rounds_number = DEFAULT_ROUNDS_NUMBER;
     int strategy_repetitions = DEFAULT_STRATEGY_REPETITIONS;
+    int strategy_repetitions2 = DEFAULT_STRATEGY_REPETITIONS;
 
     if (argc >= 2)
         rounds_number = atoi(argv[1]);
@@ -92,27 +93,34 @@ int main(int argc, char* argv[])
     if (argc >= 3)
         strategy_repetitions = atoi(argv[2]);
 
+    if (argc >= 4)
+        strategy_repetitions2 = atoi(argv[3]);
+
     char strategy_filename [100];
-    sprintf(strategy_filename, "cfr.strategy%d.stg", strategy_repetitions);
+    char strategy_filename2 [100];
 
     Player* players[2];
     int score[2];
     score[0] = 0;
     score[1] = 0;
     int basket_sizes[4] = {6,5,5,5};
+    sprintf(strategy_filename, "cfr.strategy-6-5-5-5-%d.stg", strategy_repetitions);
+
+    int basket_sizes2[4] = {6,5,5,5};
+    sprintf(strategy_filename2, "cfr.strategy-6-5-5-5-%d.stg", strategy_repetitions2);
+
     HandEvaluator evaluator;
-    //test_cards(&evaluator);
-    //TODO invalidate when the basket sizes change
-    BasketManager mng(basket_sizes, &evaluator);
-    //test_baskets(&mng);
+
+    BasketManager mng(0, basket_sizes, &evaluator);
+    BasketManager mng2(1, basket_sizes2, &evaluator);
     Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), strategy_repetitions, strategy_filename);
-    //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");
+    Cfr *cfr_strategy2 = new Cfr(new HoldemPokerAbstraction(&mng2), strategy_repetitions2, strategy_filename2);
 
     for (int r = 0; r < rounds_number; r++)
     {
         // new round
         GameAbstraction* game = new HoldemPoker(&evaluator);
-        int game_type = 2;
+        int game_type = 3;
         if (game_type == 0)
         {
             players[r & 1] = new DummyPlayer();
@@ -130,9 +138,18 @@ int main(int argc, char* argv[])
                                            new HoldemPokerAbstraction(&mng));
             players[(r + 1) & 1] = new DummyPlayer();
         }
+        if (game_type == 3)
+        {
+            players[r & 1] = new CfrPlayer(r & 1,
+                                           cfr_strategy,
+                                           new HoldemPokerAbstraction(&mng));
+            players[(r + 1) & 1] = new CfrPlayer((r + 1) & 1,
+                                           cfr_strategy2,
+                                           new HoldemPokerAbstraction(&mng2));
+        }
         vector<int> players_cards[2];
 
-        printf("CFR: %d, Dummy: %d\n", r & 1, (r+1) & 1);
+        printf("CFR: %d, CFR2: %d\n", r & 1, (r+1) & 1);
         while (!game -> isFinal())
         {
             int pnum = game -> getPlayerId();

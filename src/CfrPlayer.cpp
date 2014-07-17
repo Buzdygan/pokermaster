@@ -25,7 +25,7 @@ void CfrPlayer::annotateRandomAction(int card_id)
     if (all_cards.size() == CARDS_FOR_PHASE[random_phase])
     {
         int bnum = game -> getBasketNumber(all_cards);
-        printf("Player basket: %d\n", bnum);
+        printf("Player%d basket: %d\n", player_num, bnum);
         int action_id;
         if (player_num == 0)
             action_id = encode_basket_pair(bnum, 0);
@@ -51,6 +51,7 @@ void CfrPlayer::annotateOpponentAction(int action_id)
 /* Get player's action */
 int CfrPlayer::getAction(vector<int> available_actions)
 {
+    printf("Player%d making decision\n", player_num);
     int action_id = strategy -> getActionId(game -> getInformationSetId(player_num),
                                             game -> getActionIds(bids_number));
     if (action_id == game -> ACTION_FOLD)
