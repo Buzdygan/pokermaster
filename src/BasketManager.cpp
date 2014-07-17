@@ -808,7 +808,7 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
                 // TODO zastanów się czy nie należy zwiększać o inną wartość niż 1
                 F[oc1] ++; F[oc2] ++;
                 int index = _inc_vars(ahead, tied, behind, _evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5));
-                //HPTotal[index] += _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
+                HPTotal[index] += _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
                 F[oc1] --; F[oc2] --;
             }
         }
@@ -831,8 +831,7 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
     double ppot = 0.0, npot = 0.0, hs = 0.0;
     if (ahead + tied + behind)
         hs = (double(ahead) + tied / 2.0) / (ahead + tied + behind);
-    return hs;
-    /*
+    //return hs;
     if (HPTotal[BEHIND] + HPTotal[TIED])
         ppot = ((double)HP[BEHIND][AHEAD] + HP[BEHIND][TIED]/ 2.0 + HP[TIED][AHEAD] / 2.0) / (double)(HPTotal[BEHIND] + HPTotal[TIED]);
     if (HPTotal[AHEAD] + HPTotal[TIED])
@@ -840,7 +839,6 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
     double score = hs * (1.0 - npot) + (1.0 - hs) * ppot;
     //printf("hs: %lf ppot: %lf npot: %lf score: %lf\n", hs, ppot, npot, score);
     return score;
-    */
 }
 
 int BasketManager::_computePotential(int HP[3], int F[ONE_CARD_CODES+ 3], int pc1, int pc2, int oc1,
