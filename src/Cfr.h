@@ -26,6 +26,7 @@ class Cfr
         Smap strategy;
         Smap R;
         Smap S;
+        Smap newR;
 
         bool loadFromFile(const char* filename);
         void saveToFile(const char* filename);
