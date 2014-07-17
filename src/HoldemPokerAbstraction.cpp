@@ -127,9 +127,9 @@ void HoldemPokerAbstraction::logAction(int pnum, int action_id, int phase_id)
     mults[pnum] *= (phase_actions[phase_id] + 1);
 }
 
-int HoldemPokerAbstraction::getBasketNumber(int pnum, vector<int> cards)
+int HoldemPokerAbstraction::getBasketNumber(vector<int> cards)
 {
-    return manager -> getBasket(random_phase, cards);
+    return manager -> getBasket(cards);
 }
 
 void HoldemPokerAbstraction::logCards(int pnum, vector<int> cards, int random_phase)

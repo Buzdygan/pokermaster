@@ -42,7 +42,7 @@ class BasketManager
         BasketManager(int basket_sizes[4], HandEvaluator*);
         BasketManager(HandEvaluator*);
         int getNextBasket(int stage, int current, int cards_code);
-        int getBasket(int stage, vector<int> cards);
+        int getBasket(vector<int> cards);
         int getBasketsNumber(int stage);
         int cardsCode(vector<int> cards);
         dist getBasketPairsDistribution(int stage, int basket0, int basket1);

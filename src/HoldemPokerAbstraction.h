@@ -34,7 +34,7 @@ class HoldemPokerAbstraction : public HoldemPoker
         void makeAction(int action_id);
         void logAction(int pnum, int action_id, int phase_id);
         void logCards(int pnum, vector<int> cards, int random_phase);
-        int getBasketNumber(int pnum, vector<int> cards);
+        int getBasketNumber(vector<int> cards);
 
         static const int ACTION_FOLD;
         static const int ACTION_CALL;

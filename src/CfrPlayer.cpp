@@ -24,7 +24,7 @@ void CfrPlayer::annotateRandomAction(int card_id)
     /* We end the random phase */
     if (all_cards.size() == CARDS_FOR_PHASE[random_phase])
     {
-        int bnum = game -> getBasketNumber(player_num, all_cards);
+        int bnum = game -> getBasketNumber(all_cards);
         printf("Player basket: %d\n", bnum);
         int action_id;
         if (player_num == 0)

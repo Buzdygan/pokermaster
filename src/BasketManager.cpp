@@ -99,6 +99,7 @@ void BasketManager::_init()
             _saveDistribution();
         }
     }
+    _computeEHSDistribution();
 }
 
 dist BasketManager::_normalizeDistribution(dist d)
@@ -675,8 +676,8 @@ void BasketManager::_computeTransitions()
     {
         _computeCardCodesMap();
         _computeEHS();
+        _computeEHSDistribution();
     }
-    _computeEHSDistribution();
 
     int F[ONE_CARD_CODES + 3];
     memset(F, 0, sizeof(F));
@@ -960,7 +961,7 @@ int BasketManager::getBasketsNumber(int stage)
 }
 
 
-int BasketManager::getBasket(int stage, vector<int> cards)
+int BasketManager::getBasket(vector<int> cards)
 {
     int n = cards.size();
     int i1 = CARD_CODES_MAP[0][_cardsCode(cards[0], cards[1])];

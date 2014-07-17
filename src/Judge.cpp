@@ -51,6 +51,35 @@ void test_cards(HandEvaluator *evaluator)
     }
 }
 
+void test_baskets(BasketManager* mng)
+{
+    for (int i = 1; i <= 51; i++)
+        for (int j = i+1; j <= 52; j++)
+        {
+            vector<int> cards;
+            cards.push_back(i);
+            cards.push_back(j);
+            printHand(cards);
+            printf("basket: %d\n", mng -> getBasket(cards));
+        }
+
+    while(1)
+    {
+        printf("Podaj karty\n");
+        int c = 1;
+        vector<int> cards;
+        while (c >= 1)
+        {
+            scanf("%d", &c);
+            if (c <= 0)
+                break;
+            cards.push_back(c);
+        }
+        printHand(cards);
+        printf("basket: %d\n", mng -> getBasket(cards));
+    }
+}
+
 int main(int argc, char* argv[])
 {
     srand(time(NULL));
@@ -75,6 +104,7 @@ int main(int argc, char* argv[])
     //test_cards(&evaluator);
     //TODO invalidate when the basket sizes change
     BasketManager mng(basket_sizes, &evaluator);
+    //test_baskets(&mng);
     Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), strategy_repetitions, strategy_filename);
     //Cfr *cfr_strategy2 = new Cfr(new SimplePoker(), 100, "cfr.strategy100");
 
