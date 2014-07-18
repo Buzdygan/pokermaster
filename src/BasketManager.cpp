@@ -52,9 +52,9 @@ int encode_basket_pair(int basket0, int basket1)
     return basket0 + basket1 * MAX_BASKETS_NUMBER;
 }
 
-BasketManager::BasketManager(int index, int bs[4], HandEvaluator* ev)
+BasketManager::BasketManager(int ind, int bs[4], HandEvaluator* ev)
 {
-    index = index;
+    index = ind;
     evaluator = ev;
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
@@ -62,9 +62,9 @@ BasketManager::BasketManager(int index, int bs[4], HandEvaluator* ev)
     _init();
 }
 
-BasketManager::BasketManager(int index, HandEvaluator* ev)
+BasketManager::BasketManager(int ind, HandEvaluator* ev)
 {
-    index = index;
+    index = ind;
     evaluator = ev;
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
