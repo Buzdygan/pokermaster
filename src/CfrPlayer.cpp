@@ -12,6 +12,7 @@ CfrPlayer::CfrPlayer(int pnum, Cfr* stg, HoldemPokerAbstraction* g)
     random_phase = 0;
     bids_number = 1;
     cur_stake = 1;
+    prev_opponent_basket = -1;
     player_num = pnum;
     strategy = stg;
     game = g;
@@ -21,18 +22,22 @@ CfrPlayer::CfrPlayer(int pnum, Cfr* stg, HoldemPokerAbstraction* g)
 void CfrPlayer::annotateRandomAction(int card_id)
 {
     all_cards.push_back(card_id);
+    new_cards.push_back(card_id);
     /* We end the random phase */
+    //TODO źle źle, musisz uwzględniać rozkład koszyków przeciwnika
     if (all_cards.size() == CARDS_FOR_PHASE[random_phase])
     {
-        int bnum = game -> getBasketNumber(all_cards);
+        int bnum = game -> getBasketManager() -> getBasket(all_cards);
+        prev_opponent_basket = game -> getBasketManager() -> getOpponentBasket(random_phase, prev_opponent_basket, new_cards);
         printf("Player%d basket: %d\n", player_num, bnum);
         int action_id;
         if (player_num == 0)
-            action_id = encode_basket_pair(bnum, 0);
+            action_id = encode_basket_pair(bnum, prev_opponent_basket);
         else
-            action_id = encode_basket_pair(0, bnum);
+            action_id = encode_basket_pair(prev_opponent_basket, bnum);
         game -> makeAction(action_id);
         random_phase ++;
+        new_cards.clear();
     }
 }
 
@@ -52,7 +57,7 @@ void CfrPlayer::annotateOpponentAction(int action_id)
 int CfrPlayer::getAction(vector<int> available_actions)
 {
     printf("Player%d making decision\n", player_num);
-    int action_id = strategy -> getActionId(game -> getInformationSetId(player_num),
+    int action_id = strategy -> getActionId(game -> getInformationSetId(),
                                             game -> getActionIds(bids_number));
     if (action_id == game -> ACTION_FOLD)
         return 0;

@@ -5,6 +5,7 @@
 
 #include "GameAbstraction.h"
 #include "HoldemPoker.h"
+#include "HoldemPokerModAbstraction.h"
 #include "Utils.h"
 #include "Player.h"
 #include "DummyPlayer.h"
@@ -107,14 +108,14 @@ int main(int argc, char* argv[])
     sprintf(strategy_filename, "cfr.strategy-7-6-6-6-%d.stg", strategy_repetitions);
 
     int basket_sizes2[4] = {6,5,5,5};
-    sprintf(strategy_filename2, "cfr.strategy-6-5-5-5-%d.stg", strategy_repetitions2);
+    sprintf(strategy_filename2, "cfr.mod-strategy-6-5-5-5-%d.stg", strategy_repetitions2);
 
     HandEvaluator evaluator;
 
     BasketManager mng(0, basket_sizes, &evaluator);
     BasketManager mng2(1, basket_sizes2, &evaluator);
     Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), strategy_repetitions, strategy_filename);
-    Cfr *cfr_strategy2 = new Cfr(new HoldemPokerAbstraction(&mng2), strategy_repetitions2, strategy_filename2);
+    Cfr *cfr_mod_strategy = new Cfr(new HoldemPokerModAbstraction(&mng2), strategy_repetitions2, strategy_filename2);
 
     for (int r = 0; r < rounds_number; r++)
     {
@@ -144,12 +145,12 @@ int main(int argc, char* argv[])
                                            cfr_strategy,
                                            new HoldemPokerAbstraction(&mng));
             players[(r + 1) & 1] = new CfrPlayer((r + 1) & 1,
-                                           cfr_strategy2,
-                                           new HoldemPokerAbstraction(&mng2));
+                                           cfr_mod_strategy,
+                                           new HoldemPokerModAbstraction(&mng2));
         }
         vector<int> players_cards[2];
 
-        printf("CFR: %d, CFR2: %d\n", r & 1, (r+1) & 1);
+        printf("CFR: %d, CFR_MOD: %d\n", r & 1, (r+1) & 1);
         while (!game -> isFinal())
         {
             int pnum = game -> getPlayerId();

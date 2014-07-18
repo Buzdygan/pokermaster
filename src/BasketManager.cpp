@@ -52,9 +52,9 @@ int encode_basket_pair(int basket0, int basket1)
     return basket0 + basket1 * MAX_BASKETS_NUMBER;
 }
 
-BasketManager::BasketManager(int index, int bs[4], HandEvaluator* ev)
+BasketManager::BasketManager(int ind, int bs[4], HandEvaluator* ev)
 {
-    index = index;
+    index = ind;
     evaluator = ev;
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
@@ -62,9 +62,9 @@ BasketManager::BasketManager(int index, int bs[4], HandEvaluator* ev)
     _init();
 }
 
-BasketManager::BasketManager(int index, HandEvaluator* ev)
+BasketManager::BasketManager(int ind, HandEvaluator* ev)
 {
-    index = index;
+    index = ind;
     evaluator = ev;
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
@@ -969,6 +969,25 @@ int BasketManager::getBasket(vector<int> cards)
     int i1 = CARD_CODES_MAP[0][_cardsCode(cards[0], cards[1])];
     if(n <= 2)
         return _determineBasket(0, EHS1[i1]);
+    int i2 = CARD_CODES_MAP[1][_cardsCode2(cards[2], cards[3], cards[3])];
+    if(n <= 5)
+        return _determineBasket(1, EHS2[i2][i1]);
+    int i3 = CARD_CODES_MAP[2][cards[4]];
+    if(n <= 6)
+        return _determineBasket(2, EHS3[i3][i2][i1]);
+    int i4 = CARD_CODES_MAP[3][cards[5]];
+    return _determineBasket(3, EHS4[i4][i3][i2][i1]);
+}
+
+int BasketManager::getOpponentBasket(int stage, int prev_basket, vector<int> cards)
+{
+    int n = cards.size();
+    int i1 = CARD_CODES_MAP[0][_cardsCode(cards[0], cards[1])];
+    int player_basket = _determineBasket(0, EHS1[i1]);
+    if (stage == 0)
+    {
+
+    }
     int i2 = CARD_CODES_MAP[1][_cardsCode2(cards[2], cards[3], cards[3])];
     if(n <= 5)
         return _determineBasket(1, EHS2[i2][i1]);

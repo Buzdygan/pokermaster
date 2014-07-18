@@ -24,13 +24,16 @@ class CfrPlayer : public Player
         /* gives info on who won the round with what stake */
         void endRound(double cash_change);
         int _logBid(int bid);
-    private:
+    protected:
         int cur_stake;
         int player_num;
         int random_phase;
         bool first_action;
         int bids_number;
+        int prev_opponent_basket;
         vector<int> all_cards;
+        vector<int> new_cards;
+
         Cfr* strategy;
         HoldemPokerAbstraction* game;
 };
