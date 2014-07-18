@@ -44,6 +44,8 @@ class BasketManager
         int getNextBasket(int stage, int current, int cards_code);
         int getBasket(vector<int> cards);
         dist getOpponentBasketDist(int stage, int pbasket, dist current_dist, vector<int> cards);
+        dist getOpponentBasketDist(int stage, vector<int> ind);
+        int getIndex(int stage, vector<int> cards);
         int getBasketsNumber(int stage);
         int cardsCode(vector<int> cards);
         dist getBasketPairsDistribution(int stage, int basket0, int basket1);

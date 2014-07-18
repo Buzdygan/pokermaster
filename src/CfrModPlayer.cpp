@@ -21,8 +21,9 @@ void CfrModPlayer::annotateRandomAction(int card_id)
     //TODO źle źle, musisz uwzględniać rozkład koszyków przeciwnika
     if (all_cards.size() == CARDS_FOR_PHASE[random_phase])
     {
+        indexes.push_back(game -> getBasketManager() -> getIndex(random_phase, new_cards));
         int bnum = game -> getBasketManager() -> getBasket(all_cards);
-        prev_opp_dist = game -> getBasketManager() -> getOpponentBasketDist(random_phase, bnum, prev_opp_dist, new_cards);
+        prev_opp_dist = game -> getBasketManager() -> getOpponentBasketDist(random_phase, indexes);
         printf("Player%d basket: %d\n", player_num, bnum);
         int action_id;
         if (player_num == 0)

@@ -25,6 +25,8 @@ class Cfr
         bool initialized;
         bool sampled;
 
+        double current_regret_sum;
+        map<int, double> regrets;
         Smap strategy;
         Smap R;
         Smap S;

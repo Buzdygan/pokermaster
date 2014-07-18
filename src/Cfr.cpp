@@ -27,6 +27,7 @@ Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file, bool sa
 void Cfr::computeVanillaCfr(int iterations)
 {
     printf("Computing CFR strategy\n");
+    current_regret_sum = 0.0;
     double sum = 0.0;
     for (int i = 0; i < iterations; i++)
     {
@@ -35,7 +36,8 @@ void Cfr::computeVanillaCfr(int iterations)
         cnt = 0;
         newR.clear();
         walkTree(probs);
-        double it_err = recomputeStrategy(newR) / (i + 1);
+        recomputeStrategy(newR);
+        double it_err = current_regret_sum / (i + 1);
         sum += it_err;
         printf("It err: %0.5f Err: %0.5f\n", it_err, sum / (i+1));
     }
@@ -229,6 +231,7 @@ double Cfr::recomputeStrategy(Smap &reg)
 {
     map<int, double> is_r_sums;
     map<int, double> is_r_cnt;
+    map<int, double> mregret;
     for (Sit iter = reg.begin(); iter != reg.end(); iter++)
     {
         int is_id = iter -> first.first;
@@ -243,6 +246,27 @@ double Cfr::recomputeStrategy(Smap &reg)
             is_r_cnt[is_id] = 1.0;
         else
             is_r_cnt[is_id] = is_r_cnt[is_id] + 1.0;
+
+        if (!mregret.count(is_id))
+            mregret[is_id] = val;
+        else
+            mregret[is_id] = max(mregret[is_id], val);
+    }
+
+    for (map<int, double>::iterator it = mregret.begin(); it != mregret.end(); it++)
+    {
+        int is_id = it -> first;
+        double val = it -> second;
+        if(!regrets.count(is_id))
+        {
+            regrets[is_id] = val;
+            current_regret_sum += val;
+        }
+        else
+        {
+            current_regret_sum += val - regrets[is_id];
+            regrets[is_id] = val;
+        }
     }
 
     double max_regret = 0.0;

@@ -22,6 +22,7 @@ class CfrModPlayer : public CfrPlayer
         int getAction(vector<int> available_actions);
     protected:
         vector<int> new_cards;
+        vector<int> indexes;
         dist prev_opp_dist;
 };
 
