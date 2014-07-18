@@ -103,8 +103,8 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {6,5,5,5};
-    sprintf(strategy_filename, "cfr.strategy-6-5-5-5-%d.stg", strategy_repetitions);
+    int basket_sizes[4] = {7,6,6,6};
+    sprintf(strategy_filename, "cfr.strategy-7-6-6-6-%d.stg", strategy_repetitions);
 
     int basket_sizes2[4] = {6,5,5,5};
     sprintf(strategy_filename2, "cfr.strategy-6-5-5-5-%d.stg", strategy_repetitions2);

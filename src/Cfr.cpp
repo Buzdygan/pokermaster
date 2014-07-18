@@ -165,14 +165,22 @@ int Cfr::getActionId(int information_set_id, vector<int> action_ids)
         double prob = 0.0;
         pair<int,int> pair_id = make_pair(information_set_id, action_id);
         if (strategy.count(pair_id))
+        {
             prob = strategy[pair_id];
-        prob_sum += prob;
-        printf("is_id: %d a_id: %d, prob: %lf\n", information_set_id, action_id, prob);
+            printf("is_id: %d a_id: %d, prob: %lf\n", information_set_id, action_id, prob);
+            prob_sum += prob;
+        }
         if (choice == -1 && random_double < prob_sum)
         {
             choice = action_id;
         }
     }
+    if (choice == -1)
+    {
+        printf("WARNING, DEFAULT ACTION CHOICE\n");
+        return action_ids[0];
+    }
+
     return choice;
 }
 
