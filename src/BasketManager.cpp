@@ -919,6 +919,7 @@ int BasketManager::_evaluateCards(int p1, int p2, int o1, int o2, int t1, int t2
 /* returns basket based on the stage and probability of win */
 int BasketManager::_determineBasket(int stage, double ehs)
 {
+    //printf("stage: %d, ehs: %lf\n", stage, ehs);
     for (int b = 0; b < basket_sizes[stage]; b++)
         if (ehs <= THR[stage][b])
             return b;
@@ -979,23 +980,46 @@ int BasketManager::getBasket(vector<int> cards)
     return _determineBasket(3, EHS4[i4][i3][i2][i1]);
 }
 
-int BasketManager::getOpponentBasket(int stage, int prev_basket, vector<int> cards)
+dist BasketManager::getOpponentBasketDist(int stage, int player_basket, dist current_dist, vector<int> cards)
 {
-    int n = cards.size();
-    int i1 = CARD_CODES_MAP[0][_cardsCode(cards[0], cards[1])];
-    int player_basket = _determineBasket(0, EHS1[i1]);
+    vector<double> d;
+    for (int i = 0; i < basket_sizes[stage]; i++)
+        d.push_back(0.0);
+
     if (stage == 0)
     {
-
+        dist pair_dist = BASKET_DISTRIBUTION[index][stage][0];
+        for (int i = 0; i < pair_dist.size(); i++)
+        {
+            pair<int, int> bpair = decode_basket_pair(pair_dist[i].first);
+            if (bpair.first == player_basket)
+                d[bpair.second] = pair_dist[i].second;
+        }
     }
-    int i2 = CARD_CODES_MAP[1][_cardsCode2(cards[2], cards[3], cards[3])];
-    if(n <= 5)
-        return _determineBasket(1, EHS2[i2][i1]);
-    int i3 = CARD_CODES_MAP[2][cards[4]];
-    if(n <= 6)
-        return _determineBasket(2, EHS3[i3][i2][i1]);
-    int i4 = CARD_CODES_MAP[3][cards[5]];
-    return _determineBasket(3, EHS4[i4][i3][i2][i1]);
+    else
+    {
+        int cards_code = cardsCode(cards);
+        for (int i = 0; i < current_dist.size(); i++)
+        {
+            int b0 = current_dist[i].first;
+            double* trans;
+            if (stage == 1)
+                trans = FL[index][b0][cards_code];
+            else
+                trans = TR[index][stage-2][b0][cards_code];
+            for (int b1 = 0; b1 < d.size(); b1 ++)
+                d[b1] += trans[b1] * current_dist[i].second;
+        }
+    }
+
+    double sum = 0.0;
+    for (int i = 0; i < d.size(); i++)
+        sum += d[i];
+    dist res;
+    if (sum > 0.0)
+        for (int basket = 0; basket < d.size(); basket++)
+            res.push_back(make_pair(basket, d[basket] / sum));
+    return res;
 }
 
 int BasketManager::getNextBasket(int stage, int current, int cards_code)

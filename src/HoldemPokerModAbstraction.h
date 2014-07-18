@@ -10,6 +10,7 @@ class HoldemPokerModAbstraction : public HoldemPokerAbstraction
         HoldemPokerModAbstraction(BasketManager* manager);
         ~HoldemPokerModAbstraction();
         int getInformationSetId();
+        dist getInformationSetIds(dist baskets);
 };
 
 #endif

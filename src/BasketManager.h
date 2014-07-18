@@ -9,7 +9,7 @@ const int FIGS = 13;
 const int DFIGS = 26;
 //const int FIGS = 6;
 //const int DFIGS = 12;
-const int MAX_BASKETS_NUMBER = 10;
+const int MAX_BASKETS_NUMBER = 15;
 const int ONE_CARD_CODES = 52;
 const int TWO_CARD_CODES = 3000;
 const int THREE_CARD_CODES = 22100;
@@ -43,7 +43,7 @@ class BasketManager
         BasketManager(int index, HandEvaluator*);
         int getNextBasket(int stage, int current, int cards_code);
         int getBasket(vector<int> cards);
-        int getOpponentBasket(int stage, int prev_basket, vector<int> cards);
+        dist getOpponentBasketDist(int stage, int pbasket, dist current_dist, vector<int> cards);
         int getBasketsNumber(int stage);
         int cardsCode(vector<int> cards);
         dist getBasketPairsDistribution(int stage, int basket0, int basket1);
