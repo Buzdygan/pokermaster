@@ -979,6 +979,25 @@ int BasketManager::getBasket(vector<int> cards)
     return _determineBasket(3, EHS4[i4][i3][i2][i1]);
 }
 
+int BasketManager::getOpponentBasket(int stage, int prev_basket, vector<int> cards)
+{
+    int n = cards.size();
+    int i1 = CARD_CODES_MAP[0][_cardsCode(cards[0], cards[1])];
+    int player_basket = _determineBasket(0, EHS1[i1]);
+    if (stage == 0)
+    {
+
+    }
+    int i2 = CARD_CODES_MAP[1][_cardsCode2(cards[2], cards[3], cards[3])];
+    if(n <= 5)
+        return _determineBasket(1, EHS2[i2][i1]);
+    int i3 = CARD_CODES_MAP[2][cards[4]];
+    if(n <= 6)
+        return _determineBasket(2, EHS3[i3][i2][i1]);
+    int i4 = CARD_CODES_MAP[3][cards[5]];
+    return _determineBasket(3, EHS4[i4][i3][i2][i1]);
+}
+
 int BasketManager::getNextBasket(int stage, int current, int cards_code)
 {
     log(1, "stage: %d, current: %d, cards_code: %d\n", stage, current, cards_code);

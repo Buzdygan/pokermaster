@@ -11,7 +11,6 @@ const int HoldemPokerAbstraction::PHASE_FIRST_BID = 4;
 const int HoldemPokerAbstraction::PHASE_MIDDLE_BID = 5;
 const int HoldemPokerAbstraction::PHASE_LAST_BID = 6;
 
-int phase_actions[10];
 
 void HoldemPokerAbstraction::_init()
 {
@@ -44,6 +43,11 @@ HoldemPokerAbstraction::HoldemPokerAbstraction(BasketManager* mng)
 HoldemPokerAbstraction::~HoldemPokerAbstraction()
 {
 
+}
+
+BasketManager* HoldemPokerAbstraction::getBasketManager()
+{
+    return manager;
 }
 
 void HoldemPokerAbstraction::makeAction(int action_id)
@@ -108,10 +112,6 @@ int HoldemPokerAbstraction::getInformationSetId()
     return is_id[cur_player];
 }
 
-int HoldemPokerAbstraction::getInformationSetId(int pnum)
-{
-    return is_id[pnum];
-}
 
 dist HoldemPokerAbstraction::getActionDistribution()
 {
@@ -125,11 +125,6 @@ void HoldemPokerAbstraction::logAction(int pnum, int action_id, int phase_id)
     //printf("logging action %d by %d in phase %d, is_id: %d, mults: %d\n", action_id, pnum,
     //                                                    phase_id, is_id[pnum], mults[pnum]);
     mults[pnum] *= (phase_actions[phase_id] + 1);
-}
-
-int HoldemPokerAbstraction::getBasketNumber(vector<int> cards)
-{
-    return manager -> getBasket(cards);
 }
 
 void HoldemPokerAbstraction::logCards(int pnum, vector<int> cards, int random_phase)

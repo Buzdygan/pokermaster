@@ -8,11 +8,12 @@ HumanPlayer.o : Player.o HumanPlayer.cpp
 SimplePoker.o : SimplePoker.cpp
 HoldemPoker.o : HoldemPoker.cpp
 HoldemPokerAbstraction.o : HoldemPokerAbstraction.cpp
+HoldemPokerModAbstraction.o : HoldemPokerModAbstraction.cpp
 BasketManager.o : BasketManager.cpp
 Cfr.o : Cfr.cpp GameAbstraction.o
 
-Judge: Player.o GameAbstraction.o Utils.o BasketManager.o SimplePoker.o HoldemPoker.o HoldemPokerAbstraction.o CfrPlayer.o DummyPlayer.o HumanPlayer.o Cfr.o Judge.cpp 
-Tests: Player.o GameAbstraction.o Utils.o BasketManager.o SimplePoker.o HoldemPoker.o HoldemPokerAbstraction.o CfrPlayer.o DummyPlayer.o HumanPlayer.o Cfr.o Tests.cpp 
+Judge: Player.o GameAbstraction.o Utils.o BasketManager.o SimplePoker.o HoldemPoker.o HoldemPokerAbstraction.o HoldemPokerModAbstraction.o CfrPlayer.o DummyPlayer.o HumanPlayer.o Cfr.o Judge.cpp 
+Tests: Player.o GameAbstraction.o Utils.o BasketManager.o SimplePoker.o HoldemPoker.o HoldemPokerAbstraction.o HoldemPokerModAbstraction.o CfrPlayer.o DummyPlayer.o HumanPlayer.o Cfr.o Tests.cpp 
 
 clean:
 	rm *.o
