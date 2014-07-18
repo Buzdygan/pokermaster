@@ -14,25 +14,24 @@ class CfrPlayer : public Player
                   Cfr* strategy,
                   HoldemPokerAbstraction* game);
         /* Annotates random action */
-        void annotateRandomAction(int action_id);
+        virtual void annotateRandomAction(int action_id);
         /* annotates this player's action */
         void annotatePlayerAction(int action_id);
         /* annotates opponent's action */
         void annotateOpponentAction(int action_id);
         /* Get player's action */
-        int getAction(vector<int> available_actions);
+        virtual int getAction(vector<int> available_actions);
         /* gives info on who won the round with what stake */
         void endRound(double cash_change);
         int _logBid(int bid);
     protected:
+        int CARDS_FOR_PHASE[4];
         int cur_stake;
         int player_num;
         int random_phase;
         bool first_action;
         int bids_number;
-        int prev_opponent_basket;
         vector<int> all_cards;
-        vector<int> new_cards;
 
         Cfr* strategy;
         HoldemPokerAbstraction* game;

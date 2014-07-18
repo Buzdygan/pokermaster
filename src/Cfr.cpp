@@ -11,9 +11,10 @@ const int Cfr::ITERATIONS = 2000;
 
 int cnt = 0;
 
-Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file)
+Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file, bool samp)
 {
     printf("Init Cfr, iterations: %d\n", iterations);
+    sampled = samp;
     game = gm;
     if (!loadFromFile(strategy_file))
     {
@@ -58,9 +59,7 @@ utility Cfr::walkTree(double probs[3])
         dist action_distr = game -> getActionDistribution();
         double backup_prob = probs[RANDOM_PLAYER_NR];
 
-        const bool SAMPLED = true;
-
-        if (SAMPLED)
+        if (sampled)
         {
             double r = (double) rand() / RAND_MAX;
             double sum = 0.0;
@@ -153,35 +152,77 @@ utility Cfr::walkTree(double probs[3])
     return final_util;
 }
 
-
-int Cfr::getActionId(int information_set_id, vector<int> action_ids)
+int Cfr::getActionId(dist action_dist)
 {
+    for (int i = 0; i < action_dist.size(); i++)
+        printf("a_id: %d, prob: %lf\n", action_dist[i].first, action_dist[i].second);
+
     double random_double = ((double) rand() / (RAND_MAX));
     double prob_sum = 0;
     int choice = -1;
+    for (int i = 0; i < action_dist.size(); i++)
+    {
+        int action_id = action_dist[i].first;
+        double prob = action_dist[i].second;
+        prob_sum += prob;
+        if (random_double < prob_sum)
+            return action_id;
+    }
+    return action_dist[0].first;
+
+}
+
+int Cfr::getActionId(int information_set_id, vector<int> action_ids)
+{
+    dist action_dist;
     for (int i = 0; i < action_ids.size(); i++)
     {
         int action_id = action_ids[i];
-        double prob = 0.0;
         pair<int,int> pair_id = make_pair(information_set_id, action_id);
         if (strategy.count(pair_id))
-        {
-            prob = strategy[pair_id];
-            printf("is_id: %d a_id: %d, prob: %lf\n", information_set_id, action_id, prob);
-            prob_sum += prob;
-        }
-        if (choice == -1 && random_double < prob_sum)
-        {
-            choice = action_id;
-        }
+            action_dist.push_back(make_pair(action_id, strategy[pair_id]));
     }
-    if (choice == -1)
+    return getActionId(action_dist);
+}
+
+int Cfr::getActionId(dist information_set_ids, vector<int> action_ids)
+{
+    map<int, double> probs;
+    double total_sum = 0.0;
+    for (int i = 0; i < action_ids.size(); i++)
     {
-        printf("WARNING, DEFAULT ACTION CHOICE\n");
+        int action_id = action_ids[i];
+        double sum = 0.0;
+        for (int j = 0; j < information_set_ids.size(); j++)
+        {
+            int information_set_id = information_set_ids[j].first;
+            pair<int,int> pair_id = make_pair(information_set_id, action_id);
+            if (strategy.count(pair_id))
+            {
+                printf("is: %d, a: %d, prob: %.03lf, weight: %.03lf\n", information_set_id, action_id,
+                                                        strategy[pair_id], information_set_ids[j].second);
+                sum += strategy[pair_id] * information_set_ids[j].second;
+            }
+        }
+        probs[action_ids[i]] = sum;
+        total_sum += sum;
+    }
+    dist action_dist;
+    if (total_sum > 0.0)
+    {
+        for (int i = 0; i < action_ids.size(); i++)
+        {
+            int action_id = action_ids[i];
+            if (probs.count(action_id))
+                action_dist.push_back(make_pair(action_id, probs[action_id] / total_sum));
+        }
+        return getActionId(action_dist);
+    }
+    else
+    {
+        printf("WARNING: DEFAULT ACTION CHOSEN\n");
         return action_ids[0];
     }
-
-    return choice;
 }
 
 double Cfr::recomputeStrategy(Smap &reg)

@@ -13,8 +13,9 @@ typedef map<pair<int, int>, double>::iterator Sit;
 class Cfr
 {
     public:
-        Cfr(GameAbstraction* game, int iterations=ITERATIONS, const char* strategy_file=DEFAULT_FILE);
+        Cfr(GameAbstraction* game, int iterations=ITERATIONS, const char* strategy_file=DEFAULT_FILE, bool samp=true);
         int getActionId(int information_set_id, vector<int> action_ids);
+        int getActionId(dist information_set_ids, vector<int> action_ids);
 
     private:
         static const char* DEFAULT_FILE;
@@ -22,12 +23,14 @@ class Cfr
         static const int ITERATIONS;
         GameAbstraction* game;
         bool initialized;
+        bool sampled;
 
         Smap strategy;
         Smap R;
         Smap S;
         Smap newR;
 
+        int getActionId(dist action_dist);
         bool loadFromFile(const char* filename);
         void saveToFile(const char* filename);
 

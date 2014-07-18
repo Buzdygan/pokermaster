@@ -5,14 +5,16 @@
 
 using namespace std;
 
-int CARDS_FOR_PHASE[4] = {2,5,6,7};
 
 CfrPlayer::CfrPlayer(int pnum, Cfr* stg, HoldemPokerAbstraction* g)
 {
+    CARDS_FOR_PHASE[0] = 2;
+    CARDS_FOR_PHASE[1] = 5;
+    CARDS_FOR_PHASE[2] = 6;
+    CARDS_FOR_PHASE[3] = 7;
     random_phase = 0;
     bids_number = 1;
     cur_stake = 1;
-    prev_opponent_basket = -1;
     player_num = pnum;
     strategy = stg;
     game = g;
@@ -22,7 +24,6 @@ CfrPlayer::CfrPlayer(int pnum, Cfr* stg, HoldemPokerAbstraction* g)
 void CfrPlayer::annotateRandomAction(int card_id)
 {
     all_cards.push_back(card_id);
-    new_cards.push_back(card_id);
     /* We end the random phase */
     //TODO źle źle, musisz uwzględniać rozkład koszyków przeciwnika
     if (all_cards.size() == CARDS_FOR_PHASE[random_phase])
@@ -36,7 +37,6 @@ void CfrPlayer::annotateRandomAction(int card_id)
             action_id = encode_basket_pair(0, bnum);
         game -> makeAction(action_id);
         random_phase ++;
-        new_cards.clear();
     }
 }
 
