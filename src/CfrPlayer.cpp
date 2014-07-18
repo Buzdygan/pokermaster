@@ -28,13 +28,12 @@ void CfrPlayer::annotateRandomAction(int card_id)
     if (all_cards.size() == CARDS_FOR_PHASE[random_phase])
     {
         int bnum = game -> getBasketManager() -> getBasket(all_cards);
-        prev_opponent_basket = game -> getBasketManager() -> getOpponentBasket(random_phase, prev_opponent_basket, new_cards);
         printf("Player%d basket: %d\n", player_num, bnum);
         int action_id;
         if (player_num == 0)
-            action_id = encode_basket_pair(bnum, prev_opponent_basket);
+            action_id = encode_basket_pair(bnum, 0);
         else
-            action_id = encode_basket_pair(prev_opponent_basket, bnum);
+            action_id = encode_basket_pair(0, bnum);
         game -> makeAction(action_id);
         random_phase ++;
         new_cards.clear();
