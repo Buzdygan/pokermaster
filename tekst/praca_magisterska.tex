@@ -1,0 +1,108 @@
+\documentclass[licencjacka]{pracamgr}
+
+\usepackage{polski}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+%\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{hyperref}
+\usepackage{placeins}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{setspace}
+
+\singlespacing
+
+\newtheorem{theorem}{Twierdzenie}[chapter]
+\newtheorem{lemma}[theorem]{Lemat}
+\newtheorem{proposition}[theorem]{Stwierdzenie}
+\newtheorem{corollary}[theorem]{Wniosek}
+\newtheorem{definition}[theorem]{Definicja}
+
+\newenvironment{proof}[1][Dowód]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{example}[1][Przykład]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{remark}[1][Uwaga]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\newcommand{\qed}{\nobreak \ifvmode \relax \else
+        \ifdim\lastskip<1.5em \hskip-\lastskip
+            \hskip1.5em plus0em minus0.5em \fi \nobreak
+                  \vrule height0.75em width0.5em depth0.25em\fi}
+
+\allowdisplaybreaks
+
+
+%\floatstyle{boxed}
+%\restylefloat{figure}
+%\floatplacement{figure}{H}
+
+\author{Jakub Tlałka}
+\nralbumu{292665}
+
+\title{Heurystyczna modyfikacja techniki CFR w Pokerze}
+\tytulang{Heuristic modification of CFR technique in Poker}
+
+\kierunek{Informatyka}
+
+\opiekun{dra Jakuba Pawlewicza\\
+  Wydzia{\l} Matematyki Informatyki i Mechaniki\\
+  }
+  
+\date{Sierpież 2014}
+
+%TODO poprawić numerek
+\dziedzina{
+11.3 Informatyka\\
+}
+
+%TODO zmienić klasyfikacjż
+\klasyfikacja{D. Maths\\
+D.0. General\\}
+
+%TODO uzupełnić sżowa kluczowe
+\keywords{}
+ 
+\newtheorem{defi}{Definicja}[section]
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\end{abstract}
+
+\tableofcontents
+
+\chapter{Wstęp - sztuczna inteligencja w grach}
+
+\chapter{Rozwój programów grających w Pokera}
+
+\chapter{Metoda CFR}
+
+Metoda CFR (Counterfactual Regret Minimization) to algorytm, który pozwala znajdować równowagę Nasha
+w grach w postaci ekstensywnej. Jest to obecnie najlepsze rozwiązanie w dziedzinie badań nad
+sztuczną inteligencją w Pokerze. Choć używane są głównie różne modyfikacje algorytmu, chciałbym
+przedstawić tu jego bazową wersję.
+
+\chapter{Modyfikacja}
+
+\chapter{Implementacja}
+
+\chapter{Symulacje na dwóch wariantach Pokera}
+
+\chapter{Podsumowanie}
+
+
+%TODO zmieniż bibliografiż
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{Bibliografia}
+\bibitem[1]{1} Guihua Gong and Guoliang Yu. $\;\;\;$ "Volume growth and positive scalar curvature. " $\;\;\;$. GAFA, Geom. funct. anal.
+Vol. 10 (2000) 821 - 828 1016-443X/00/040821-8
+\bibitem[2]{2} Piotr Nowak and Guoliang Yu. $\;\;\;$ "Large Scale Geometry. " $\;\;\;$ EMS Publishing House, Nashville/Warsaw (2012).
+\bibitem[3]{3} Jean-Louis Tu $\;\;\;$ "Remarks on Yu's property A for discrete metric spaces and groups" $\;\;\;$ Bull. Soc. Math. France 129 (2001), no. 1, 115-139. MR 1871980 (2002j:58038)
+\bibitem[4]{4} Mladen Bestvina. $\;\;\;$ "Groups as Metric Spaces." $\;\;\;$ University of Utah (2007)
+\end{thebibliography}
+
+\end{document}
