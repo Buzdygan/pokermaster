@@ -44,7 +44,7 @@ void Cfr::computeVanillaCfr(int iterations)
     recomputeStrategy(S);
 }
 
-utility Cfr::walkTree(double probs[3])
+utility Cfr::walkTree(double probs[3], int prev_is_id)
 {
     if (game -> isFinal())
     {
@@ -72,13 +72,33 @@ utility Cfr::walkTree(double probs[3])
 
                 if (r < sum + 1e-9)
                 {
+
                     probs[RANDOM_PLAYER_NR] *= iter -> second;
                     game -> makeAction(iter -> first);
-                    utility res_util = walkTree(probs);
+                    utility res_util = walkTree(probs, prev_is_id);
                     game -> unmakeAction(iter -> first);
                     probs[RANDOM_PLAYER_NR] = backup_prob;
-                    final_util.first = res_util.first;
-                    final_util.second = res_util.second;
+
+                    pair<int, int> decision_id = make_pair(prev_is_id, iter -> first);
+                    if(!action_utility.count(decision_id))
+                    {
+                        action_utility[decision_id] = make_pair(res_util.first * iter -> second,
+                                                                res_util.second * iter -> second);
+                        final_util.first = res_util.first * iter -> second;
+                        final_util.second = res_util.second * iter -> second;
+                        is_utility[prev_is_id] = final_util;
+                    }
+                    else
+                    {
+                        utility prev_utility = action_utility[decision_id];
+                        action_utility[decision_id] = make_pair(res_util.first * iter -> second,
+                                                                res_util.second * iter -> second);
+                        final_util = is_utility[prev_is_id];
+                        final_util.first += res_util.first * iter -> second - prev_utility.first;
+                        final_util.second += res_util.second * iter -> second - prev_utility.second;
+                        is_utility[prev_is_id] = final_util;
+                    }
+
                     break;
                 }
                 l ++;
@@ -91,7 +111,7 @@ utility Cfr::walkTree(double probs[3])
             {
                 probs[RANDOM_PLAYER_NR] *= iter -> second;
                 game -> makeAction(iter -> first);
-                utility res_util = walkTree(probs);
+                utility res_util = walkTree(probs, prev_is_id);
                 game -> unmakeAction(iter -> first);
                 probs[RANDOM_PLAYER_NR] = backup_prob;
                 final_util.first += res_util.first * iter -> second;
@@ -126,7 +146,7 @@ utility Cfr::walkTree(double probs[3])
             probs[p] *= action_prob;
 
             game -> makeAction(*a_id);
-            utility temp_util = walkTree(probs);
+            utility temp_util = walkTree(probs, is_id);
             double res_util [2] = {temp_util.first, temp_util.second};
             game -> unmakeAction(*a_id);
 

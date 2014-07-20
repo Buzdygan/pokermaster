@@ -86,6 +86,82 @@ w grach w postaci ekstensywnej. Jest to obecnie najlepsze rozwiązanie w dziedzi
 sztuczną inteligencją w Pokerze. Choć używane są głównie różne modyfikacje algorytmu, chciałbym
 przedstawić tu jego bazową wersję.
 
+\section{Terminologia}
+
+\begin{itemize}
+
+\item Zbiór graczy oznaczamy przez $N$.
+\item Zbiór wszystkich możliwych ciągów akcji (historii) legalnych w grze nazywamy $H$. Ciągi, po których kończy
+      się rozgrywka, należą do podzbioru $Z$. Oczywiście każdej historii jest przyporządkowany stan gry, który
+      jest jej efektem.
+\item Dla każdej historii $h$ zbiór akcji dostępnych w stanie gry jej odpowiadającym oznaczamy przez $A(h)$. Oczywiście
+      każdy stan wyznacza jednoznacznie gracza wykonującego akcje.
+\item Dla każdego gracza $i$, zbiór historii, w których ma on ruch, są pogrupowane w tzw zbiory informacyjne $I_i$. Dla zbioru
+      informacyjnego $I_i$ oraz dowolnych dwóch historii $h_1, h_2 \in I_i$ zachodzi $A(h_1) = A(h_2) = A(I_i)$. Do jednego
+      zbioru informacyjnego $I_i$ należą historie, które są parami tożsame po usunięciu z nich akcji niewidocznych dla gracza $i$
+      (np w Pokerze są to akcje przydzielenia kart prywatnych graczom innym niż $i$).
+\item Gracza losowego oznaczamy przez $c$. Funkcja $f_c(h, a)$ oznacza prawdopodobieństwo zaistnienia akcji $a$ dla historii $h$.
+\item Strategię gracza $i$ oznaczamy przez $\sigma_i$. $\sigma_i(I_i, a)$ oznacza prawdopodobieństwo wykonania akcji $a$ przez
+      gracza $i$ w zbiorze informacyjnym $I_i$ jeśli gra on strategią $\sigma_i$. Przyjmujemy $\sigma_c(h, a) = f_c(h, a)$.
+      Przez $\sigma$ oznaczamy zespół strategii wszystkich graczy biorących udział w rozgrywce. Przez $\sigma_{-i}$ oznaczamy
+      zespół strategii wszystkich graczy z wyjątkiem $i$.
+\item Przez $\pi^{\sigma}(h)$ oznaczamy prawdopodobieństwo zajścia historii $h$ dla zespołu strategii $\sigma$.
+      $\pi^{\sigma}(I)$ to suma tych prawdopodobieństw po $h \in I$. $\pi_i^{\sigma}(h)$ to prawdopodobieństwo że grając
+      zgodnie ze strategią $\sigma$, gracz $i$ będzie podejmował akcje z odpowiadającej historii $h$. Analogicznie
+      $\pi_{-i}^{\sigma}(h)$ oznacza prawdopodobieństwo że pozostali gracze będą podejmowali akcje z historii $h$.
+\item Dla końcowych historii $h \in Z$ określamy funkcję użyteczności $u_i(h)$ oznaczającą zysk gracza $i$ w rozgrywce
+      określonej przez $h$.
+
+\end{itemize}
+
+\noindent
+W dalszej części będziemy zajmować się grami dwuosobowymi, przede wszystkim dwuosobową wersją Texas Holdem Poker.
+
+\section{$\epsilon$-równowaga Nasha}
+
+$\epsilon$-równowagą Nasha nazywamy zespół strategii $\sigma$, taki że:
+
+\begin{align*}
+u_1(\sigma) + \epsilon \geq  \max_{\sigma_1'} \, u_1(\sigma_1', \sigma_2) 
+\end{align*}
+
+\begin{align*}
+u_2(\sigma) + \epsilon \geq  \max_{\sigma_2'} \, u_2(\sigma_1, \sigma_2') 
+\end{align*}
+
+\noindent
+Metoda CFR znajduje $\epsilon$-równowagę Nasha dla $\epsilon$ malejącego proporcjonalnie do pierwiastka z liczby iteracji.
+
+\section{Minimalizacja funkcji regretu}
+
+W dalszej części przyjmujemy że rozgrywane są kolejne rundy indeksowane przez $t$. W każdej z rund
+strategie graczy będą modyfikowane na podstawie dotychczasowej rozgrywki, w efekcie dając ciąg strategii
+$(\sigma^t)$. Jako uśrednioną strategię gracza $i$ po $T$ rundach definiujemy:
+
+\begin{align*}
+\overline{\sigma}_i^T(I, a) = \frac{\sum\limits_{t=1}^T \pi_i^{\sigma^t}(I) \, \sigma^t(I, a)}{\sum\limits_{t=1}^T \, \pi_i^{\sigma^t}(I)}
+\end{align*}
+
+\noindent
+Intuicyjnie funkcja regretu określa ile gracz mógłby zyskać zamieniając obecną strategię na najlepszą możliwą
+przy założeniu że inni gracze pozostali by przy obecnych strategiach. Formalnie definiujemy średni całkowity regret gracza $i$
+w rozgrywce o numerze $T$ przez:
+
+\begin{align*}
+R_i^T = \frac{1}{T} \, \max_{\sigma_i'} \sum\limits_{t=1}^T \, (u_i(\sigma_i', \sigma_{-i}^t) - u_i(\sigma^t))
+\end{align*}
+
+%todo dodaj referencje
+\noindent
+Znany wynik (referencja) mówi o tym, że w grze o sumie zerowej, jeśli po $T$ iteracjach średni całkowity regret obu graczy
+jest mniejszy niż $\epsilon$ to uśredniony zespół strategii $\overline{\sigma}^T$ jest $2\epsilon$-równowagą Nasha.
+
+\section{Funkcja regretu lokalnego}
+Trudno jest minimalizować całkowity regret liczony:w
+
+
+
+
 \chapter{Modyfikacja}
 
 \chapter{Implementacja}
@@ -94,15 +170,5 @@ przedstawić tu jego bazową wersję.
 
 \chapter{Podsumowanie}
 
-
-%TODO zmieniż bibliografiż
-\begin{thebibliography}{99}
-\addcontentsline{toc}{chapter}{Bibliografia}
-\bibitem[1]{1} Guihua Gong and Guoliang Yu. $\;\;\;$ "Volume growth and positive scalar curvature. " $\;\;\;$. GAFA, Geom. funct. anal.
-Vol. 10 (2000) 821 - 828 1016-443X/00/040821-8
-\bibitem[2]{2} Piotr Nowak and Guoliang Yu. $\;\;\;$ "Large Scale Geometry. " $\;\;\;$ EMS Publishing House, Nashville/Warsaw (2012).
-\bibitem[3]{3} Jean-Louis Tu $\;\;\;$ "Remarks on Yu's property A for discrete metric spaces and groups" $\;\;\;$ Bull. Soc. Math. France 129 (2001), no. 1, 115-139. MR 1871980 (2002j:58038)
-\bibitem[4]{4} Mladen Bestvina. $\;\;\;$ "Groups as Metric Spaces." $\;\;\;$ University of Utah (2007)
-\end{thebibliography}
 
 \end{document}

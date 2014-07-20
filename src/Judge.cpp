@@ -127,6 +127,7 @@ int main(int argc, char* argv[])
         // new round
         GameAbstraction* game = new HoldemPoker(&evaluator);
         int game_type = 4;
+        printf("RUNDAAAAAAAAAAAAAAAAAAAAAAAAAA: %d\n", r);
         if (game_type == 0)
         {
             players[r & 1] = new DummyPlayer();
