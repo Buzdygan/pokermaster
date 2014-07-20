@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
     //int basket_sizes[4] = {6,5,5,5};
     //sprintf(strategy_filename, "cfr.strategy-6-5-5-5-%d.stg", strategy_repetitions);
 
-    int basket_sizes2[4] = {15,15,15,15};
+    int basket_sizes2[4] = {10,10,10,10};
     sprintf(strategy_filename2, "cfr.mod-strategy-%d-%d-%d-%d-%d.stg", basket_sizes2[0],
                                                                        basket_sizes2[1],
                                                                        basket_sizes2[2],
