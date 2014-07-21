@@ -204,6 +204,8 @@ int Cfr::getActionId(int information_set_id, vector<int> action_ids)
         if (strategy.count(pair_id))
             action_dist.push_back(make_pair(action_id, strategy[pair_id]));
     }
+    if (!action_dist.size())
+        return action_ids[0];
     return getActionId(action_dist);
 }
 
