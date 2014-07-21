@@ -674,7 +674,7 @@ void BasketManager::_computeEHS()
 
         printf("Progress: %d / %d\n", i1 + 1, (int)v1.size());
 
-        EHS_DIST[0][_perc(EHS1[i1] =_EHS(F, pc1, pc2))] ++;
+        EHS_DIST[0][_perc(EHS1[i1] =_EHS(F, pc1, pc2))] += S1[i1];
         // dealing flop cards
         for (int i2 = 0; i2 < v2.size(); i2++)
         {
@@ -684,14 +684,14 @@ void BasketManager::_computeEHS()
             if (F[tc1] + F[tc2] + F[tc3] == 0)
             {
                 F[tc1] ++; F[tc2] ++; F[tc3] ++;
-                EHS_DIST[1][_perc(EHS2[i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3))] ++;
+                EHS_DIST[1][_perc(EHS2[i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3))] += S2[i2];
                 for (int i3 = 0; i3 < v3.size(); i3++)
                 {
                     int tc4 = v3[i3].first;
                     if (!F[tc4])
                     {
                         F[tc4] ++;
-                        EHS_DIST[2][_perc(EHS3[i3][i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3, tc4))] ++;
+                        EHS_DIST[2][_perc(EHS3[i3][i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3, tc4))] += S3[i3];
 
                         for (int i4 = 0; i4 < v4.size(); i4++)
                         {
@@ -699,7 +699,7 @@ void BasketManager::_computeEHS()
                             if (!F[tc5])
                             {
                                 F[tc5] ++;
-                                EHS_DIST[3][_perc(EHS4[i4][i3][i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5))] ++;
+                                EHS_DIST[3][_perc(EHS4[i4][i3][i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5))] += S4[i4];
                                 F[tc5] --;
                             }
                         }
@@ -725,15 +725,13 @@ void BasketManager::_computeEHSDistribution()
 
         // computing percentage thresholds for the baskets;
         double thresholds[bnum + 1];
-        double s = 0.0;
-        for (int i = 2; i < 2 + bnum; i++)
-            s += 1.0 / (double)i;
         double th = 0.0;
         for (int b = 0; b < bnum; b++)
         {
-            th += (1.0 / (double(b + 2))) / s;
+            th += 1.0 / bnum;
             thresholds[b] = th;
         }
+        thresholds[bnum - 1] = 0.99999;
 
         int sum = 0;
         int current_basket = 0;
@@ -887,19 +885,16 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
     int HP[3][3];
     memset(HP, 0, sizeof(HP));
     int HPTotal[3] = {0, 0, 0};
-    for (int o1 = 0; o1 < DFIGS; o1 ++)
-        for (int o2 = o1; o2 < DFIGS; o2 ++)
-        {
-            int oc1 = _card_map(1, o1), oc2 = _card_map(2, o2);
-            if (oc1 != oc2 && F[oc1] + F[oc2] == 0)
+    for (int oc1 = 1; oc1 <= ONE_CARD_CODES - 1; oc1 ++)
+        for (int oc2 = oc1 + 1; oc2 <= ONE_CARD_CODES; oc2 ++)
+            if (F[oc1] + F[oc2] == 0)
             {
-                // TODO zastanów się czy nie należy zwiększać o inną wartość niż 1
                 F[oc1] ++; F[oc2] ++;
                 int index = _inc_vars(ahead, tied, behind, _evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5));
-                HPTotal[index] += _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
+                if(!tc5)
+                    HPTotal[index] += _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
                 F[oc1] --; F[oc2] --;
             }
-        }
 
     /*
     printf("BA: %d, BT: %d, BB: %d, TA: %d, TT: %d, TB: %d, AB: %d, AT: %d AA: %d, TOTA: %d, TOTT: %d, TOTB: %d\n",
@@ -919,17 +914,83 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
     double ppot = 0.0, npot = 0.0, hs = 0.0;
     if (ahead + tied + behind)
         hs = (double(ahead) + tied / 2.0) / (ahead + tied + behind);
-    //return hs;
-    if (HPTotal[BEHIND] + HPTotal[TIED])
-        ppot = ((double)HP[BEHIND][AHEAD] + HP[BEHIND][TIED]/ 2.0 + HP[TIED][AHEAD] / 2.0) / (double)(HPTotal[BEHIND] + HPTotal[TIED]);
-    if (HPTotal[AHEAD] + HPTotal[TIED])
-        npot = ((double)HP[AHEAD][BEHIND] + HP[TIED][BEHIND] / 2.0 + HP[AHEAD][TIED] / 2.0) / (double)(HPTotal[AHEAD] + HPTotal[TIED]);
-    double score = hs * (1.0 - npot) + (1.0 - hs) * ppot;
-    //printf("hs: %lf ppot: %lf npot: %lf score: %lf\n", hs, ppot, npot, score);
-    return score;
+    if(tc5)
+        return hs;
+    else
+    {
+        if (HPTotal[BEHIND] + HPTotal[TIED])
+            ppot = ((double)HP[BEHIND][AHEAD] + HP[BEHIND][TIED]/ 2.0 + HP[TIED][AHEAD] / 2.0) / (double)(HPTotal[BEHIND] + HPTotal[TIED]);
+        if (HPTotal[AHEAD] + HPTotal[TIED])
+            npot = ((double)HP[AHEAD][BEHIND] + HP[TIED][BEHIND] / 2.0 + HP[AHEAD][TIED] / 2.0) / (double)(HPTotal[AHEAD] + HPTotal[TIED]);
+        double score = hs * (1.0 - npot) + (1.0 - hs) * ppot;
+        //printf("hs: %lf ppot: %lf npot: %lf score: %lf\n", hs, ppot, npot, score);
+        return score;
+    }
+}
+int BasketManager::_computePotential(int HP[3], int F[ONE_CARD_CODES+ 3], int pc1, int pc2, int oc1,
+                                      int oc2, int tc1, int tc2, int tc3, int tc4, int tc5)
+{
+    int total = 0;
+    if (!tc1)
+    {
+        for (int t1 = 1; t1 <= ONE_CARD_CODES - 2; t1 ++)
+            for (int t2 = t1 + 1; t2 <= ONE_CARD_CODES - 1; t2++)
+                for (int t3 = t2 + 1; t3 <= ONE_CARD_CODES; t3++)
+                    if (!(F[t1] + F[t2] + F[t3]))
+                    {
+                        F[t1] ++; F[t2] ++; F[t3] ++;
+                        for (int t4 = 1; t4 <= ONE_CARD_CODES; t4++)
+                            if (!F[t4])
+                            {
+                                F[t4] ++;
+                                for (int t5 = 1; t5 <= ONE_CARD_CODES; t5++)
+                                    if (!F[t5])
+                                    {
+                                        HP[_evaluateCards(pc1, pc2, oc1, oc2, t1, t2, t3, t4, t5)] ++;
+                                        total ++;
+                                    }
+                                F[t4] --;
+                            }
+                        F[t1] --; F[t2] --; F[t3] --;
+                    }
+    }
+    else if (!tc4)
+    {
+        for (int t4 = 1; t4 <= ONE_CARD_CODES; t4++)
+            if (!F[t4])
+            {
+                F[t4] ++;
+                for (int t5 = 1; t5 <= ONE_CARD_CODES; t5++)
+                    if (!F[t5])
+                    {
+                        HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, t4, t5)] ++;
+                        total ++;
+                    }
+                F[t4] --;
+            }
+
+    }
+    else if (!tc5)
+    {
+        for (int t5 = 1; t5 <= ONE_CARD_CODES; t5++)
+        {
+            if (!F[t5])
+            {
+                HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, t5)] ++;
+                total ++;
+            }
+        }
+
+    }
+    else
+    {
+        HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5)] ++;
+        total ++;
+    }
+    return total;
 }
 
-int BasketManager::_computePotential(int HP[3], int F[ONE_CARD_CODES+ 3], int pc1, int pc2, int oc1,
+int BasketManager::_computePotential2(int HP[3], int F[ONE_CARD_CODES+ 3], int pc1, int pc2, int oc1,
                                       int oc2, int tc1, int tc2, int tc3, int tc4, int tc5)
 {
     int total = 0;

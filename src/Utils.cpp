@@ -8,7 +8,12 @@
 
 #include "Utils.h"
 
+const int CNUM = 52;
+
 int HR[32487834];
+
+int HR2[CNUM + 2][CNUM + 2];
+const char* HR2_FILENAME = "../data/hr2.dat";
 
 const int DEBUG_LEVEL = 1;
 
@@ -55,8 +60,61 @@ HandEvaluator::HandEvaluator()
 	FILE * fin = fopen("../data/HandRanks.dat", "rb");
 	size_t bytesread = fread(HR, sizeof(HR), 1, fin);	// get the HandRank Array
 	fclose(fin);
+    if(!_loadHR2())
+    {
+        _computeHR2();
+        _saveHR2();
+    }
 }
 
+void HandEvaluator::_computeHR2()
+{
+    const double DENOM = 19600.0;
+    for (int i = 1; i <= CNUM - 1; i++)
+        for (int j = i + 1; j <= CNUM; j++)
+            {
+                double sum = 0.0;
+                for (int c1 = 1; c1 <= CNUM - 2; c1++)
+                    if (c1 != i && c1 != j)
+                        for (int c2 = c1 + 1; c2 <= CNUM - 1; c2++)
+                            if (c2 != i && c2 != j)
+                                for (int c3 = c2 + 1; c3 <= CNUM; c3++)
+                                    if (c3 != i && c3 != j)
+                                        sum += evaluateHand(i, j, c1, c2, c3) / DENOM;
+
+                HR2[i][j] = HR2[j][i] = int(sum);
+            }
+}
+
+void HandEvaluator::_saveHR2()
+{
+    FILE * fout = fopen(HR2_FILENAME, "w");
+    for (int i = 1; i <= CNUM; i++)
+        for (int j = 1; j <= CNUM; j++)
+            if (i != j)
+                fprintf(fout, "%d\n", HR2[i][j]);
+    fclose(fout);
+}
+
+bool HandEvaluator::_loadHR2()
+{
+    try
+    {
+        FILE* fin = fopen(HR2_FILENAME, "r");
+        if (fin == NULL)
+            return false;
+        for (int i = 1; i <= CNUM; i++)
+            for (int j = 1; j <= CNUM; j++)
+                if (i != j)
+                    fscanf(fin, "%d\n", &HR2[i][j]);
+        fclose(fin);
+        return true;
+    }
+    catch(int e)
+    {
+        return false;
+    }
+}
 
 int HandEvaluator::evaluateHand(vector<int> cards)
 {
@@ -85,14 +143,6 @@ int HandEvaluator::evaluateHand(int c1, int c2, int c3, int c4, int c5, int c6, 
         return HR[p];
     }
     else
-    {
-        int f1 = (c1 - 1) / 4, f2 = (c2 - 1) / 4;
-        int same_color_bonus = (c1 % 4) == (c2 % 4) ? 1 : 0;
-        int diff = max(0, 3 - iabs(f1 - f2));
-        if (diff > 1)
-            return diff * 400 + same_color_bonus * 200 + max(f1, f2) * 13 + min(f1, f2);
-        else
-            return diff * 100 + same_color_bonus * 200 + max(f1, f2) * 13 + min(f1, f2);
-    }
+        return HR2[c1][c2];
 }
 
