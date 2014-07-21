@@ -891,8 +891,8 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
             {
                 F[oc1] ++; F[oc2] ++;
                 int index = _inc_vars(ahead, tied, behind, _evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5));
-                if(!tc5)
-                    HPTotal[index] += _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
+                //if(!tc5)
+                //    HPTotal[index] += _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
                 F[oc1] --; F[oc2] --;
             }
 
@@ -914,6 +914,7 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
     double ppot = 0.0, npot = 0.0, hs = 0.0;
     if (ahead + tied + behind)
         hs = (double(ahead) + tied / 2.0) / (ahead + tied + behind);
+    return hs;
     if(tc5)
         return hs;
     else
