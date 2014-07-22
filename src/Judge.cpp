@@ -132,20 +132,20 @@ int main(int argc, char* argv[])
     for (int r = 0; r < rounds_number; r++)
     {
         // new round
-        //GameAbstraction* game = new HoldemPoker(&evaluator);
-        GameAbstraction* game = new HoldemPokerAbstraction(&mng);
+        GameAbstraction* game = new HoldemPoker(&evaluator);
+        //GameAbstraction* game = new HoldemPokerAbstraction(&mng);
         printf("RUNDAAAAAAAAAAAAAAAAAAAAAAAAAA: %d\n", r);
 
 
 
-        /*
         players[r & 1] = new CfrPlayer(r & 1,
                                        cfr_strategy,
                                        new HoldemPokerAbstraction(&mng));
-                                       */
+        /*
         players[r & 1] = new CfrAbstractionPlayer(r & 1,
                                        cfr_strategy,
                                        new HoldemPokerAbstraction(&mng));
+                                       */
         /*
         players[r & 1] = new CfrModPlayer(r & 1,
                                        cfr_mod_strategy,
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 
         vector<int> players_cards[2];
 
-        printf("CFR_MOD: %d, DUMMY: %d\n", r & 1, (r+1) & 1);
+        printf("CFR: %d, DUMMY: %d\n", r & 1, (r+1) & 1);
         while (!game -> isFinal())
         {
             int pnum = game -> getPlayerId();
