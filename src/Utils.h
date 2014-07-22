@@ -8,6 +8,7 @@ typedef vector<pair<int, double> > dist;
 
 int other(int player_number);
 void printCard(int card);
+void printBaskets(int bpair);
 void printHand(vector<int> cards);
 int log(int level, const char* format, ...);
 

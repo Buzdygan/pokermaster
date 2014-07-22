@@ -11,6 +11,7 @@
 #include "DummyPlayer.h"
 #include "CfrPlayer.h"
 #include "CfrModPlayer.h"
+#include "CfrAbstractionPlayer.h"
 #include "HumanPlayer.h"
 
 const int DEFAULT_ROUNDS_NUMBER = 1;
@@ -105,7 +106,7 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {6,5,5,5};
+    int basket_sizes[4] = {5,4,4,3};
     sprintf(strategy_filename, "cfr.strategy-%d-%d-%d-%d-%d.stg", basket_sizes[0],
                                                                        basket_sizes[1],
                                                                        basket_sizes[2],
@@ -125,50 +126,35 @@ int main(int argc, char* argv[])
 
     BasketManager mng(0, basket_sizes, &evaluator);
     //BasketManager mng2(1, basket_sizes2, &evaluator);
-    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), strategy_repetitions, strategy_filename);
+    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), strategy_repetitions, strategy_filename, false);
     //Cfr *cfr_mod_strategy = new Cfr(new HoldemPokerModAbstraction(&mng2), strategy_repetitions2, strategy_filename2, true);
 
     for (int r = 0; r < rounds_number; r++)
     {
         // new round
-        GameAbstraction* game = new HoldemPoker(&evaluator);
-        int game_type = 2;
+        //GameAbstraction* game = new HoldemPoker(&evaluator);
+        GameAbstraction* game = new HoldemPokerAbstraction(&mng);
         printf("RUNDAAAAAAAAAAAAAAAAAAAAAAAAAA: %d\n", r);
-        if (game_type == 0)
-        {
-            players[r & 1] = new DummyPlayer();
-            players[(r + 1) & 1] = new DummyPlayer();
-        }
-        if (game_type == 1)
-        {
-            players[r & 1] = new HumanPlayer(r & 1);
-            players[(r + 1) & 1] = new HumanPlayer((r + 1) & 1);
-        }
-        if (game_type == 2)
-        {
-            players[r & 1] = new CfrPlayer(r & 1,
-                                           cfr_strategy,
-                                           new HoldemPokerAbstraction(&mng));
-            players[(r + 1) & 1] = new DummyPlayer();
-        }
+
+
+
         /*
-        if (game_type == 3)
-        {
-            players[r & 1] = new CfrPlayer(r & 1,
-                                           cfr_strategy,
-                                           new HoldemPokerAbstraction(&mng));
-            players[(r + 1) & 1] = new CfrPlayer((r + 1) & 1,
-                                           cfr_mod_strategy,
-                                           new HoldemPokerModAbstraction(&mng2));
-        }
-        if (game_type == 4)
-        {
-            players[r & 1] = new CfrModPlayer(r & 1,
-                                           cfr_mod_strategy,
-                                           new HoldemPokerModAbstraction(&mng2));
-            players[(r + 1) & 1] = new DummyPlayer();
-        }
+        players[r & 1] = new CfrPlayer(r & 1,
+                                       cfr_strategy,
+                                       new HoldemPokerAbstraction(&mng));
+                                       */
+        players[r & 1] = new CfrAbstractionPlayer(r & 1,
+                                       cfr_strategy,
+                                       new HoldemPokerAbstraction(&mng));
+        /*
+        players[r & 1] = new CfrModPlayer(r & 1,
+                                       cfr_mod_strategy,
+                                       new HoldemPokerModAbstraction(&mng2));
+        players[r & 1] = new HumanPlayer(r & 1);
         */
+
+        players[(r + 1) & 1] = new DummyPlayer();
+
         vector<int> players_cards[2];
 
         printf("CFR_MOD: %d, DUMMY: %d\n", r & 1, (r+1) & 1);
@@ -183,8 +169,8 @@ int main(int argc, char* argv[])
                 game -> makeAction(action_id);
                 if (seeing_player == ALL_PLAYERS)
                 {
-                    printCard(action_id);
-                    log(0, " dealt to player %d\n", seeing_player);
+                    //printCard(action_id);
+                    //log(0, " dealt to player %d\n", seeing_player);
                     for (int p = 0; p < 2; p++)
                     {
                         players[p] -> annotateRandomAction(action_id);
@@ -193,8 +179,8 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    printCard(action_id);
-                    log(0, " dealt to player %d\n", seeing_player);
+                    //printCard(action_id);
+                    //log(0, " dealt to player %d\n", seeing_player);
                     players[seeing_player] -> annotateRandomAction(action_id);
                     // the player shouldn't see the real action but it's needed
                     // to keep the other player's game tree
@@ -204,7 +190,7 @@ int main(int argc, char* argv[])
             else
             {
                 int action_id = players[pnum] -> getAction(game -> getActionIds());
-                log(0, "Player %d bets %d\n", pnum, action_id);
+                log(0, "Player %d plays %d\n", pnum, action_id);
                 game -> makeAction(action_id);
                 players[other(pnum)] -> annotateOpponentAction(action_id);
                 players[pnum] -> annotatePlayerAction(action_id);
@@ -217,6 +203,7 @@ int main(int argc, char* argv[])
         score[(r + 1) & 1] += round_result.second;
         printf("End of round %d, results: %1.f:%1.f, current score: %d:%d\n", r, round_result.first,
                 round_result.second, score[0], score[1]);
+        /*
         for (int j = 0; j < 2; j++)
         {
             printf("Player %d cards: ", j);
@@ -224,6 +211,7 @@ int main(int argc, char* argv[])
                 printCard(players_cards[j][c]);
             printf("\n");
         }
+        */
         delete game;
     }
     return 0;

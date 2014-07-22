@@ -28,7 +28,8 @@ class Cfr
         double current_regret_sum;
         map<int, double> regrets;
         map<pair<int, int>, utility > action_utility;
-        map<int, utility> is_utility;
+        map<int, utility> state_utility;
+        map<int, vector<int> > state_map;
         Smap strategy;
         Smap R;
         Smap S;
@@ -40,7 +41,7 @@ class Cfr
 
         double recomputeStrategy(Smap &r);
         void computeVanillaCfr(int iterations);
-        utility walkTree(double probs[3], int prev_is_id=-1);
+        utility walkTree(int level, long double probs[3], int prev_is_id=-1);
 };
 
 #endif

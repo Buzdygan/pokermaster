@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include "Utils.h"
+#include "BasketManager.h"
 
 const int CNUM = 52;
 
@@ -35,6 +36,13 @@ int log(int level, const char* format, ...)
 int other(int player_number)
 {
     return (player_number + 1) & 1;
+}
+
+void printBaskets(int bpair)
+{
+    int b0 = bpair % MAX_BASKETS_NUMBER;
+    int b1 = bpair / MAX_BASKETS_NUMBER;
+    printf("basket0: %d, basket1: %d\n", b0, b1);
 }
 
 void printCard(int card)

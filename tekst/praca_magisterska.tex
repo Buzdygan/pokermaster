@@ -157,14 +157,113 @@ Znany wynik (referencja) mówi o tym, że w grze o sumie zerowej, jeśli po $T$ 
 jest mniejszy niż $\epsilon$ to uśredniony zespół strategii $\overline{\sigma}^T$ jest $2\epsilon$-równowagą Nasha.
 
 \section{Funkcja regretu lokalnego}
-Trudno jest minimalizować całkowity regret liczony:w
 
+By łatwiej minimalizować regret całkowity, wprowadzamy funkcję regretu lokalnego.
+Działa ona na podobnej zasadzie co regret całkowity, ale jest określana na zbiorach informacyjnych
+a nie na całej grze. Dzięki temu można ją minimalizować osobno dla każdego zbioru informacyjnego. \\\\
 
+\noindent
+Niech $\sigma_{|I \rightarrow a}$ oznacza strategię $\sigma$ zmodyfikowaną tak, że w zbiorze informacyjnym $I$ zawsze
+wykonywana jest akcja $a$. $u_i(\sigma, I)$ oznacza warunkową wartość oczekiwaną zysku gracza $i$ przy założeniu że
+osiągnięty został zbiór informacyjny $I$ a gracze grają strategią $\sigma$ zmodyfikowaną tak, że gracz $i$
+podejmuje akcje prowadzące do zbioru informacyjnego $I$ z prawdopodobieństwem $1$. \\\\
 
+\noindent
+Wtedy definiujemy:
 
-\chapter{Modyfikacja}
+\begin{align*}
+R_i^T(I, a) = \frac{1}{T} \sum\limits_{t=1}^{T} \, \pi_{-i}^{\sigma^t}(I)(u_i(\sigma^t_{I \rightarrow a}, I) - u_i(\sigma^t, I))
+\end{align*}
+\begin{align*}
+R_{i, imm}^T(I) = \max_{a \in A(I)} \, R_i^T(I, a)
+\end{align*}
+
+\noindent
+Dzięki twierdzeniu z (referencja) wiemy, że $R_i^T \leq \, \sum_{I} \, max(R_{i, imm}^T(I), 0)$. W takim razie
+minimalizowanie regretów w zbiorach informacyjnych minimalizuje regret całkowity i prowadzi do znalezienia
+dobrej aproksymacji równowagi Nasha. \\
+
+\noindent
+Algorytm CFR w kolejnych iteracjach przechodzi drzewo gry i dla każdego zbioru informacyjnego aktualizuje strategię
+zgodnie z regułą:
+
+\begin{align*}
+\sigma_i^(T+1) (I, a) = \frac{max(R_i^T(I, a), 0)}{\sum\limits_{a' \in A(I)} \, max(R_i^T(I, a'), 0)}
+\end{align*}
+
+\noindent
+pod warunkiem, że suma w mianowniku jest dodatnia. W przeciwnym wypadku wszystkie akcje w $I$ mają równe prawdopodobieństwo.
+Czyli akcja jest wybierana tym częściej im większa strata - regret, wiąże się z nie wybraniem jej.\\\\
+
+\noindent
+Całkowity uśredniony regret maleje proporcjonalnie do pierwiastka z liczby iteracji wykonanych przez algorytm CFR. Niestety
+liczba stanów gry i zbiorów informacyjnych nawet w dwuosobowej wersji Texas Holdem Poker jest zbyt duża by można było
+zastosować algorytm bezpośrednio. W tym celu wprowadza się abstrakcje pełnej wersji gry, przez ograniczenia w licytacji
+oraz dzielenie kart na niewielką liczbę grup (koszyków) ze względu na ich siłę. \\
 
 \chapter{Implementacja}
+
+\section{Podział na koszyki}
+
+Powstał osobny moduł, który odpowiada za przyporządkowywanie tzw "koszyków" układom kart.
+Są 4 rodzaje układów: pre-flop (2 karty), flop(5 kart), turn(6 kart) i river(7 kart).
+Do oceny siły układów zastosowano miarę "Effective Hand Strength" (EHS). EHS układu wyliczany
+jest z trzech innych miar: "Hand Strength" ($HS$), "Positive Potential" ($Ppot$) oraz "Negative Potential" ($Npot$) według
+wzoru:
+
+\begin{align*}
+EHS = HS \cdot (1 - Npot) + (1 - HS) \cdot Ppot
+\end{align*}
+
+\noindent
+$HS$ to w przybliżeniu prawdopodobieństwo że nasza ręka jest lepsza od ręki przeciwnika. Miary $Ppot$ i $Npot$ oznaczają
+prawdopodobieństwo że nasza ręka stanie się gorsza (odpowiednio lepsza) od ręki przeciwnika po wyłożeniu kolejnych kart na stół. \\
+
+\noindent
+Wyliczenie wartości $EHS$ dla wszystkich możliwych układów wymaga przejrzenia wszystkich możliwych kombinacji 9 kart (2 kart gracza, 2 przeciwnika
+oraz 5 kart na stole). Jest to bardzo wymagające obliczeniowo. By skrócić obliczenia, EHS jest wyliczane jedynie dla niektórych układów
+kart gracza. Jest to oparte na obserwacji że niektóre układy powinny mieć taki sam $EHS$. Np $EHS$ pary As Kier i As Karo powinien być taki
+sam jak $EHS$ pary As Kier, As Trefl albo As Pik, As Karo. 
+
+\begin{align*}
+(A\heartsuit, A\spadesuit) = (A\heartsuit, A\diamondsuit) = (A\heartsuit, A\clubsuit) = (A\spadesuit, A\diamondsuit) =
+(A\spadesuit, A\clubsuit) = (A\diamondsuit, A\clubsuit)
+\end{align*}
+
+\noindent
+W ogólności, wyliczając $EHS$ układów operuję nie na pełnym zbiorze $52$ kart a na zbiorze $13$ figur. Dany układ figur
+może występować w kilku wersjach uwzględniających kolory kart. Para tych samych figur jest zawsze różnokolorowa ale w 
+parze różnych figur mogą one występować w tym samym kolorze bądź w różnych kolorach i wpływa to na $EHS$ takich układów.
+
+\begin{align*}
+EHS(A\heartsuit, K\heartsuit) \neq EHS(A\heartsuit, K\spadesuit)
+\end{align*}
+
+\noindent
+Stosując tę koncepcję wprowadzono klasy abstrakcji dla układów kart. Układy kart dochodzące w kolejnych rundach są traktowane
+osobno. Poniżej typy układów dla poszczególnych rund, napis $Fn-x$ oznacza figurę numer $n$ w kolorze $x$. 
+
+\noindent
+\textbf{Pre-flop}:
+\begin{itemize}
+\item (F1a, F1b)
+\item (F1a, F2a)
+\item (F1a, F2b)
+\end{itemize}
+
+\noindent
+\textbf{Flop}:
+\begin{itemize}
+\item (F1a, F1b, F1c)
+\item (F1a, F1b, F2a)
+\item (F1a, F1b, F2c)
+\item (F1a, F2a, F3a)
+\item (F1a, F2a, F3b)
+\item (F1a, F2b, F3c)
+\end{itemize}
+
+\noindent
+Dla rund Turn i River w których dochodzi po jednej karcie, każda klasa abstrakcji to czwórka kart o tej samej figurze.
 
 \chapter{Symulacje na dwóch wariantach Pokera}
 
