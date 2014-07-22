@@ -11,10 +11,17 @@ const int Cfr::ITERATIONS = 2000;
 
 int cnt = 0;
 
-Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file, bool samp)
+double ABS(double x)
+{
+    if (x < 0)
+        return -1.0 * x;
+    return x;
+}
+
+Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file, bool information_tree)
 {
     printf("Init Cfr, iterations: %d\n", iterations);
-    sampled = samp;
+    itree = information_tree;
     game = gm;
     if (!loadFromFile(strategy_file))
     {
@@ -32,10 +39,12 @@ void Cfr::computeVanillaCfr(int iterations)
     for (int i = 0; i < iterations; i++)
     {
         printf("Iteration %d\n", i);
+        util_map.clear();
         long double probs [3] = {1.0L, 1.0L, 1.0L};
         cnt = 0;
         newR.clear();
         walkTree(0, probs);
+        printf("UTIL MAP SIZE: %d\n", (int)util_map.size());
         recomputeStrategy(newR);
         double it_err = current_regret_sum / (i + 1);
         sum += it_err;
@@ -50,7 +59,13 @@ utility Cfr::walkTree(int lev, long double probs[3], int prev_is_id)
     {
         return game -> getUtility();
     }
+
     int p = game -> getPlayerId();
+    int is_id = game -> getInformationSetId();
+
+    if (itree && is_id >= 0 && util_map.count(is_id))
+        return util_map[is_id];
+
     utility final_util = make_pair(0.0, 0.0);
 
     /* If it is a turn of a chance player */
@@ -58,70 +73,19 @@ utility Cfr::walkTree(int lev, long double probs[3], int prev_is_id)
     {
         dist action_distr = game -> getActionDistribution();
         long double backup_prob = probs[RANDOM_PLAYER_NR];
-
-        if (sampled)
+        for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
         {
-            double r = (double) rand() / RAND_MAX;
-            double sum = 0.0;
-            int l = 0;
-            for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
-            {
-                sum += iter -> second;
-
-                if (r < sum + 1e-9)
-                {
-
-                    probs[RANDOM_PLAYER_NR] *= (long double) iter -> second;
-                    game -> makeAction(iter -> first);
-                    utility res_util = walkTree(lev + 1, probs, prev_is_id);
-                    game -> unmakeAction(iter -> first);
-                    probs[RANDOM_PLAYER_NR] = backup_prob;
-                    final_util = res_util;
-
-                    /*
-                    pair<int, int> decision_id = make_pair(prev_is_id, iter -> first);
-                    if(!action_utility.count(decision_id))
-                    {
-                        action_utility[decision_id] = make_pair(res_util.first * iter -> second,
-                                                                res_util.second * iter -> second);
-                        final_util.first = res_util.first * iter -> second;
-                        final_util.second = res_util.second * iter -> second;
-                        state_utility[prev_is_id] = final_util;
-                    }
-                    else
-                    {
-                        utility prev_utility = action_utility[decision_id];
-                        action_utility[decision_id] = make_pair(res_util.first * iter -> second,
-                                                                res_util.second * iter -> second);
-                        final_util = state_utility[prev_is_id];
-                        final_util.first += res_util.first * iter -> second - prev_utility.first;
-                        final_util.second += res_util.second * iter -> second - prev_utility.second;
-                        state_utility[prev_is_id] = final_util;
-                    }
-                    */
-
-                    break;
-                }
-                l ++;
-            }
-        }
-        else
-        {
-            for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
-            {
-                probs[RANDOM_PLAYER_NR] *= (long double) iter -> second;
-                game -> makeAction(iter -> first);
-                utility res_util = walkTree(lev + 1, probs, prev_is_id);
-                game -> unmakeAction(iter -> first);
-                probs[RANDOM_PLAYER_NR] = backup_prob;
-                final_util.first += res_util.first * iter -> second;
-                final_util.second += res_util.second * iter -> second;
-            }
+            probs[RANDOM_PLAYER_NR] *= (long double) iter -> second;
+            game -> makeAction(iter -> first);
+            utility res_util = walkTree(lev + 1, probs, prev_is_id);
+            game -> unmakeAction(iter -> first);
+            probs[RANDOM_PLAYER_NR] = backup_prob;
+            final_util.first += res_util.first * iter -> second;
+            final_util.second += res_util.second * iter -> second;
         }
     }
     else
     {
-        int is_id = game -> getInformationSetId();
         vector<int> action_ids = game -> getActionIds();
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
         {
@@ -168,6 +132,9 @@ utility Cfr::walkTree(int lev, long double probs[3], int prev_is_id)
             newR[decision_id] = R[decision_id];
         }
     }
+    if (itree && is_id >= 0)
+        util_map[is_id] = final_util;
+
     return final_util;
 }
 

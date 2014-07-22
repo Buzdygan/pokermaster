@@ -21,17 +21,18 @@ int HoldemPokerModAbstraction::getInformationSetId()
 {
     int res = 0;
     int mult = 1;
+    int ind = cur_player == 2 ? cur_player - 2 : cur_player;
 
     res += cur_player * mult;
-    mult *= 2;
+    mult *= 3;
 
     res += bidding_phase * mult;
     mult *= 4;
 
-    res += player_basket[cur_player] * mult;
+    res += player_basket[ind] * mult;
     mult *= MAX_BASKETS_NUMBER;
 
-    res += player_basket[other(cur_player)] * mult;
+    res += player_basket[other(ind)] * mult;
     mult *= MAX_BASKETS_NUMBER;
 
     res += bids_number * mult;
@@ -90,14 +91,15 @@ dist HoldemPokerModAbstraction::getInformationSetIds(dist baskets)
     int res = 0;
     int mult = 1;
     int backup_mult = 1;
+    int ind = cur_player == 2 ? cur_player - 2 : cur_player;
 
     res += cur_player * mult;
-    mult *= 2;
+    mult *= 3;
 
     res += bidding_phase * mult;
     mult *= 4;
 
-    res += player_basket[cur_player] * mult;
+    res += player_basket[ind] * mult;
     mult *= MAX_BASKETS_NUMBER;
 
     //res += player_basket[other(cur_player)] * mult;

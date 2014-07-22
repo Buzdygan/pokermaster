@@ -106,28 +106,28 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {5,4,4,3};
-    sprintf(strategy_filename, "cfr.strategy-%d-%d-%d-%d-%d.stg", basket_sizes[0],
+    int basket_sizes[4] = {5,5,5,5};
+    sprintf(strategy_filename, "cfr.mod.strategy-%d-%d-%d-%d-%d.stg", basket_sizes[0],
                                                                        basket_sizes[1],
                                                                        basket_sizes[2],
                                                                        basket_sizes[3],
                                                                        strategy_repetitions);
 
-    //int basket_sizes2[4] = {10,10,10,10};
-    /*
-    sprintf(strategy_filename2, "cfr.mod-strategy-%d-%d-%d-%d-%d.stg", basket_sizes2[0],
+    int basket_sizes2[4] = {5,4,4,3};
+
+    sprintf(strategy_filename2, "cfr.strategy-%d-%d-%d-%d-%d.stg", basket_sizes2[0],
                                                                        basket_sizes2[1],
                                                                        basket_sizes2[2],
                                                                        basket_sizes2[3],
                                                                        strategy_repetitions2);
-    */
+
 
     HandEvaluator evaluator;
 
     BasketManager mng(0, basket_sizes, &evaluator);
-    //BasketManager mng2(1, basket_sizes2, &evaluator);
-    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng), strategy_repetitions, strategy_filename, false);
-    //Cfr *cfr_mod_strategy = new Cfr(new HoldemPokerModAbstraction(&mng2), strategy_repetitions2, strategy_filename2, true);
+    BasketManager mng2(1, basket_sizes2, &evaluator);
+    Cfr *cfr_mod_strategy = new Cfr(new HoldemPokerModAbstraction(&mng), strategy_repetitions, strategy_filename, true);
+    Cfr *cfr_strategy = new Cfr(new HoldemPokerModAbstraction(&mng2), strategy_repetitions2, strategy_filename2, true);
 
     for (int r = 0; r < rounds_number; r++)
     {
@@ -138,26 +138,36 @@ int main(int argc, char* argv[])
 
 
 
+        /*
         players[r & 1] = new CfrPlayer(r & 1,
                                        cfr_strategy,
                                        new HoldemPokerAbstraction(&mng));
+                                       */
         /*
         players[r & 1] = new CfrAbstractionPlayer(r & 1,
                                        cfr_strategy,
                                        new HoldemPokerAbstraction(&mng));
                                        */
-        /*
+
         players[r & 1] = new CfrModPlayer(r & 1,
                                        cfr_mod_strategy,
-                                       new HoldemPokerModAbstraction(&mng2));
+                                       new HoldemPokerModAbstraction(&mng));
+        /*
         players[r & 1] = new HumanPlayer(r & 1);
         */
 
+        players[(r + 1) & 1] = new CfrPlayer((r + 1) & 1,
+                                       cfr_strategy,
+                                       new HoldemPokerAbstraction(&mng2));
+
+
+        /*
         players[(r + 1) & 1] = new DummyPlayer();
+        */
 
         vector<int> players_cards[2];
 
-        printf("CFR: %d, DUMMY: %d\n", r & 1, (r+1) & 1);
+        printf("CFR MOD: %d, CFR: %d\n", r & 1, (r+1) & 1);
         while (!game -> isFinal())
         {
             int pnum = game -> getPlayerId();

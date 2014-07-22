@@ -1117,13 +1117,13 @@ int BasketManager::getBasket(vector<int> cards)
     int i1 = CARD_CODES_MAP[0][_cardsCode(cards[0], cards[1])];
     if(n <= 2)
         return B1[i1];
-    int i2 = CARD_CODES_MAP[1][_cardsCode2(cards[2], cards[3], cards[3])];
+    int i2 = CARD_CODES_MAP[1][_cardsCode2(cards[2], cards[3], cards[4])];
     if(n <= 5)
         return B2[i2][i1];
-    int i3 = CARD_CODES_MAP[2][cards[4]];
+    int i3 = CARD_CODES_MAP[2][cards[5]];
     if(n <= 6)
         return B3[i3][i2][i1];
-    int i4 = CARD_CODES_MAP[3][cards[5]];
+    int i4 = CARD_CODES_MAP[3][cards[6]];
     return B4[i4][i3][i2][i1];
 }
 

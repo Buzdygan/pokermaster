@@ -109,6 +109,8 @@ vector<int> HoldemPokerAbstraction::getActionIds(int bids_num)
 
 int HoldemPokerAbstraction::getInformationSetId()
 {
+    if (cur_player == RANDOM_PLAYER_NR)
+        return -1;
     return is_id[cur_player];
 }
 
