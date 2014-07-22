@@ -169,8 +169,8 @@ int main(int argc, char* argv[])
                 game -> makeAction(action_id);
                 if (seeing_player == ALL_PLAYERS)
                 {
-                    //printCard(action_id);
-                    //log(0, " dealt to player %d\n", seeing_player);
+                    printCard(action_id);
+                    log(0, " dealt to player %d\n", seeing_player);
                     for (int p = 0; p < 2; p++)
                     {
                         players[p] -> annotateRandomAction(action_id);
@@ -179,8 +179,8 @@ int main(int argc, char* argv[])
                 }
                 else
                 {
-                    //printCard(action_id);
-                    //log(0, " dealt to player %d\n", seeing_player);
+                    printCard(action_id);
+                    log(0, " dealt to player %d\n", seeing_player);
                     players[seeing_player] -> annotateRandomAction(action_id);
                     // the player shouldn't see the real action but it's needed
                     // to keep the other player's game tree
@@ -203,7 +203,6 @@ int main(int argc, char* argv[])
         score[(r + 1) & 1] += round_result.second;
         printf("End of round %d, results: %1.f:%1.f, current score: %d:%d\n", r, round_result.first,
                 round_result.second, score[0], score[1]);
-        /*
         for (int j = 0; j < 2; j++)
         {
             printf("Player %d cards: ", j);
@@ -211,7 +210,6 @@ int main(int argc, char* argv[])
                 printCard(players_cards[j][c]);
             printf("\n");
         }
-        */
         delete game;
     }
     return 0;
