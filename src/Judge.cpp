@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {5,5,5,5};
+    int basket_sizes[4] = {12,10,10,10};
     sprintf(strategy_filename, "cfr.mod.strategy-%d-%d-%d-%d-%d.stg", basket_sizes[0],
                                                                        basket_sizes[1],
                                                                        basket_sizes[2],
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
     BasketManager mng(0, basket_sizes, &evaluator);
     BasketManager mng2(1, basket_sizes2, &evaluator);
     Cfr *cfr_mod_strategy = new Cfr(new HoldemPokerModAbstraction(&mng), strategy_repetitions, strategy_filename, true);
-    Cfr *cfr_strategy = new Cfr(new HoldemPokerModAbstraction(&mng2), strategy_repetitions2, strategy_filename2, true);
+    Cfr *cfr_strategy = new Cfr(new HoldemPokerModAbstraction(&mng2), strategy_repetitions2, strategy_filename2, false);
 
     for (int r = 0; r < rounds_number; r++)
     {
