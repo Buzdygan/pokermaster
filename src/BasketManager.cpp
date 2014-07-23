@@ -31,7 +31,7 @@ int B4[2][EHS_SIZE4][EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
 
 
 // thresholds for the given baskets, THR[2][0] = 0.3 means that ehs < 0.3 in round 2 => basket0
-double THR[4][MAX_BASKETS_NUMBER + 2];
+double THR[2][4][MAX_BASKETS_NUMBER + 2];
 map<int, int> CARD_CODES_MAP[4];
 
 dist BASKET_DISTRIBUTION[2][5][MAX_BASKETS_NUMBER * MAX_BASKETS_NUMBER];
@@ -98,20 +98,14 @@ void BasketManager::_init(char* ehs_str)
     }
     else
     {
-        if(!_loadEHS())
-        {
-            printf("computing EHS\n");
-            _computeCardCombinations();
-            _computeEHS();
-        }
         if(!_loadDistribution())
         {
             printf("computing Distribution\n");
             _computeBasketsDistribution();
             _saveDistribution();
         }
+        _computeEHSDistribution();
     }
-    _computeEHSDistribution();
 }
 
 dist BasketManager::_normalizeDistribution(dist d)
@@ -745,7 +739,7 @@ void BasketManager::_computeEHSDistribution()
             sum += EHS_DIST[st][p];
             if ((double)sum / total >= thresholds[current_basket])
             {
-                THR[st][current_basket] = (double)p / 100.0;
+                THR[index][st][current_basket] = (double)p / 100.0;
                 printf("st: %d, basket: %d, threshold: %.02lf\n", st, current_basket, p / 100.0);
                 current_basket ++;
             }
@@ -1056,7 +1050,7 @@ int BasketManager::_determineBasket(int stage, double ehs)
 {
     //printf("stage: %d, ehs: %lf\n", stage, ehs);
     for (int b = 0; b < basket_sizes[stage]; b++)
-        if (ehs <= THR[stage][b])
+        if (ehs <= THR[index][stage][b])
             return b;
     return basket_sizes[stage] - 1;
 }
