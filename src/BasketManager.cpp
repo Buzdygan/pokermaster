@@ -7,8 +7,6 @@
 #include "Utils.h"
 #include "BasketManager.h"
 
-const char* EHS_FILENAME = "ehs_pot.cpt";
-
 const int EHS_SIZE1 = 169;
 const int EHS_SIZE2 = 1755;
 const int EHS_SIZE3 = 13;
@@ -63,30 +61,32 @@ int encode_basket_pair(int basket0, int basket1)
     return basket0 + basket1 * MAX_BASKETS_NUMBER;
 }
 
-BasketManager::BasketManager(int ind, int bs[4], HandEvaluator* ev)
+BasketManager::BasketManager(int ind, int bs[4], HandEvaluator* ev, bool ehs_pot, char* estr)
 {
+    ehs_potential = ehs_pot;
     index = ind;
     evaluator = ev;
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
         basket_sizes[b] = bs[b];
-    _init();
+    _init(estr);
 }
 
-BasketManager::BasketManager(int ind, HandEvaluator* ev)
+BasketManager::BasketManager(int ind, HandEvaluator* ev, bool ehs_pot, char* estr)
 {
     index = ind;
     evaluator = ev;
     basket_sizes = new int[4];
     for (int b = 0; b < 4; b++)
         basket_sizes[b] = DEFAULT_BASKET_SIZES[b];
-    _init();
+    _init(estr);
 }
 
-void BasketManager::_init()
+void BasketManager::_init(char* ehs_str)
 {
-    sprintf(TRANSITIONS_FILENAME, "basket_transitions-%d-%d-%d-%d.stg", basket_sizes[0], basket_sizes[1], basket_sizes[2], basket_sizes[3]);
-    sprintf(DISTRIBUTION_FILENAME, "basket_distribution-%d-%d-%d-%d.stg", basket_sizes[0], basket_sizes[1], basket_sizes[2], basket_sizes[3]);
+    sprintf(TRANSITIONS_FILENAME, "basket_transitions%s-%d-%d-%d-%d.stg", ehs_str, basket_sizes[0], basket_sizes[1], basket_sizes[2], basket_sizes[3]);
+    sprintf(DISTRIBUTION_FILENAME, "basket_distribution%s-%d-%d-%d-%d.stg", ehs_str, basket_sizes[0], basket_sizes[1], basket_sizes[2], basket_sizes[3]);
+    sprintf(EHS_FILENAME, "ehs_%s.cpt", ehs_str);
     _computeCC();
     if (!_loadTransitions())
     {
@@ -893,8 +893,11 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
             {
                 F[oc1] ++; F[oc2] ++;
                 int index = _inc_vars(ahead, tied, behind, _evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5));
-                if(!tc5)
-                    HPTotal[index] += _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
+                if(ehs_potential)
+                {
+                    if(!tc5)
+                        HPTotal[index] += _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
+                }
                 F[oc1] --; F[oc2] --;
             }
 
@@ -916,6 +919,8 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
     double ppot = 0.0, npot = 0.0, hs = 0.0;
     if (ahead + tied + behind)
         hs = (double(ahead) + tied / 2.0) / (ahead + tied + behind);
+    if (!ehs_potential)
+        return hs;
     if(tc5)
         return hs;
     else

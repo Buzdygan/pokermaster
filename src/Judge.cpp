@@ -16,7 +16,8 @@
 
 const int DEFAULT_ROUNDS_NUMBER = 1;
 const int DEFAULT_STRATEGY_REPETITIONS = 10;
-
+bool EHS_POTENTIAL = true;
+char EHS_STR [7] = "pot";
 
 int get_random_action(dist distribution)
 {
@@ -107,7 +108,8 @@ int main(int argc, char* argv[])
     score[0] = 0;
     score[1] = 0;
     int basket_sizes[4] = {12,10,10,10};
-    sprintf(strategy_filename, "cfr.mod.strategy-%d-%d-%d-%d-%d.stg", basket_sizes[0],
+    sprintf(strategy_filename, "cfr.mod.strategy%s-%d-%d-%d-%d-%d.stg", EHS_STR,
+                                                                       basket_sizes[0],
                                                                        basket_sizes[1],
                                                                        basket_sizes[2],
                                                                        basket_sizes[3],
@@ -115,7 +117,8 @@ int main(int argc, char* argv[])
 
     int basket_sizes2[4] = {5,4,4,3};
 
-    sprintf(strategy_filename2, "cfr.strategy-%d-%d-%d-%d-%d.stg", basket_sizes2[0],
+    sprintf(strategy_filename2, "cfr.strategy%s-%d-%d-%d-%d-%d.stg", EHS_STR,
+                                                                       basket_sizes2[0],
                                                                        basket_sizes2[1],
                                                                        basket_sizes2[2],
                                                                        basket_sizes2[3],
@@ -124,8 +127,8 @@ int main(int argc, char* argv[])
 
     HandEvaluator evaluator;
 
-    BasketManager mng(0, basket_sizes, &evaluator);
-    BasketManager mng2(1, basket_sizes2, &evaluator);
+    BasketManager mng(0, basket_sizes, &evaluator, EHS_POTENTIAL, EHS_STR);
+    BasketManager mng2(1, basket_sizes2, &evaluator, EHS_POTENTIAL, EHS_STR);
     Cfr *cfr_mod_strategy = new Cfr(new HoldemPokerModAbstraction(&mng), strategy_repetitions, strategy_filename, true);
     Cfr *cfr_strategy = new Cfr(new HoldemPokerModAbstraction(&mng2), strategy_repetitions2, strategy_filename2, false);
 

@@ -17,6 +17,9 @@
 const int DEFAULT_ROUNDS_NUMBER = 1;
 const int DEFAULT_STRATEGY_REPETITIONS = 10;
 
+bool EHS_POTENTIAL = true;
+char EHS_STR [7] = "pot";
+
 int get_random_action(dist distribution)
 {
     double r = (double) rand() / RAND_MAX;
@@ -57,14 +60,15 @@ int main(int argc, char* argv[])
     score[0] = 0;
     score[1] = 0;
     int basket_sizes[4] = {5,5,5,5};
-    sprintf(strategy_filename, "cfr.mod.strategy-%d-%d-%d-%d-%d.stg", basket_sizes[0],
+    sprintf(strategy_filename, "cfr.mod.strategy%s-%d-%d-%d-%d-%d.stg", EHS_STR,
+                                                                       basket_sizes[0],
                                                                        basket_sizes[1],
                                                                        basket_sizes[2],
                                                                        basket_sizes[3],
                                                                        strategy_repetitions);
     HandEvaluator evaluator;
 
-    BasketManager mng(0, basket_sizes, &evaluator);
+    BasketManager mng(0, basket_sizes, &evaluator, EHS_POTENTIAL, EHS_STR);
     Cfr *cfr_mod_strategy = new Cfr(new HoldemPokerModAbstraction(&mng), strategy_repetitions, strategy_filename, true);
 
     for (int r = 0; r < rounds_number; r++)

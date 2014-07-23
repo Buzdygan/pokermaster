@@ -39,8 +39,8 @@ struct TP
 class BasketManager
 {
     public:
-        BasketManager(int index, int basket_sizes[4], HandEvaluator*);
-        BasketManager(int index, HandEvaluator*);
+        BasketManager(int index, int basket_sizes[4], HandEvaluator*, bool ehs_potential, char* ehs_str);
+        BasketManager(int index, HandEvaluator*, bool ehs_potential, char* ehs_str);
         int getNextBasket(int stage, int current, int cards_code);
         int getBasket(vector<int> cards);
         dist getOpponentBasketDist(int stage, int pbasket, dist current_dist, vector<int> cards);
@@ -53,8 +53,10 @@ class BasketManager
     private:
         HandEvaluator* evaluator;
         int index;
+        bool ehs_potential;
         char TRANSITIONS_FILENAME [100];
         char DISTRIBUTION_FILENAME [100];
+        char EHS_FILENAME [100];
         int* basket_sizes;
         int _cardsCode(int c0, int c1);
         int _cardsCode(int c0, int c1, int c2);
@@ -70,7 +72,7 @@ class BasketManager
         void _computeEHS();
         void _computeEHSDistribution();
         void _computeTransitions();
-        void _init();
+        void _init(char* estr);
         void _computeCC();
         dist _normalizeDistribution(dist d);
         void _computeBasketsDistribution();
