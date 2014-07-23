@@ -23,24 +23,26 @@ double EHS1[EHS_SIZE1];
 double EHS2[EHS_SIZE2][EHS_SIZE1];
 double EHS3[EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
 double EHS4[EHS_SIZE4][EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
+int EHS_DIST[4][102];
 
 int B1[2][EHS_SIZE1];
 int B2[2][EHS_SIZE2][EHS_SIZE1];
 int B3[2][EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
 int B4[2][EHS_SIZE4][EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
 
-int S1[2][EHS_SIZE1];
-int S2[2][EHS_SIZE2];
-int S3[2][EHS_SIZE3];
-int S4[2][EHS_SIZE4];
 
-int EHS_DIST[4][102];
 
 // thresholds for the given baskets, THR[2][0] = 0.3 means that ehs < 0.3 in round 2 => basket0
 double THR[4][MAX_BASKETS_NUMBER + 2];
 map<int, int> CARD_CODES_MAP[4];
 
 dist BASKET_DISTRIBUTION[2][5][MAX_BASKETS_NUMBER * MAX_BASKETS_NUMBER];
+
+bool card_combinations_computed = false;
+int S1[EHS_SIZE1];
+int S2[EHS_SIZE2];
+int S3[EHS_SIZE3];
+int S4[EHS_SIZE4];
 
 // possibilities for the player cards
 vector<pair<TP, vector<int> > > v1;
@@ -100,7 +102,6 @@ void BasketManager::_init()
         {
             printf("computing EHS\n");
             _computeCardCombinations();
-            _computeCardCodesMap();
             _computeEHS();
         }
         if(!_loadDistribution())
@@ -339,16 +340,16 @@ void BasketManager::_saveTransitions()
                     fprintf(f, "%d\n", B4[index][i4][i3][i2][i1]);
 
     for (int i = 0; i < EHS_SIZE1; i++)
-        fprintf(f, "%d\n", S1[index][i]);
+        fprintf(f, "%d\n", S1[i]);
 
     for (int i = 0; i < EHS_SIZE2; i++)
-        fprintf(f, "%d\n", S2[index][i]);
+        fprintf(f, "%d\n", S2[i]);
 
     for (int i = 0; i < EHS_SIZE3; i++)
-        fprintf(f, "%d\n", S3[index][i]);
+        fprintf(f, "%d\n", S3[i]);
 
     for (int i = 0; i < EHS_SIZE4; i++)
-        fprintf(f, "%d\n", S4[index][i]);
+        fprintf(f, "%d\n", S4[i]);
 
     fclose(f);
 }
@@ -408,16 +409,16 @@ bool BasketManager::_loadTransitions()
                         fscanf(f, "%d\n", &B4[index][i4][i3][i2][i1]);
 
         for (int i = 0; i < EHS_SIZE1; i++)
-            fscanf(f, "%d\n", &S1[index][i]);
+            fscanf(f, "%d\n", &S1[i]);
 
         for (int i = 0; i < EHS_SIZE2; i++)
-            fscanf(f, "%d\n", &S2[index][i]);
+            fscanf(f, "%d\n", &S2[i]);
 
         for (int i = 0; i < EHS_SIZE3; i++)
-            fscanf(f, "%d\n", &S3[index][i]);
+            fscanf(f, "%d\n", &S3[i]);
 
         for (int i = 0; i < EHS_SIZE4; i++)
-            fscanf(f, "%d\n", &S4[index][i]);
+            fscanf(f, "%d\n", &S4[i]);
 
         fclose(f);
         return true;
@@ -532,128 +533,132 @@ void BasketManager::_computeCardCodesMap()
 
 void BasketManager::_computeCardCombinations()
 {
-    for (int p1 = 0; p1 < FIGS; p1 ++)
-        for (int p2 = p1 + 1; p2 < FIGS; p2 ++)
+    if (!card_combinations_computed)
+    {
+        for (int p1 = 0; p1 < FIGS; p1 ++)
+            for (int p2 = p1 + 1; p2 < FIGS; p2 ++)
+            {
+                vector<int> cards;
+                for (int i = 1; i <= 4; i++)
+                    for (int j = 1; j <= 4; j++)
+                        if (i != j)
+                            cards.push_back(_cardsCode(4 * p1 + i, 4 * p2 + j));
+                v1.push_back(make_pair(TP (4 * p1 + 2, 4 * p2 + 3), cards));
+
+                vector<int> cards2;
+                for (int i = 1; i <= 4; i++)
+                    cards2.push_back(_cardsCode(4 * p1 + i, 4 * p2 + i));
+                v1.push_back(make_pair(TP (4 * p1 + 1, 4 * p2 + 1), cards2));
+            }
+        for (int p1 = 0; p1 < FIGS; p1 ++)
         {
             vector<int> cards;
-            for (int i = 1; i <= 4; i++)
-                for (int j = 1; j <= 4; j++)
-                    if (i != j)
-                        cards.push_back(_cardsCode(4 * p1 + i, 4 * p2 + j));
-            v1.push_back(make_pair(TP (4 * p1 + 2, 4 * p2 + 3), cards));
-
-            vector<int> cards2;
-            for (int i = 1; i <= 4; i++)
-                cards2.push_back(_cardsCode(4 * p1 + i, 4 * p2 + i));
-            v1.push_back(make_pair(TP (4 * p1 + 1, 4 * p2 + 1), cards2));
+            for (int i = 1; i <= 3; i++)
+                for (int j = i + 1; j <= 4; j++)
+                    cards.push_back(_cardsCode(4 * p1 + i, 4 * p1 + j));
+            v1.push_back(make_pair(TP (4 * p1 + 2, 4 * p1 + 3), cards));
         }
-    for (int p1 = 0; p1 < FIGS; p1 ++)
-    {
-        vector<int> cards;
-        for (int i = 1; i <= 3; i++)
-            for (int j = i + 1; j <= 4; j++)
-                cards.push_back(_cardsCode(4 * p1 + i, 4 * p1 + j));
-        v1.push_back(make_pair(TP (4 * p1 + 2, 4 * p1 + 3), cards));
+
+        // all the figures different
+        for (int t1 = 0; t1 < FIGS; t1 ++)
+            for (int t2 = t1 + 1; t2 < FIGS; t2 ++)
+                for (int t3 = t2 + 1; t3 < FIGS; t3 ++)
+                {
+                    vector<int> cards;
+                    for (int i = 1; i <= 4; i++)
+                        for (int j = 1; j <= 4; j++)
+                            for (int k = 1; k <= 4; k++)
+                                if (i != j && i != k && j != k)
+                                    cards.push_back(_cardsCode(4 * t1 + i, 4 * t2 + j, 4 * t3 + k));
+                    v2.push_back(make_pair(TP (4 * t1 + 2, 4 * t2 + 3, 4 * t3 + 4), cards));
+
+                    vector<int> cards2;
+                    for (int i = 1; i <= 4; i++)
+                        for (int j = 1; j <= 4; j++)
+                            if (i != j)
+                                cards2.push_back(_cardsCode(4 * t1 + i, 4 * t2 + i, 4 * t3 + j));
+                    v2.push_back(make_pair(TP (4 * t1 + 1, 4 * t2 + 1, 4 * t3 + 2), cards2));
+
+                    vector<int> cards3;
+                    for (int i = 1; i <= 4; i++)
+                        for (int j = 1; j <= 4; j++)
+                            if (i != j)
+                                cards3.push_back(_cardsCode(4 * t1 + i, 4 * t2 + j, 4 * t3 + i));
+                    v2.push_back(make_pair(TP (4 * t1 + 1, 4 * t2 + 3, 4 * t3 + 1), cards3));
+
+                    vector<int> cards4;
+                    for (int i = 1; i <= 4; i++)
+                        for (int j = 1; j <= 4; j++)
+                            if (i != j)
+                                cards4.push_back(_cardsCode(4 * t1 + j, 4 * t2 + i, 4 * t3 + i));
+                    v2.push_back(make_pair(TP (4 * t1 + 4, 4 * t2 + 1, 4 * t3 + 1), cards4));
+
+                    vector<int> cards5;
+                    for (int i = 1; i <= 4; i++)
+                        cards5.push_back(_cardsCode(4 * t1 + i, 4 * t2 + i, 4 * t3 + i));
+                    v2.push_back(make_pair(TP (4 * t1 + 1, 4 * t2 + 1, 4 * t3 + 1), cards5));
+                }
+
+        for (int t1 = 0; t1 < FIGS; t1++) // two figures t1
+            for (int t2 = 0; t2 < FIGS; t2++) // one figure t2
+                if (t1 != t2)
+                {
+                    vector<int> cards;
+                    // all colors different
+                    for (int i = 1; i <= 3; i++)
+                        for (int j = i+1; j <= 4; j++)
+                            for (int k = 1; k <= 4; k++)
+                                if (k != i && k != j)
+                                    cards.push_back(_cardsCode2(4 * t1 + i, 4 * t1 + j, 4 * t2 + k));
+                    v2.push_back(make_pair(TP (4 * t1 + 2, 4 * t1 + 3, 4 * t2 + 4), cards));
+
+                    vector<int> cards2;
+                    // two colors matching
+                    for (int i = 1; i <= 4; i++)
+                        for (int j = 1; j <= 4; j++)
+                            if (i != j)
+                                cards2.push_back(_cardsCode2(4 * t1 + i, 4 * t1 + j, 4 * t2 + i));
+                    v2.push_back(make_pair(TP (4 * t1 + 1, 4 * t1 + 3, 4 * t2 + 1), cards2));
+                }
+        for (int t1 = 0; t1 < FIGS; t1++) // all figures the same
+        {
+            vector<int> cards;
+            for (int i = 1; i <= 2; i++)
+                for (int j = i + 1; j <= 3; j++)
+                    for (int k = j + 1; k <= 4; k++)
+                        cards.push_back(_cardsCode(4 * t1 + i, 4 * t1 + j, 4 * t1 + k));
+            v2.push_back(make_pair(TP (4 * t1 + 2, 4 * t1 + 3, 4 * t1 + 4), cards));
+        }
+
+        for (int t4 = 0; t4 < FIGS; t4 ++)
+        {
+            vector<int> cards;
+            int c = 4 * t4 + 3;
+            for (int i = 1; i <= 4; i++)
+                cards.push_back(4 * t4 + i);
+            v3.push_back(make_pair(c, cards));
+        }
+
+        for (int t5 = 0; t5 < FIGS; t5 ++)
+        {
+            vector<int> cards;
+            int c = 4 * t5 + 4;
+            for (int i = 1; i <= 4; i++)
+                cards.push_back(4 * t5 + i);
+            v4.push_back(make_pair(c, cards));
+        }
+
+        for (int i = 0; i < v1.size(); i++)
+            S1[i] = v1[i].second.size();
+        for (int i = 0; i < v2.size(); i++)
+            S2[i] = v2[i].second.size();
+        for (int i = 0; i < v3.size(); i++)
+            S3[i] = v3[i].second.size();
+        for (int i = 0; i < v4.size(); i++)
+            S4[i] = v4[i].second.size();
+        _computeCardCodesMap();
+        card_combinations_computed = true;
     }
-
-    // all the figures different
-    for (int t1 = 0; t1 < FIGS; t1 ++)
-        for (int t2 = t1 + 1; t2 < FIGS; t2 ++)
-            for (int t3 = t2 + 1; t3 < FIGS; t3 ++)
-            {
-                vector<int> cards;
-                for (int i = 1; i <= 4; i++)
-                    for (int j = 1; j <= 4; j++)
-                        for (int k = 1; k <= 4; k++)
-                            if (i != j && i != k && j != k)
-                                cards.push_back(_cardsCode(4 * t1 + i, 4 * t2 + j, 4 * t3 + k));
-                v2.push_back(make_pair(TP (4 * t1 + 2, 4 * t2 + 3, 4 * t3 + 4), cards));
-
-                vector<int> cards2;
-                for (int i = 1; i <= 4; i++)
-                    for (int j = 1; j <= 4; j++)
-                        if (i != j)
-                            cards2.push_back(_cardsCode(4 * t1 + i, 4 * t2 + i, 4 * t3 + j));
-                v2.push_back(make_pair(TP (4 * t1 + 1, 4 * t2 + 1, 4 * t3 + 2), cards2));
-
-                vector<int> cards3;
-                for (int i = 1; i <= 4; i++)
-                    for (int j = 1; j <= 4; j++)
-                        if (i != j)
-                            cards3.push_back(_cardsCode(4 * t1 + i, 4 * t2 + j, 4 * t3 + i));
-                v2.push_back(make_pair(TP (4 * t1 + 1, 4 * t2 + 3, 4 * t3 + 1), cards3));
-
-                vector<int> cards4;
-                for (int i = 1; i <= 4; i++)
-                    for (int j = 1; j <= 4; j++)
-                        if (i != j)
-                            cards4.push_back(_cardsCode(4 * t1 + j, 4 * t2 + i, 4 * t3 + i));
-                v2.push_back(make_pair(TP (4 * t1 + 4, 4 * t2 + 1, 4 * t3 + 1), cards4));
-
-                vector<int> cards5;
-                for (int i = 1; i <= 4; i++)
-                    cards5.push_back(_cardsCode(4 * t1 + i, 4 * t2 + i, 4 * t3 + i));
-                v2.push_back(make_pair(TP (4 * t1 + 1, 4 * t2 + 1, 4 * t3 + 1), cards5));
-            }
-
-    for (int t1 = 0; t1 < FIGS; t1++) // two figures t1
-        for (int t2 = 0; t2 < FIGS; t2++) // one figure t2
-            if (t1 != t2)
-            {
-                vector<int> cards;
-                // all colors different
-                for (int i = 1; i <= 3; i++)
-                    for (int j = i+1; j <= 4; j++)
-                        for (int k = 1; k <= 4; k++)
-                            if (k != i && k != j)
-                                cards.push_back(_cardsCode2(4 * t1 + i, 4 * t1 + j, 4 * t2 + k));
-                v2.push_back(make_pair(TP (4 * t1 + 2, 4 * t1 + 3, 4 * t2 + 4), cards));
-
-                vector<int> cards2;
-                // two colors matching
-                for (int i = 1; i <= 4; i++)
-                    for (int j = 1; j <= 4; j++)
-                        if (i != j)
-                            cards2.push_back(_cardsCode2(4 * t1 + i, 4 * t1 + j, 4 * t2 + i));
-                v2.push_back(make_pair(TP (4 * t1 + 1, 4 * t1 + 3, 4 * t2 + 1), cards2));
-            }
-    for (int t1 = 0; t1 < FIGS; t1++) // all figures the same
-    {
-        vector<int> cards;
-        for (int i = 1; i <= 2; i++)
-            for (int j = i + 1; j <= 3; j++)
-                for (int k = j + 1; k <= 4; k++)
-                    cards.push_back(_cardsCode(4 * t1 + i, 4 * t1 + j, 4 * t1 + k));
-        v2.push_back(make_pair(TP (4 * t1 + 2, 4 * t1 + 3, 4 * t1 + 4), cards));
-    }
-
-    for (int t4 = 0; t4 < FIGS; t4 ++)
-    {
-        vector<int> cards;
-        int c = 4 * t4 + 3;
-        for (int i = 1; i <= 4; i++)
-            cards.push_back(4 * t4 + i);
-        v3.push_back(make_pair(c, cards));
-    }
-
-    for (int t5 = 0; t5 < FIGS; t5 ++)
-    {
-        vector<int> cards;
-        int c = 4 * t5 + 4;
-        for (int i = 1; i <= 4; i++)
-            cards.push_back(4 * t5 + i);
-        v4.push_back(make_pair(c, cards));
-    }
-
-    for (int i = 0; i < v1.size(); i++)
-        S1[index][i] = v1[i].second.size();
-    for (int i = 0; i < v2.size(); i++)
-        S2[index][i] = v2[i].second.size();
-    for (int i = 0; i < v3.size(); i++)
-        S3[index][i] = v3[i].second.size();
-    for (int i = 0; i < v4.size(); i++)
-        S4[index][i] = v4[i].second.size();
-
 }
 
 int _perc(double e)
@@ -674,7 +679,7 @@ void BasketManager::_computeEHS()
 
         printf("Progress: %d / %d\n", i1 + 1, (int)v1.size());
 
-        EHS_DIST[0][_perc(EHS1[i1] =_EHS(F, pc1, pc2))] += S1[index][i1];
+        EHS_DIST[0][_perc(EHS1[i1] =_EHS(F, pc1, pc2))] += S1[i1];
         // dealing flop cards
         for (int i2 = 0; i2 < v2.size(); i2++)
         {
@@ -684,14 +689,14 @@ void BasketManager::_computeEHS()
             if (F[tc1] + F[tc2] + F[tc3] == 0)
             {
                 F[tc1] ++; F[tc2] ++; F[tc3] ++;
-                EHS_DIST[1][_perc(EHS2[i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3))] += S2[index][i2];
+                EHS_DIST[1][_perc(EHS2[i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3))] += S2[i2];
                 for (int i3 = 0; i3 < v3.size(); i3++)
                 {
                     int tc4 = v3[i3].first;
                     if (!F[tc4])
                     {
                         F[tc4] ++;
-                        EHS_DIST[2][_perc(EHS3[i3][i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3, tc4))] += S3[index][i3];
+                        EHS_DIST[2][_perc(EHS3[i3][i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3, tc4))] += S3[i3];
 
                         for (int i4 = 0; i4 < v4.size(); i4++)
                         {
@@ -699,7 +704,7 @@ void BasketManager::_computeEHS()
                             if (!F[tc5])
                             {
                                 F[tc5] ++;
-                                EHS_DIST[3][_perc(EHS4[i4][i3][i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5))] += S4[index][i4];
+                                EHS_DIST[3][_perc(EHS4[i4][i3][i2][i1] = _EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5))] += S4[i4];
                                 F[tc5] --;
                             }
                         }
@@ -754,10 +759,7 @@ void BasketManager::_computeTransitions()
 {
     _computeCardCombinations();
     if(!_loadEHS())
-    {
-        _computeCardCodesMap();
         _computeEHS();
-    }
     _computeEHSDistribution();
 
     int F[ONE_CARD_CODES + 3];
@@ -1129,7 +1131,7 @@ dist BasketManager::getOpponentBasketDist(int stage, vector<int> ind)
     else
         baskets_dist = B4[index][ind[3]][ind[2]][ind[1]];
     for (int i = 0; i < EHS_SIZE1; i++)
-        d[baskets_dist[i]] += S1[index][i];
+        d[baskets_dist[i]] += S1[i];
 
     double sum = 0.0;
     for (int i = 0; i < d.size(); i++)
