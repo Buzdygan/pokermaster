@@ -7,7 +7,7 @@
 #include "Utils.h"
 #include "BasketManager.h"
 
-const char* EHS_FILENAME = "ehs.cpt";
+const char* EHS_FILENAME = "ehs_pot.cpt";
 
 const int EHS_SIZE1 = 169;
 const int EHS_SIZE2 = 1755;
@@ -891,8 +891,8 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
             {
                 F[oc1] ++; F[oc2] ++;
                 int index = _inc_vars(ahead, tied, behind, _evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5));
-                //if(!tc5)
-                //    HPTotal[index] += _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
+                if(!tc5)
+                    HPTotal[index] += _computePotential(HP[index], F, pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5);
                 F[oc1] --; F[oc2] --;
             }
 
@@ -914,7 +914,6 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
     double ppot = 0.0, npot = 0.0, hs = 0.0;
     if (ahead + tied + behind)
         hs = (double(ahead) + tied / 2.0) / (ahead + tied + behind);
-    return hs;
     if(tc5)
         return hs;
     else
@@ -939,20 +938,8 @@ int BasketManager::_computePotential(int HP[3], int F[ONE_CARD_CODES+ 3], int pc
                 for (int t3 = t2 + 1; t3 <= ONE_CARD_CODES; t3++)
                     if (!(F[t1] + F[t2] + F[t3]))
                     {
-                        F[t1] ++; F[t2] ++; F[t3] ++;
-                        for (int t4 = 1; t4 <= ONE_CARD_CODES; t4++)
-                            if (!F[t4])
-                            {
-                                F[t4] ++;
-                                for (int t5 = 1; t5 <= ONE_CARD_CODES; t5++)
-                                    if (!F[t5])
-                                    {
-                                        HP[_evaluateCards(pc1, pc2, oc1, oc2, t1, t2, t3, t4, t5)] ++;
-                                        total ++;
-                                    }
-                                F[t4] --;
-                            }
-                        F[t1] --; F[t2] --; F[t3] --;
+                        HP[_evaluateCards(pc1, pc2, oc1, oc2, t1, t2, t3)] ++;
+                        total ++;
                     }
     }
     else if (!tc4)
@@ -960,14 +947,8 @@ int BasketManager::_computePotential(int HP[3], int F[ONE_CARD_CODES+ 3], int pc
         for (int t4 = 1; t4 <= ONE_CARD_CODES; t4++)
             if (!F[t4])
             {
-                F[t4] ++;
-                for (int t5 = 1; t5 <= ONE_CARD_CODES; t5++)
-                    if (!F[t5])
-                    {
-                        HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, t4, t5)] ++;
-                        total ++;
-                    }
-                F[t4] --;
+                HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, t4)] ++;
+                total ++;
             }
 
     }
