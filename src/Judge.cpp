@@ -9,6 +9,8 @@
 #include "Utils.h"
 #include "Player.h"
 #include "DummyPlayer.h"
+#include "ModCfr.h"
+#include "Cfr.h"
 #include "CfrPlayer.h"
 #include "CfrModPlayer.h"
 #include "CfrAbstractionPlayer.h"
@@ -108,6 +110,7 @@ int main(int argc, char* argv[])
     score[0] = 0;
     score[1] = 0;
     int basket_sizes[4] = {12,10,10,10};
+    //int basket_sizes[4] = {3,3,3,3};
     sprintf(strategy_filename, "cfr.mod.strategy%s-%d-%d-%d-%d-%d.stg", EHS_STR,
                                                                        basket_sizes[0],
                                                                        basket_sizes[1],
@@ -129,8 +132,8 @@ int main(int argc, char* argv[])
 
     BasketManager mng(0, basket_sizes, &evaluator, EHS_POTENTIAL, EHS_STR);
     BasketManager mng2(1, basket_sizes2, &evaluator, EHS_POTENTIAL, EHS_STR);
-    Cfr *cfr_mod_strategy = new Cfr(new HoldemPokerModAbstraction(&mng), strategy_repetitions, strategy_filename, true);
-    Cfr *cfr_strategy = new Cfr(new HoldemPokerModAbstraction(&mng2), strategy_repetitions2, strategy_filename2, false);
+    ModCfr *cfr_mod_strategy = new ModCfr(new HoldemPokerModAbstraction(&mng), strategy_repetitions, strategy_filename);
+    Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng2), strategy_repetitions2, strategy_filename2, false);
 
     for (int r = 0; r < rounds_number; r++)
     {
@@ -152,21 +155,23 @@ int main(int argc, char* argv[])
                                        new HoldemPokerAbstraction(&mng));
                                        */
 
+        /*
         players[r & 1] = new CfrModPlayer(r & 1,
                                        cfr_mod_strategy,
                                        new HoldemPokerModAbstraction(&mng));
+                                       */
         /*
         players[r & 1] = new HumanPlayer(r & 1);
         */
+
+        players[r & 1] = new DummyPlayer();
 
         players[(r + 1) & 1] = new CfrPlayer((r + 1) & 1,
                                        cfr_strategy,
                                        new HoldemPokerAbstraction(&mng2));
 
 
-        /*
-        players[(r + 1) & 1] = new DummyPlayer();
-        */
+        //players[(r + 1) & 1] = new DummyPlayer();
 
         vector<int> players_cards[2];
 

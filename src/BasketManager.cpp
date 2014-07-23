@@ -88,6 +88,7 @@ void BasketManager::_init(char* ehs_str)
     sprintf(DISTRIBUTION_FILENAME, "basket_distribution%s-%d-%d-%d-%d.stg", ehs_str, basket_sizes[0], basket_sizes[1], basket_sizes[2], basket_sizes[3]);
     sprintf(EHS_FILENAME, "ehs_%s.cpt", ehs_str);
     _computeCC();
+    _computeCardCombinations();
     if (!_loadTransitions())
     {
         printf("computing Transitions\n");

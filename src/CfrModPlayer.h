@@ -3,27 +3,45 @@
 
 #include "Player.h"
 #include "CfrPlayer.h"
-#include "Cfr.h"
+#include "ModCfr.h"
 #include "BasketManager.h"
 #include "GameAbstraction.h"
 #include "HoldemPokerModAbstraction.h"
 
 using namespace std;
 
-class CfrModPlayer : public CfrPlayer
+class CfrModPlayer : public Player
 {
     public:
         CfrModPlayer(int player_num,
-                  Cfr* strategy,
+                  ModCfr* strategy,
                   HoldemPokerModAbstraction* game);
         /* Annotates random action */
         void annotateRandomAction(int action_id);
+        /* annotates this player's action */
+        void annotatePlayerAction(int action_id);
+        /* annotates opponent's action */
+        void annotateOpponentAction(int action_id);
         /* Get player's action */
         int getAction(vector<int> available_actions);
+        /* gives info on who won the round with what stake */
+        void endRound(double cash_change);
+        int _logBid(int bid);
     protected:
         vector<int> new_cards;
         vector<int> indexes;
         dist prev_opp_dist;
+
+        int CARDS_FOR_PHASE[4];
+        int cur_stake;
+        int player_num;
+        int random_phase;
+        bool first_action;
+        int bids_number;
+        vector<int> all_cards;
+
+        ModCfr* strategy;
+        HoldemPokerModAbstraction* game;
 };
 
 #endif

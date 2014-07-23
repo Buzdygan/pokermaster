@@ -7,10 +7,20 @@
 
 using namespace std;
 
-CfrModPlayer::CfrModPlayer(int player_num,
-                  Cfr* strategy,
-                  HoldemPokerModAbstraction* gam) : CfrPlayer(player_num, strategy, (HoldemPokerAbstraction*) gam)
+CfrModPlayer::CfrModPlayer(int pnum,
+                  ModCfr* stg,
+                  HoldemPokerModAbstraction* gam)
 {
+    CARDS_FOR_PHASE[0] = 2;
+    CARDS_FOR_PHASE[1] = 5;
+    CARDS_FOR_PHASE[2] = 6;
+    CARDS_FOR_PHASE[3] = 7;
+    random_phase = 0;
+    bids_number = 1;
+    cur_stake = 1;
+    player_num = pnum;
+    strategy = stg;
+    game = gam;
 }
 /* Annotates random action */
 void CfrModPlayer::annotateRandomAction(int card_id)
@@ -37,11 +47,22 @@ void CfrModPlayer::annotateRandomAction(int card_id)
 
 }
 
+/* annotates this player's action */
+void CfrModPlayer::annotatePlayerAction(int action_id)
+{
+    game -> makeAction(_logBid(action_id));
+}
+
+/* annotates opponent's action */
+void CfrModPlayer::annotateOpponentAction(int action_id)
+{
+    game -> makeAction(_logBid(action_id));
+}
+
 /* Get player's action */
 int CfrModPlayer::getAction(vector<int> available_actions)
 {
-    HoldemPokerModAbstraction* mod_game = (HoldemPokerModAbstraction*) game;
-    dist isets_dist = mod_game -> getInformationSetIds(prev_opp_dist);
+    dist isets_dist = game -> getInformationSetIds(prev_opp_dist);
     printf("Player%d making decision\n", player_num);
     int action_id = strategy -> getActionId(isets_dist, game -> getActionIds(bids_number));
     if (action_id == game -> ACTION_FOLD)
@@ -54,3 +75,18 @@ int CfrModPlayer::getAction(vector<int> available_actions)
 
 }
 
+/* gives info on who won the round with what stake */
+void CfrModPlayer::endRound(double cash_change)
+{
+}
+
+int CfrModPlayer::_logBid(int bid)
+{
+    int action_id = game -> ACTION_FOLD;
+    if (bid == cur_stake)
+        action_id = game -> ACTION_CALL;
+    if (bid > cur_stake)
+        action_id = game -> ACTION_RAISE;
+    cur_stake = bid;
+    return action_id;
+}
