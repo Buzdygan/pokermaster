@@ -203,9 +203,28 @@ oraz dzielenie kart na niewielką liczbę grup (koszyków) ze względu na ich si
 
 \chapter{Implementacja}
 
-\section{Podział na koszyki}
+\section{Informacje ogólne}
 
-Powstał osobny moduł, który odpowiada za przyporządkowywanie tzw "koszyków" układom kart.
+Całość została zaprogramowana w języku C++. Do zaimplementowania zasad Texas Holdem Pokera oraz jego
+abstrakcji wykorzystano mechanizm dziedziczenia. Dla zasad pokera przyjęto 3-fazową licytację w każdej
+rundzie. Pierwszy gracz w rundzie flop musi zawsze zagrać za $1$. Podbijać można tylko w $1$ i $2$ fazie
+każdej rundy. Karty rozdawane są zgodnie z zasadami Texas Holdem Poker. Do porównywania siły rąk graczy
+wykorzystano gotowy algorytm 2+2.
+
+\section{Abstrakcje}
+
+W celu ograniczenia rozmiaru drzewa gry zastosowano abstrakcje. Pierwsze ograniczenie dotyczy
+licytacji. Dostępne są maksymalnie 3 akcje: fold (rezygnacja z licytacji), call (pozostanie przy obecnej stawce)
+oraz raise(dwukrotne podbicie stawki). W ten sposób jedyne możliwe wysokości stawek w licytacji to: $1$, $2$,
+$4$, $8$, $16$, $32$, $64$ i $128$. \\\\
+\noindent
+Drugie ograniczenie przyporządkowuje układom kart graczy (karty na ręce wraz z kartami na stole) tzw "koszyki".
+W jednym "koszyku" są karty o podobnej sile. W każdej rundzie licytacji obowiązuje osobny podział, zmienna
+jest też liczba koszyków. Testowano różne liczby koszyków, w zależności od używanego algorytmu.
+
+\section{Obliczanie EHS}
+
+Zaimplementowano osobny moduł, który odpowiada za przyporządkowywanie "koszyków" układom kart.
 Są 4 rodzaje układów: pre-flop (2 karty), flop(5 kart), turn(6 kart) i river(7 kart).
 Do oceny siły układów zastosowano miarę "Effective Hand Strength" (EHS). EHS układu wyliczany
 jest z trzech innych miar: "Hand Strength" ($HS$), "Positive Potential" ($Ppot$) oraz "Negative Potential" ($Npot$) według
@@ -217,7 +236,7 @@ EHS = HS \cdot (1 - Npot) + (1 - HS) \cdot Ppot
 
 \noindent
 $HS$ to w przybliżeniu prawdopodobieństwo że nasza ręka jest lepsza od ręki przeciwnika. Miary $Ppot$ i $Npot$ oznaczają
-prawdopodobieństwo że nasza ręka stanie się gorsza (odpowiednio lepsza) od ręki przeciwnika po wyłożeniu kolejnych kart na stół. \\
+prawdopodobieństwo że nasza ręka stanie się lepsza (odpowiednio gorsza) od ręki przeciwnika po wyłożeniu kolejnych kart na stół. \\
 
 \noindent
 Wyliczenie wartości $EHS$ dla wszystkich możliwych układów wymaga przejrzenia wszystkich możliwych kombinacji 9 kart (2 kart gracza, 2 przeciwnika
@@ -241,7 +260,7 @@ EHS(A\heartsuit, K\heartsuit) \neq EHS(A\heartsuit, K\spadesuit)
 
 \noindent
 Stosując tę koncepcję wprowadzono klasy abstrakcji dla układów kart. Układy kart dochodzące w kolejnych rundach są traktowane
-osobno. Poniżej typy układów dla poszczególnych rund, napis $Fn-x$ oznacza figurę numer $n$ w kolorze $x$. 
+osobno. Poniżej typy układów dla poszczególnych rund, napis $Fnx$ oznacza figurę numer $n$ w kolorze $x$. 
 
 \noindent
 \textbf{Pre-flop}:
@@ -263,7 +282,28 @@ osobno. Poniżej typy układów dla poszczególnych rund, napis $Fn-x$ oznacza f
 \end{itemize}
 
 \noindent
-Dla rund Turn i River w których dochodzi po jednej karcie, każda klasa abstrakcji to czwórka kart o tej samej figurze.
+Dla rund Turn i River w których dochodzi po jednej karcie, każda klasa abstrakcji to czwórka kart o tej samej figurze. \\
+
+\noindent
+W celu wyliczenia wartości $HS$ dla układu, przeglądane są wszystkie możliwe pary kart u przeciwnika i liczony jest procent
+przypadków gdy siła układu jest większa niż siła kart przeciwnika poszerzonych o karty ze stołu występujące w układzie.
+By wyliczyć potencjał układu z rund $1$, $2$, $3$ (dla rundy $4$ liczenie potencjału nie ma sensu) przeglądane są wszystkie
+możliwe kombinacje następnych kart na stole. Jeżeli po dodaniu następnych kart, układ zmienił się z przegrywającego w
+wygrywający, rośnie wartość $Ppot$. W odwrotnej sytuacj rośnie $Npot$.
+
+\section{Podział na koszyki}
+
+W celu podzielenia układów na koszyki, układy z jednej rundy są sortowane po wartości $EHS$. Jeżeli mają być podzielone na
+$n$ koszyków, to są dzielone tak, by w każdym koszyku znalazła się podobna liczba układów (czyli $\frac{1}{n}$ wszystkich układów). \\
+\noindent
+Na potrzebę wyliczania strategii liczone są prawdopodobieństwa przejść między parami koszyków. Czyli np dla każdej kombinacji
+trójek kart pojawiąjących się na stole na flopie, liczone jest prawdopodobieństwo zmiany koszyka o numerze $A$ z pierwszej
+rundy na koszyk $B$ w drugiej rundzie dla każdej takiej pary $(A, B)$. Dodatkowo liczone są rozkłady koszyków
+w każdej rundzie, zależne od koszyków z poprzedniej rundy.
+
+\section{Implementacja Vanilla CFR}
+
+\section{Zmodyfikowany CFR}
 
 \chapter{Symulacje na dwóch wariantach Pokera}
 
