@@ -1,6 +1,7 @@
 \documentclass[licencjacka]{pracamgr}
 
 \usepackage{polski}
+\usepackage{algpseudocode}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 %\usepackage{float}
@@ -302,6 +303,52 @@ rundy na koszyk $B$ w drugiej rundzie dla każdej takiej pary $(A, B)$. Dodatkow
 w każdej rundzie, zależne od koszyków z poprzedniej rundy.
 
 \section{Implementacja Vanilla CFR}
+
+Użyto rekurencyjnej implementacji algorytmu. W danej iteracji algorytmu, mapy $R$, $S$ oraz $\sigma$ przechowują informacje
+dla par (zbiór informacyjny, akcja).
+\begin{itemize}
+\item $R$ : przechowuje sumę regretu po wszystkich dotychczasowych iteracjach algorytmu
+\item $\sigma$ : przechowuje prawdopodobieństwo wykonania akcji w zbiorze informacyjnym zgodnie z obecną strategią
+\item $S$ : przechowuje sumę strategii z wszystkich dotychczasowych iteracji, ważoną przez $\pi_i^{\sigma^t}$
+\end{itemize}
+
+\noindent
+Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwraca parę
+($\mu_0$, $\mu_1$) oczekiwanych zysków obu graczy w danym stanie gry przy aktualnej strategii. \\\\
+
+\begin{algorithmic}
+    \Function{WalkTree}{$game$, $[\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c ]$}
+        \If {$game \rightarrow finalState()$}
+            \Return $game \rightarrow getUtility()$
+        \EndIf
+        \State $finalUtility \gets 0$ 
+        \If {$game \rightarrow randomPlayer()$}
+            \For {$(randomAction, randomProb) \, \in \, game \rightarrow distribution()$}
+                \State $modGame \gets game \rightarrow makeAction(randomAction)$
+                \State $modProb \gets [\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c \cdot randomProb ]$
+                \State $actionUtility \gets WalkTree(modGame, modProb)$
+                \State $finalUtility \gets finalUtility + actionUtility \cdot randomProb$
+            \EndFor
+        \Else
+            \State $ply \gets game \rightarrow currentPlayer()$
+            \State $opp \gets game \rightarrow currentOpponent()$
+            \State $I \gets game \rightarrow informationSet()$
+            \For {$action \, \in \, game \rightarrow playerActions()$}
+                \State $actionProb \gets \sigma(I, action)$
+                \State $modGame \gets game \rightarrow makeAction(action)$
+                \If {$ply = 0$}
+                    \State $modProb \gets [\pi_0^{\sigma} \cdot actionProb, \pi_1^{\sigma}, \pi_c]$
+                \Else
+                    \State $modProb \gets [\pi_0^{\sigma}, \pi_1^{\sigma} \cdot actionProb, \pi_c]$
+                \EndIf
+                \State $actionUtility \gets WalkTree(modGame, modProb)$
+                \State $finalUtility \gets finalUtility + actionUtility \cdot randomProb$
+                \State $R(I, action) \gets R(I, action) + actionUtility_{ply} \cdot \pi_{opp}^{\sigma} \cdot \pi_c $
+                \State $S(I, action) \gets S(I, action) + actionProb $
+            \EndFor
+        \EndIf
+    \EndFunction
+\end{algorithmic}
 
 \section{Zmodyfikowany CFR}
 
