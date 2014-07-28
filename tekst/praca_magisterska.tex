@@ -76,9 +76,15 @@ D.0. General\\}
 
 \tableofcontents
 
-\chapter{Wstęp - sztuczna inteligencja w grach}
+\chapter{Wstęp}
 
-\chapter{Rozwój programów grających w Pokera}
+\section{Sztuczna inteligencja w grach}
+
+Sztuczna inteligencja w grach to dział algorytmiki zajmujący się badaniem programów grających
+z dużą skutecznością w gry. Jest dużo rodzajów gier. Gry jednoosobowe to tzw łamigłówki, w których
+należy znaleźć odpowiednią sekwencję ruchów, prowadzącą do jak najlepszego wyniku. Algorytmy znajdujące
+takie sekwencje opierają się na efektywnym przeglądaniu drzewa gry, czyli 
+
 
 \chapter{Metoda CFR}
 
@@ -316,17 +322,19 @@ dla par (zbiór informacyjny, akcja).
 Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwraca parę
 ($\mu_0$, $\mu_1$) oczekiwanych zysków obu graczy w danym stanie gry przy aktualnej strategii. \\\\
 
+%\Call \Comment \If \ElsIf  \Else \EndIf
+
 \begin{algorithmic}
     \Function{WalkTree}{$game$, $[\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c ]$}
         \If {$game \rightarrow finalState()$}
-            \Return $game \rightarrow getUtility()$
+            \State \Return $game \rightarrow getUtility()$
         \EndIf
         \State $finalUtility \gets 0$ 
         \If {$game \rightarrow randomPlayer()$}
             \For {$(randomAction, randomProb) \, \in \, game \rightarrow distribution()$}
                 \State $modGame \gets game \rightarrow makeAction(randomAction)$
                 \State $modProb \gets [\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c \cdot randomProb ]$
-                \State $actionUtility \gets WalkTree(modGame, modProb)$
+                \State $actionUtility \gets \Call{WalkTree}{modGame, modProb}$
                 \State $finalUtility \gets finalUtility + actionUtility \cdot randomProb$
             \EndFor
         \Else
@@ -341,14 +349,42 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
                 \Else
                     \State $modProb \gets [\pi_0^{\sigma}, \pi_1^{\sigma} \cdot actionProb, \pi_c]$
                 \EndIf
-                \State $actionUtility \gets WalkTree(modGame, modProb)$
+                \State $actionUtility \gets \Call{WalkTree}{modGame, modProb}$
                 \State $finalUtility \gets finalUtility + actionUtility \cdot randomProb$
                 \State $R(I, action) \gets R(I, action) + actionUtility_{ply} \cdot \pi_{opp}^{\sigma} \cdot \pi_c $
                 \State $S(I, action) \gets S(I, action) + actionProb $
             \EndFor
+            \For {$action \, \in \, game \rightarrow playerActions()$}
+                \State $R(I, action) \gets R(I, action) - finalUtility_{ply} \cdot \pi_{opp}^{\sigma} \cdot \pi_c $
+            \EndFor
         \EndIf
+    \State \Return finalUtility
     \EndFunction
 \end{algorithmic}
+
+$\,$ \\
+\noindent
+Cały algorytm wygląda następująco: \\
+
+\begin{algorithmic}
+    \Function{VanillaCfr}{iterationsNumber}
+        \State $R \gets 0$
+        \State $S \gets 0$
+        \State $\sigma \gets \Call{DefaultStrategy}{}$
+        \For {$iterationsNumber$} 
+            \State \Call{WalkTree}{newGame(), $[1.0, 1.0, 1.0]$}
+            \State $\sigma \gets \Call{RecomputeStrategy}{R}$
+        \EndFor
+        \State \Return \Call{RecomputeStrategy}{S}
+    \EndFunction
+\end{algorithmic}
+
+$\,$ \\
+\noindent
+$DefaultStrategy$ to strategia w której każda akcja jest wykonywana z takim samym prawdopodobieństwem. Metoda
+$RecomputeStrategy(R)$ aktualizuje aktualną strategię tak że prawdopodobieństwo zagrania akcji $a$ w zbiorze informacyjnym
+$I$ jest proporcjonalne do wartości $R(I, a)$ o ile ta wartość jest nieujemna. Jeśli jest ujemna, prawdopodobieństwo
+wynosi $0$. Analogicznie wygląda obliczenie końcowej strategii przy czym patrzymy na wartości $S(I, a)$.
 
 \section{Zmodyfikowany CFR}
 
