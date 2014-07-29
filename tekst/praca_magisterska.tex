@@ -78,13 +78,96 @@ D.0. General\\}
 
 \chapter{Wstęp}
 
+\section{Pomocnicze pojęcia}
+
+\begin{itemize}
+\item Stan gry jest opisany przez zespół informacji, które są rezultatem dotychczasowych akcji
+      podjętych przez graczy oraz zdarzeń losowych. Stan gry jednoznacznie definiuje zbiór dostępnych
+      akcji oraz graczy, którzy je wykonują (wliczając w to tzw gracza losowego, który odpowiada
+      za generowanie zdarzeń losowych zgodnie z zasadami gry). Wykonywane przez graczy akcje
+      zmieniają stan gry (inaczej ich wykonywanie nie ma sensu).
+\item Graf gry to graf, którego wierzchołkami są stany gry a krawędź prowadzi od stanu
+      $s_1$ do stanu $s_2$ jeśli w stanie $s_1$ można wykonać akcję prowadzącą do stanu
+      $s_2$. W większości gier graf ten nie zawiera cyklu dlatego zazwyczaj nazywa się go
+      drzewem gry.
+\item Gra z pełną/niepełną informacją. Nie wszystkie informacje składające się na stan gry
+      są dostępne wszystkim graczom. Np w grach karcianych karty które posiada przeciwnik
+      są zazwyczaj niewidoczne dla gracza. Takie gry nazywa się grami z niepełną informacją.
+      Jeśli wszystkie informacje są dostępne wszystkim graczom, jest to gra z pełną informacją.
+      Przykładem takiej gry są szachy.
+\item Zbiór informacyjny dla gracza $p$ zawiera te stany gry, które są identyczne jeśli chodzi
+      o informacje dostępne graczowi $p$. Przykładowo, w dwuosobowej grze karcianej, przykładem zbioru informacyjnego
+      jest zbiór wszystkich stanów zaraz po rozdaniu kart, w których gracz $p$ ma na ręku jedynie asa i króla kier.
+      Zbiory informacyjne są ważne z punktu widzenia podejmowania decyzji: w każdym stanie gry należącym do tego
+      samego zbioru informacyjnego gracza $p$, gracz $p$ podejmuje decyzje wg tej samej strategii.
+\item Strategia gracza $p$ wyznacza zasady podejmowania przez gracza akcji w zbiorach informacyjnych.
+      Strategia może być deterministyczna, jeśli w każdym zbiorze informacyjnym jest wyznaczona dokładnie
+      jedna podejmowana akcja, bądź mieszana jeśli na akcjach określony jest rozkład prawdopodobieństwa
+      zagrania ich.
+\end{itemize}
+
 \section{Sztuczna inteligencja w grach}
 
 Sztuczna inteligencja w grach to dział algorytmiki zajmujący się badaniem programów grających
 z dużą skutecznością w gry. Jest dużo rodzajów gier. Gry jednoosobowe to tzw łamigłówki, w których
 należy znaleźć odpowiednią sekwencję ruchów, prowadzącą do jak najlepszego wyniku. Algorytmy znajdujące
-takie sekwencje opierają się na efektywnym przeglądaniu drzewa gry, czyli 
+takie sekwencje opierają się na efektywnym przeglądaniu drzewa gry. Programy grające w gry wieloosobowe
+muszą wyliczyć odpowiednią strategię. Gry różnią się złożonością informacji składających się na stan gry.
+Nawet prosta gra, w której graczom przydzielana jest losowo wybrana liczba rzeczywista, mają nieskończenie
+wiele stanów gry. Zazwyczaj jednak informacje można reprezentować przez ograniczone liczby całkowite przez co
+liczba stanów gry też jest ograniczona. Przedmiotem badań tej pracy jest gra Texas Holdem Poker, która
+należy do gatunku gier z niepełną informacją z ograniczoną liczbą stanów gry.
 
+\section{Texas Holdem Poker}
+
+Texas Holdem Poker to gra karciana przeznaczona dla co najmniej dwóch graczy. Na początku każdy z graczy
+dostaje dokładnie dwie karty, których nie pokazuje przeciwnikom. Następuje potem runda licytacji, w której
+gracze ustalają wysokość stawki. W pierwszej rundzie licytacji gracz zaczynający musi wejść do gry
+za stawkę ustaloną wielkością "small blind" a następny gracz w kolejności musi wejść stawką o wysokości
+"big blind". \\
+
+\noindent
+W licytacji gracze odzywają się w ustalonej kolejności. Mogą podbić stawkę (raise), pozostać przy
+obecnej stawce (call) lub zrezygnować z udziału w licytacji (fold). W pierwszych dwóch przypadkach są
+zobowiązani oddać do puli stawkę na jaką się zgodzili. Różne wersje gry określają ograniczenia podnoszenia
+stawki. W tej pracy przyjęta jest wersja, w której można podnieść stawkę o dowolną kwotę całkowitą o ile stawka
+po podniesieniu nie przekracza 128 jednostek. Stawka na zakończenie licytacji zostaje ustalona, gdy
+wszyscy gracze biorący jeszcze udział w licytacji zaakceptują aktualną wysokość stawki. Jeśli będzie to
+tylko jedna osoba, zostaje ona zwycięzcą i zgarnia całą pulę a gra się kończy. \\
+
+\noindent
+Po pierwszej rundzie licytacji następuje wyłożenie trzech kart na stół, tak by widzieli je wszyscy gracze.
+Jest to tzw "flop". Następuje kolejna runda licytacji po czym wykładana jest jedna karta, tzw "turn".
+Po trzeciej rundzie licytacji na stół wykładana jest ostatnia karta "river" i następuje ostatnia runda
+licytacji. Jeżeli w ostatniej rundzie co najmniej dwóch graczy uzgodni ostateczną stawkę gry, następuje
+wyłożenie kart graczy na stół i rozstrzygnięcie kto został zwycięzcą. \\
+
+\noindent
+Zwycięzcą zostaje gracz, który jest w stanie wybrać ze swoich kart oraz kart na stole, najsilniejszy
+5-kartowy układ. Siłę układu 5 kart wyznacza poniższy ranking, dla każdego typu układu, im wyższe
+figury występują w układzie tym większa jest jego siła. Typy układów wymienione są w kolejności
+od najsilniejszego do najsłabszego.
+
+\begin{enumerate}
+\item \textbf{Poker}: 5 kolejnych kart w tym samym kolorze, np $(D\clubsuit, W\clubsuit, 10\clubsuit, 9\clubsuit, 8\clubsuit)$ 
+\item \textbf{Kareta}: 4 takie same figury, np $(7\heartsuit, 7\spadesuit, 7\diamondsuit, 7\clubsuit, D\diamondsuit)$
+\item \textbf{Full}: Trójka takich samych figur połączona z parą takich samych figur, np $(K\heartsuit, K\diamondsuit, K\clubsuit, 3\heartsuit, 3\diamondsuit)$ 
+\item \textbf{Kolor}: 5 kart w tym samym kolorze, np $(K\diamondsuit, W\diamondsuit, 6\diamondsuit, 5\diamondsuit, 2\diamondsuit)$
+\item \textbf{Strit}: 5 kolejnych kart, np $(10\heartsuit, 9\diamondsuit, 8\heartsuit, 7\clubsuit, 6\spadesuit)$
+\item \textbf{Trójka}: 3 takie same figury, np $(5\heartsuit, 5\diamondsuit, 5\clubsuit, 8\heartsuit, D\spadesuit)$
+\item \textbf{Dwie pary}: Dwie pary tych samych figur, np $(A\heartsuit, A\diamondsuit, 8\clubsuit, 8\heartsuit, W\clubsuit)$
+\item \textbf{Para}: Para tych samych figur, np $(10\clubsuit, 10\spadesuit, A\heartsuit, 9\clubsuit, 2\heartsuit)$
+\item \textbf{Najwyższa karta}: Najwyższa figura, np $(K\heartsuit, W\diamondsuit, 10\heartsuit, 9\heartsuit, 5\spadesuit)$
+\end{enumerate}
+
+\noindent
+W sytuacji gdy gracze mają ten sam typ układu, z tymi samymi figurami, pod uwagę brane są pozostałe karty z układu. Np
+układ $(7\heartsuit, 7\diamondsuit, 7\clubsuit, K\heartsuit, W\clubsuit)$ jest silniejszy od układu
+$(7\spadesuit, 7\diamondsuit, 7\clubsuit, K\spadesuit, 5\diamondsuit)$. \\
+
+\noindent
+Jeśli po uwzględnieniu wszystkich 5 kart układu nadal występuje remis (np gdy najsilniejszy układ stanowią karty na stole),
+pula jest dzielona między graczy z najwyższym układem.
 
 \chapter{Metoda CFR}
 
@@ -387,6 +470,96 @@ $I$ jest proporcjonalne do wartości $R(I, a)$ o ile ta wartość jest nieujemna
 wynosi $0$. Analogicznie wygląda obliczenie końcowej strategii przy czym patrzymy na wartości $S(I, a)$.
 
 \section{Zmodyfikowany CFR}
+
+Zmodyfikowany algorytm CFR redukuje liczbę stanów gry przez ignorowanie historii akcji wykonywanych
+przez graczy. Stan gry jest opisany przez następujące parametry: \\
+\begin{itemize}
+\item Aktualny gracz (łącznie z graczem losowym)
+\item Aktualna runda (runda licytacji bądź rozdawania kart, jeśli aktualny gracz to gracz losowy)
+\item Obecne koszyki obu graczy
+\item Liczba odzywek w aktualnej licytacji
+\item Proponowana stawka
+\item Uzgodniona stawka
+\end{itemize}
+
+\noindent
+Algorytm zakłada że są to informacje wystarczające do podjęcia decyzji o wykonywanym ruchu.
+Ważną modyfikacją jest utożsamienie stanów gry i zbiorów informacyjnych. Algorytm liczy strategię
+tak jakby graczom była dostępna informacja o koszyku przeciwnika. Czyli abstrakcja gry jest grą
+z pełną informacją. Wymusza to zmianę sposobu korzystania z wyliczonej strategii. W normalnej wersji
+CFR, strategia jest określona dla zbioru informacyjnego gracza. W zmodyfikowanej wersji, gracz
+nie jest pewny w którym stanie gry się znajduje, ponieważ nie wie jaki koszyk ma jego przeciwnik.
+Zamiast tego, wylicza oczekiwany rozkład koszyków przeciwnika zgodnie z jego zagraniami i kartami
+widocznymi na stole. Następnie stosuje strategię, która jest ważoną sumą strategii wyliczonych
+przez algorytm dla każdego możliwego koszyka przeciwnika. Wagami są prawdopodobieństwa że
+przeciwnik znajduje się w danym koszyku. \\
+
+\noindent
+Zauważmy, że złożoność jednego przebiegu metody $WalkTree$ w oryginalnym CFR jest liniowa w stosunku
+do rozmiaru drzewa gry. Przy dużej liczbie koszyków drzewo gry jest bardzo duże i uniemożliwia
+wykonanie potrzebnej liczby iteracji algorytmu w rozsądnym czasie. Autor pracy zmodyfikował algorytm
+Vanilla Cfr tak by wykonanie jednej iteracji miało złożoność liniową względem liczby stanów gry.
+W sytuacji gdy stan gry nie zawiera informacji o historii rozgrywki liczba stanów jest znacząco
+mniejsza od rozmiaru drzewa gry co pozwala na wykonanie znacznie większej liczby iteracji algorytmu. \\
+
+\noindent
+Dodatkową optymalizacją jest zlikwidowanie operacji wykonywanych przy każdym ruchu przez abstrakcję gry.
+Na początku algorytmu obliczany jest graf przejść między stanami gry. Wierzchołkami są stany gry. Krawędź
+skierowana między wierzchołkiem/stanem $s_1$ a stanem $s_2$ istnieje jeśli istnieje akcja $a$ w stanie
+$s_1$, która prowadzi do stanu $s_2$. Taka krawędź jest etykietowana akcją $a$. Jeśli była to akcja
+gracza losowego, dołączona jest informacja o prawdopodobieństwie zajścia tej akcji. W stanach końcowych
+zachowana jest informacja o zyskach obu graczy. Dzieki temu iteracje algorytmu są wyizolowane od samej
+mechaniki gry. \\
+
+\noindent
+Wspomniany wyżej graf stanów jest budowany przy użyciu algorytmu DFS. W każdym nowo odwiedzanym stanie
+wyliczany jest jego identyfikator na podstawie aktualnych wartości parametrów. Dodatkowo dodawane
+są krawędzie prowadzące do sąsiednich stanów, a w stanach końcowych zapisywana jest informacja o
+zyskach graczy. Zauważmy, że w tak utworzonym grafie nie występują cykle. Po utworzeniu, wierzchołki
+są sortowane topologicznie co ułatwi potem wykonywanie iteracji. \\
+
+\noindent
+W każdej iteracji wykonywane są dwie metody: $computeProbs$ oraz $modWalkTree$. Pierwsza oblicza dla każdego stanu $s$
+wartości $\pi_0^{\sigma}(s)$, $\pi_1^{\sigma}(s)$, $\pi_0^{\sigma}(s) \cdot \pi_c(s)$ oraz $\pi_1^{\sigma}(s) \cdot \pi_c(s)$
+dla aktualnej strategii $\sigma$. Niech $H(s)$ oznacza zbiór historii $h$, których rezultatem jest stan $s$. Wtedy
+\begin{align*}
+\pi_i^{\sigma}(s) = \sum\limits_{h \in H(s)} \, \pi_i^{\sigma}(h)
+\end{align*}
+\begin{align*}
+\pi_i^{\sigma}(s) \cdot \pi_c(s) = \sum\limits_{h \in H(s)} \, \pi_i^{\sigma}(h) \cdot \pi_c(h)
+\end{align*}
+
+\noindent
+Zauważmy, że dla każdej historii $h \in H(s)$ zysk graczy jest taki sam. W takim razie można zamienić instrukcję
+\begin{algorithmic}
+    \State $R(I, action) \gets R(I, action) + actionUtility_{ply}(h) \cdot \pi_{opp}^{\sigma}(h) \cdot \pi_c(h) $
+\end{algorithmic}
+
+\noindent
+wykonywaną dla każdej historii $h \in H(s)$ na instrukcję
+
+\begin{algorithmic}
+    \State $R(I, action) \gets R(I, action) + actionUtility_{ply}(s) \cdot \pi_{opp}^{\sigma}(s) \cdot \pi_c(s) $
+\end{algorithmic}
+
+\noindent
+wykonywaną jednokrotnie w stanie $s$. Zauważmy, że zachodzi \\
+
+\begin{align*}
+\pi_{p}^{\sigma}(s) = \sum\limits_{s' : E(s', s)} \pi_{p}^{\sigma}(s') \cdot prob_{p}(E(s', s))
+\end{align*}
+\begin{align*}
+\pi_p^{\sigma}(s) \cdot \pi_c(s) = \sum\limits_{s' : E(s', s)} \pi_{p}^{\sigma}(s') \pi_c(s') \cdot prob_p(E(s', s)) \cdot prob_c(E(s', s))
+\end{align*}
+
+gdzie $E(s_1, s_2)$ zachodzi gdy istnieje krawędź z $s_1$ do $s_2$ a $prob_{i}(E(s_1, s_2))$ oznacza prawdopodobieństwo przejścia ze stanu
+$s_1$ do $s_2$ jeżeli akcję wykonuje gracz $i$. W przeciwnym przypadku $prob_{i}(E(s_1, s_2)) = 1$. Metoda $computeProbs$ wykonuje algorytm
+BFS, który przechodzi stany w porządku topologicznym i oblicza powyższe wartości. \\
+
+\noindent
+Metoda $modWalkTree$ przechodzi rekurencyjnie graf stanów, obliczając oczekiwany zysk graczy
+w każdym stanie przy obecnej strategii. Dodatkowo aktualizuje mapy $R$ oraz $S$ analogicznie do metody $WalkTree$ ze
+zwykłej wersji CFR.
 
 \chapter{Symulacje na dwóch wariantach Pokera}
 
