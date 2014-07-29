@@ -974,70 +974,11 @@ int BasketManager::_computePotential(int HP[3], int F[ONE_CARD_CODES+ 3], int pc
     return total;
 }
 
-int BasketManager::_computePotential2(int HP[3], int F[ONE_CARD_CODES+ 3], int pc1, int pc2, int oc1,
-                                      int oc2, int tc1, int tc2, int tc3, int tc4, int tc5)
-{
-    int total = 0;
-    if (!tc1)
-    {
-        for (int t1 = 0; t1 < DFIGS; t1++)
-            for (int t2 = t1; t2 < DFIGS; t2++)
-                for (int t3 = t2; t3 < DFIGS; t3++)
-                    for (int t4 = 0; t4 < DFIGS; t4++)
-                        for (int t5 = 0; t5 < DFIGS; t5++)
-                            if (t1 != t4)
-                            {
-                                tc1 = _card_map(1, t1);
-                                tc2 = _card_map(2, t2);
-                                tc3 = _card_map(3, t3);
-                                tc4 = _card_map(1, t4);
-                                tc5 = _card_map(4, t5);
-                                if (!(F[tc1] + F[tc2] + F[tc3] + F[tc4] + F[tc5]))
-                                {
-                                    HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5)] ++;
-                                    total ++;
-                                }
-                            }
-    }
-    else if (!tc4)
-    {
-        for (int t4 = 0; t4 < DFIGS; t4++)
-            for (int t5 = 0; t5 < DFIGS; t5++)
-            {
-                tc4 = _card_map(1, t4); tc5 = _card_map(2, t5);
-                if (!(F[tc4] + F[tc5]))
-                {
-                    HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5)] ++;
-                    total ++;
-                }
-            }
-    }
-    else if (!tc5)
-    {
-        for (int t5 = 0; t5 < DFIGS; t5++)
-        {
-            tc5 = _card_map(2, t5);
-            if (!F[tc5])
-            {
-                HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5)] ++;
-                total ++;
-            }
-        }
-    }
-    else
-    {
-        HP[_evaluateCards(pc1, pc2, oc1, oc2, tc1, tc2, tc3, tc4, tc5)] ++;
-        total ++;
-    }
-    return total;
-}
 
 int BasketManager::_evaluateCards(int p1, int p2, int o1, int o2, int t1, int t2, int t3, int t4, int t5)
 {
     int pscore = evaluator -> evaluateHand(p1, p2, t1, t2, t3, t4, t5);
     int oppscore = evaluator -> evaluateHand(o1, o2, t1, t2, t3, t4, t5);
-    //printf("p1: %d, p2: %d, score: %d\n", p1, p2, pscore);
-    //printf("o1: %d, o2: %d, score: %d\n", o1, o2, oppscore);
     if (pscore > oppscore)
         return AHEAD;
     if (pscore == oppscore)
