@@ -26,14 +26,11 @@ CfrModPlayer::CfrModPlayer(int pnum,
 void CfrModPlayer::annotateRandomAction(int card_id)
 {
     all_cards.push_back(card_id);
-    new_cards.push_back(card_id);
     /* We end the random phase */
-    //TODO źle źle, musisz uwzględniać rozkład koszyków przeciwnika
     if (all_cards.size() == CARDS_FOR_PHASE[random_phase])
     {
-        indexes.push_back(game -> getBasketManager() -> getIndex(random_phase, new_cards));
         int bnum = game -> getBasketManager() -> getBasket(all_cards);
-        prev_opp_dist = game -> getBasketManager() -> getOpponentBasketDist(random_phase, indexes);
+        prev_opp_dist = game -> getBasketManager() -> getOpponentBasketDist(random_phase, all_cards);
         printf("Player%d basket: %d\n", player_num, bnum);
         int action_id;
         if (player_num == 0)
@@ -42,7 +39,6 @@ void CfrModPlayer::annotateRandomAction(int card_id)
             action_id = encode_basket_pair(0, bnum);
         game -> makeAction(action_id);
         random_phase ++;
-        new_cards.clear();
     }
 
 }

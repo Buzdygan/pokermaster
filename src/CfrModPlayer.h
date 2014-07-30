@@ -28,8 +28,6 @@ class CfrModPlayer : public Player
         void endRound(double cash_change);
         int _logBid(int bid);
     protected:
-        vector<int> new_cards;
-        vector<int> indexes;
         dist prev_opp_dist;
 
         int CARDS_FOR_PHASE[4];
