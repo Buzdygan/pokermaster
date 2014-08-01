@@ -18,6 +18,7 @@ int PF[2][TWO_CARD_CODES + 5]; // pre flop basket
 double FL[2][MAX_BASKETS_NUMBER][THREE_CARD_CODES + 10][MAX_BASKETS_NUMBER]; // flop basket transistions
 double TR[2][2][MAX_BASKETS_NUMBER][ONE_CARD_CODES + 5][MAX_BASKETS_NUMBER]; // turn and river basket transitions
 
+bool ehs_loaded = false;
 int EHS1[EHS_SIZE1];
 int EHS2[EHS_SIZE2][EHS_SIZE1];
 int EHS3[EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
@@ -491,41 +492,47 @@ void BasketManager::_saveEHS()
 
 bool BasketManager::_loadEHS()
 {
-    try
+    if (!ehs_loaded)
     {
-        FILE *f = fopen(EHS_FILENAME, "r");
-        if (f == NULL)
-            return false;
-        // EHS_DIST
-        for (int st = 0; st < 4; st++)
-            for (int p = 0; p <= PRECISION; p++)
-                fscanf(f, "%d\n", &EHS_DIST[st][p]);
+        try
+        {
+            FILE *f = fopen(EHS_FILENAME, "r");
+            if (f == NULL)
+                return false;
+            // EHS_DIST
+            for (int st = 0; st < 4; st++)
+                for (int p = 0; p <= PRECISION; p++)
+                    fscanf(f, "%d\n", &EHS_DIST[st][p]);
 
-        for (int i1 = 0; i1 < EHS_SIZE1; i1++)
-            fscanf(f, "%d\n", &EHS1[i1]);
-
-        for (int i2 = 0; i2 < EHS_SIZE2; i2++)
             for (int i1 = 0; i1 < EHS_SIZE1; i1++)
-                fscanf(f, "%d\n", &EHS2[i2][i1]);
+                fscanf(f, "%d\n", &EHS1[i1]);
 
-        for (int i3 = 0; i3 < EHS_SIZE3; i3++)
             for (int i2 = 0; i2 < EHS_SIZE2; i2++)
                 for (int i1 = 0; i1 < EHS_SIZE1; i1++)
-                    fscanf(f, "%d\n", &EHS3[i3][i2][i1]);
+                    fscanf(f, "%d\n", &EHS2[i2][i1]);
 
-        for (int i4 = 0; i4 < EHS_SIZE4; i4++)
             for (int i3 = 0; i3 < EHS_SIZE3; i3++)
                 for (int i2 = 0; i2 < EHS_SIZE2; i2++)
                     for (int i1 = 0; i1 < EHS_SIZE1; i1++)
-                        fscanf(f, "%d\n", &EHS4[i4][i3][i2][i1]);
+                        fscanf(f, "%d\n", &EHS3[i3][i2][i1]);
 
-        fclose(f);
+            for (int i4 = 0; i4 < EHS_SIZE4; i4++)
+                for (int i3 = 0; i3 < EHS_SIZE3; i3++)
+                    for (int i2 = 0; i2 < EHS_SIZE2; i2++)
+                        for (int i1 = 0; i1 < EHS_SIZE1; i1++)
+                            fscanf(f, "%d\n", &EHS4[i4][i3][i2][i1]);
+
+            fclose(f);
+            ehs_loaded = true;
+            return true;
+        }
+        catch (int e)
+        {
+            return false;
+        }
+    }
+    else
         return true;
-    }
-    catch (int e)
-    {
-        return false;
-    }
 }
 
 void BasketManager::_computeCardCodesMap()
@@ -885,6 +892,7 @@ void BasketManager::_computeTransitions()
                             {
                                 F[tc5] ++;
                                 int basket4 = _determineBasket(3, EHS4[i4][i3][i2][i1]);
+                                printf("index: %d, i4: %d, i3: %d, i2: %d, i1: %d\n", index, i4, i3, i2, i1);
                                 B4[index][i4][i3][i2][i1] = basket4;
                                 // setting basket3 to basket4 transition for all the cards
                                 vector<int> cards = v4[i4].second;
