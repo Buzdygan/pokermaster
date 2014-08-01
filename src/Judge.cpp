@@ -135,6 +135,7 @@ int main(int argc, char* argv[])
     ModCfr *cfr_mod_strategy = new ModCfr(new HoldemPokerModAbstraction(&mng), strategy_repetitions, strategy_filename);
     Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng2), strategy_repetitions2, strategy_filename2, false);
 
+    vector<int> random_actions;
     for (int r = 0; r < rounds_number; r++)
     {
         // new round
@@ -174,13 +175,24 @@ int main(int argc, char* argv[])
         vector<int> players_cards[2];
 
         printf("CFR MOD: %d, CFR: %d\n", r & 1, (r+1) & 1);
+        int random_action_index = 0;
+        bool even_round = bool(r & 1);
+        if (even_round)
+            random_actions.clear();
         while (!game -> isFinal())
         {
             int pnum = game -> getPlayerId();
             if (pnum == RANDOM_PLAYER_NR)
             {
                 dist distr = game -> getActionDistribution();
-                int action_id = get_random_action(distr);
+                int action_id;
+                if (even_round)
+                {
+                    action_id = get_random_action(distr);
+                    random_actions.push_back(action_id);
+                }
+                else
+                    action_id = random_actions[random_action_index ++];
                 int seeing_player = game -> randomActionPlayer();
                 game -> makeAction(action_id);
                 if (seeing_player == ALL_PLAYERS)

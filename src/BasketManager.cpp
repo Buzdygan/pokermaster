@@ -62,6 +62,41 @@ int encode_basket_pair(int basket0, int basket1)
     return basket0 + basket1 * MAX_BASKETS_NUMBER;
 }
 
+bool _switchCard(int F[ONE_CARD_CODES + 3], int& card)
+{
+    if ((card - 1) % 4 == 0)
+        return false;
+    if (F[card])
+    {
+        int s = card - (card - 1) % 4;
+        for (int c = 1; c <= 3; c++)
+        {
+            if(!F[s + c])
+            {
+                card = s + c;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool _adjustCards(int F[ONE_CARD_CODES + 3], int& tc1, int& tc2, int& tc3)
+{
+    bool changed = false;
+    if(F[tc1])
+        changed |= _switchCard(F, tc1);
+    F[tc1] ++;
+    if(F[tc2])
+        changed |= _switchCard(F, tc2);
+    F[tc2] ++;
+    if(F[tc3])
+        changed |= _switchCard(F, tc3);
+    F[tc1] --;
+    F[tc2] --;
+    return changed;
+}
+
 BasketManager::BasketManager(int ind, int bs[4], HandEvaluator* ev, bool ehs_pot, char* estr)
 {
     ehs_potential = ehs_pot;
@@ -90,8 +125,6 @@ void BasketManager::_init(char* ehs_str)
     sprintf(EHS_FILENAME, "ehs_%s.cpt", ehs_str);
     _computeCC();
     _computeCardCombinations();
-    _loadEHS();
-    _computeEHS();
     if (!_loadTransitions())
     {
         printf("computing Transitions\n");
@@ -701,40 +734,6 @@ double BasketManager::checkEHS(vector<int> cards)
         return _EHS(F, cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]);
 }
 
-bool _switchCard(int F[ONE_CARD_CODES + 3], int& card)
-{
-    if ((card - 1) % 4 == 0)
-        return false;
-    if (F[card])
-    {
-        int s = card - (card - 1) % 4;
-        for (int c = 1; c <= 3; c++)
-        {
-            if(!F[s + c])
-            {
-                card = s + c;
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-bool _adjustCards(int F[ONE_CARD_CODES + 3], int& tc1, int& tc2, int& tc3)
-{
-    bool changed = false;
-    if(F[tc1])
-        changed |= _switchCard(F, tc1);
-    F[tc1] ++;
-    if(F[tc2])
-        changed |= _switchCard(F, tc2);
-    F[tc2] ++;
-    if(F[tc3])
-        changed |= _switchCard(F, tc3);
-    F[tc1] --;
-    F[tc2] --;
-    return changed;
-}
 
 void BasketManager::_computeEHS()
 {
@@ -757,48 +756,33 @@ void BasketManager::_computeEHS()
             int tc1 = v2[i2].first.p1();
             int tc2 = v2[i2].first.p2();
             int tc3 = v2[i2].first.p3();
-            bool recompute2 = _adjustCards(F, tc1, tc2, tc3);
+            _adjustCards(F, tc1, tc2, tc3);
             if (F[tc1] + F[tc2] + F[tc3] == 0)
             {
                 F[tc1] ++; F[tc2] ++; F[tc3] ++;
-                if (recompute2)
-                {
-                    ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3));
-                    EHS2[i2][i1] = ehs;
-                }
-                else
-                    ehs = EHS2[i2][i1];
+                ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3));
+                EHS2[i2][i1] = ehs;
                 EHS_DIST[1][ehs] += S2[i2];
                 for (int i3 = 0; i3 < v3.size(); i3++)
                 {
                     int tc4 = v3[i3].first;
-                    bool recompute3 = _switchCard(F, tc4);
+                    _switchCard(F, tc4);
                     if (!F[tc4])
                     {
                         F[tc4] ++;
-                        if (recompute3)
-                        {
-                            ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4));
-                            EHS3[i3][i2][i1] = ehs;
-                        }
-                        else
-                            ehs = EHS3[i3][i2][i1];
+                        ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4));
+                        EHS3[i3][i2][i1] = ehs;
                         EHS_DIST[2][ehs] += S3[i3];
 
                         for (int i4 = 0; i4 < v4.size(); i4++)
                         {
                             int tc5 = v4[i4].first;
-                            bool recompute4 = _switchCard(F, tc5);
+                            _switchCard(F, tc5);
                             if (!F[tc5])
                             {
                                 F[tc5] ++;
-                                if (recompute4)
-                                {
-                                    ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5));
-                                    EHS4[i4][i3][i2][i1] = ehs;
-                                }
-                                else
-                                    ehs = EHS4[i4][i3][i2][i1];
+                                ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5));
+                                EHS4[i4][i3][i2][i1] = ehs;
                                 EHS_DIST[3][ehs] += S4[i4];
                                 F[tc5] --;
                             }
@@ -877,6 +861,7 @@ void BasketManager::_computeTransitions()
             int tc1 = v2[i2].first.p1();
             int tc2 = v2[i2].first.p2();
             int tc3 = v2[i2].first.p3();
+            _adjustCards(F, tc1, tc2, tc3);
             if (F[tc1] + F[tc2] + F[tc3] == 0)
             {
                 F[tc1] ++; F[tc2] ++; F[tc3] ++;
@@ -885,6 +870,7 @@ void BasketManager::_computeTransitions()
                 for (int i3 = 0; i3 < v3.size(); i3++)
                 {
                     int tc4 = v3[i3].first;
+                    _switchCard(F, tc4);
                     if (!F[tc4])
                     {
                         F[tc4] ++;
@@ -894,6 +880,7 @@ void BasketManager::_computeTransitions()
                         for (int i4 = 0; i4 < v4.size(); i4++)
                         {
                             int tc5 = v4[i4].first;
+                            _switchCard(F, tc5);
                             if (!F[tc5])
                             {
                                 F[tc5] ++;
