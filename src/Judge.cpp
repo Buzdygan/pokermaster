@@ -155,16 +155,14 @@ int main(int argc, char* argv[])
                                        new HoldemPokerAbstraction(&mng));
                                        */
 
-        /*
         players[r & 1] = new CfrModPlayer(r & 1,
                                        cfr_mod_strategy,
                                        new HoldemPokerModAbstraction(&mng));
-                                       */
         /*
         players[r & 1] = new HumanPlayer(r & 1);
         */
 
-        players[r & 1] = new DummyPlayer();
+        //players[r & 1] = new DummyPlayer();
 
         players[(r + 1) & 1] = new CfrPlayer((r + 1) & 1,
                                        cfr_strategy,
