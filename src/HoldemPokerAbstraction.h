@@ -38,6 +38,7 @@ class HoldemPokerAbstraction : public HoldemPoker
         static const int ACTION_FOLD;
         static const int ACTION_CALL;
         static const int ACTION_RAISE;
+        static const int ACTION_ALL_IN;
         static const int PHASE_FIRST_BID;
         static const int PHASE_MIDDLE_BID;
         static const int PHASE_LAST_BID;

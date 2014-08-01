@@ -64,6 +64,8 @@ int CfrPlayer::getAction(vector<int> available_actions)
         return cur_stake;
     if (action_id == game -> ACTION_RAISE)
         return cur_stake * 2;
+    if (action_id == game -> ACTION_ALL_IN)
+        return game -> MAX_STAKE;
     return cur_stake;
 }
 
@@ -77,7 +79,9 @@ int CfrPlayer::_logBid(int bid)
     int action_id = game -> ACTION_FOLD;
     if (bid == cur_stake)
         action_id = game -> ACTION_CALL;
-    if (bid > cur_stake)
+    if (bid == game -> MAX_STAKE)
+        action_id = game -> ACTION_ALL_IN;
+    else if (bid > cur_stake)
         action_id = game -> ACTION_RAISE;
     cur_stake = bid;
     return action_id;

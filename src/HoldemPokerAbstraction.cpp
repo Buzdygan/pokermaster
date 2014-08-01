@@ -7,6 +7,7 @@ using namespace std;
 const int HoldemPokerAbstraction::ACTION_FOLD = 0;
 const int HoldemPokerAbstraction::ACTION_CALL = 1;
 const int HoldemPokerAbstraction::ACTION_RAISE = 2;
+const int HoldemPokerAbstraction::ACTION_ALL_IN = 3;
 const int HoldemPokerAbstraction::PHASE_FIRST_BID = 4;
 const int HoldemPokerAbstraction::PHASE_MIDDLE_BID = 5;
 const int HoldemPokerAbstraction::PHASE_LAST_BID = 6;
@@ -76,16 +77,27 @@ void HoldemPokerAbstraction::makeAction(int action_id)
         if (action_id == ACTION_CALL)
         {
             agreed_stake = cur_stake;
-            /* Second player agrees */
-            if (bids_number >= 2)
-                _endOfBiddingPhase();
+            if (agreed_stake == MAX_STAKE)
+                _endGame();
             else
-                cur_player = other(cur_player);
+            {
+                /* Second player agrees */
+                if (bids_number >= 2)
+                    _endOfBiddingPhase();
+                else
+                    cur_player = other(cur_player);
+            }
         }
         if (action_id == ACTION_RAISE)
         {
             agreed_stake = cur_stake;
             cur_stake *= 2;
+            cur_player = other(cur_player);
+        }
+        if (action_id == ACTION_ALL_IN)
+        {
+            agreed_stake = cur_stake;
+            cur_stake = MAX_STAKE;
             cur_player = other(cur_player);
         }
     }
@@ -103,7 +115,10 @@ vector<int> HoldemPokerAbstraction::getActionIds(int bids_num)
         action_ids.push_back(ACTION_FOLD);
     action_ids.push_back(ACTION_CALL);
     if (bids_num < MAX_BIDS_NUMBER)
+    {
         action_ids.push_back(ACTION_RAISE);
+        action_ids.push_back(ACTION_ALL_IN);
+    }
     return action_ids;
 }
 

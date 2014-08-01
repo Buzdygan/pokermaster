@@ -106,6 +106,18 @@ vector<int> HoldemPoker::getActionIds()
     return action_ids;
 }
 
+void HoldemPoker::_endGame()
+{
+    int strength0 = _evaluateHand(0);
+    int strength1 = _evaluateHand(1);
+    if (strength0 > strength1)
+        _endGame(0);
+    else if (strength1 > strength0)
+        _endGame(1);
+    else
+        _endGame(DRAW);
+}
+
 void HoldemPoker::_endGame(int winner)
 {
     if (winner == 0)
@@ -166,11 +178,17 @@ void HoldemPoker::makeAction(int action_id)
         else if (bet == cur_stake)
         {
             agreed_stake = cur_stake;
-            /* Second player agrees */
-            if (bids_number >= 2)
-                _endOfBiddingPhase();
+            /* all in */
+            if (agreed_stake == MAX_STAKE)
+                _endGame();
             else
-                cur_player = other(cur_player);
+            {
+                /* Second player agrees */
+                if (bids_number >= 2)
+                    _endOfBiddingPhase();
+                else
+                    cur_player = other(cur_player);
+            }
         }
         if (bet > cur_stake)
         {

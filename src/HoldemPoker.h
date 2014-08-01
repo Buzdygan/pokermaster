@@ -80,6 +80,8 @@ class HoldemPoker : public GameAbstraction
         void _endOfBiddingPhase();
         void _startOfBiddingPhase();
         void _endGame(int winner);
+        void _endGame();
+
     private:
         vector<int> deck;
         vector<int> player_cards[2];
