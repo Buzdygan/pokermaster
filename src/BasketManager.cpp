@@ -90,6 +90,8 @@ void BasketManager::_init(char* ehs_str)
     sprintf(EHS_FILENAME, "ehs_%s.cpt", ehs_str);
     _computeCC();
     _computeCardCombinations();
+    _loadEHS();
+    _computeEHS();
     if (!_loadTransitions())
     {
         printf("computing Transitions\n");
@@ -680,11 +682,65 @@ int _perc(double e)
     return int(e * PRECISION);
 }
 
+double BasketManager::checkEHS(vector<int> cards)
+{
+    int F[ONE_CARD_CODES + 3];
+    memset(F, 0, sizeof(F));
+    F[cards[0]] ++; F[cards[1]] ++;
+    int n = cards.size();
+    if (n == 2)
+        return _EHS(F, cards[0], cards[1]);
+    F[cards[2]] ++; F[cards[3]] ++; F[cards[4]] ++;
+    if (n == 5)
+        return _EHS(F, cards[0], cards[1], cards[2], cards[3], cards[4]);
+    F[cards[5]] ++;
+    if (n == 6)
+        return _EHS(F, cards[0], cards[1], cards[2], cards[3], cards[4], cards[5]);
+    F[cards[6]] ++;
+    if (n == 7)
+        return _EHS(F, cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6]);
+}
+
+bool _switchCard(int F[ONE_CARD_CODES + 3], int& card)
+{
+    if ((card - 1) % 4 == 0)
+        return false;
+    if (F[card])
+    {
+        int s = card - (card - 1) % 4;
+        for (int c = 1; c <= 3; c++)
+        {
+            if(!F[s + c])
+            {
+                card = s + c;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool _adjustCards(int F[ONE_CARD_CODES + 3], int& tc1, int& tc2, int& tc3)
+{
+    bool changed = false;
+    if(F[tc1])
+        changed |= _switchCard(F, tc1);
+    F[tc1] ++;
+    if(F[tc2])
+        changed |= _switchCard(F, tc2);
+    F[tc2] ++;
+    if(F[tc3])
+        changed |= _switchCard(F, tc3);
+    F[tc1] --;
+    F[tc2] --;
+    return changed;
+}
+
 void BasketManager::_computeEHS()
 {
     int F[ONE_CARD_CODES + 3];
     memset(F, 0, sizeof(F));
-    double ehs = 0.0;
+    int ehs;
     for (int i1 = 0; i1 < v1.size(); i1 ++)
     {
         int pc1 = v1[i1].first.p1();
@@ -701,25 +757,49 @@ void BasketManager::_computeEHS()
             int tc1 = v2[i2].first.p1();
             int tc2 = v2[i2].first.p2();
             int tc3 = v2[i2].first.p3();
+            bool recompute2 = _adjustCards(F, tc1, tc2, tc3);
             if (F[tc1] + F[tc2] + F[tc3] == 0)
             {
                 F[tc1] ++; F[tc2] ++; F[tc3] ++;
-                EHS_DIST[1][EHS2[i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3))] += S2[i2];
+                if (recompute2)
+                {
+                    ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3));
+                    EHS2[i2][i1] = ehs;
+                }
+                else
+                    ehs = EHS2[i2][i1];
+                EHS_DIST[1][ehs] += S2[i2];
                 for (int i3 = 0; i3 < v3.size(); i3++)
                 {
                     int tc4 = v3[i3].first;
+                    bool recompute3 = _switchCard(F, tc4);
                     if (!F[tc4])
                     {
                         F[tc4] ++;
-                        EHS_DIST[2][EHS3[i3][i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4))] += S3[i3];
+                        if (recompute3)
+                        {
+                            ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4));
+                            EHS3[i3][i2][i1] = ehs;
+                        }
+                        else
+                            ehs = EHS3[i3][i2][i1];
+                        EHS_DIST[2][ehs] += S3[i3];
 
                         for (int i4 = 0; i4 < v4.size(); i4++)
                         {
                             int tc5 = v4[i4].first;
+                            bool recompute4 = _switchCard(F, tc5);
                             if (!F[tc5])
                             {
                                 F[tc5] ++;
-                                EHS_DIST[3][EHS4[i4][i3][i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5))] += S4[i4];
+                                if (recompute4)
+                                {
+                                    ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5));
+                                    EHS4[i4][i3][i2][i1] = ehs;
+                                }
+                                else
+                                    ehs = EHS4[i4][i3][i2][i1];
+                                EHS_DIST[3][ehs] += S4[i4];
                                 F[tc5] --;
                             }
                         }
@@ -1106,6 +1186,7 @@ inline int _card_figure(int card)
 vector<int> BasketManager::_convertCards(vector<int> cards)
 {
     int Ccnt [5];
+    memset(Ccnt, 0, sizeof(Ccnt));
     int pop_color = -1;
     int pop_color_score = 0;
     for (int i = 0; i < cards.size(); i++)
@@ -1118,7 +1199,8 @@ vector<int> BasketManager::_convertCards(vector<int> cards)
             pop_color = col;
         }
     }
-    // hearts are already the most common color
+    printf("pop color: %d, pop score: %d\n", pop_color, pop_color_score);
+    // clubs are already the most common color
     if (pop_color == 0)
         return cards;
     vector<int> converted_cards;
@@ -1127,9 +1209,9 @@ vector<int> BasketManager::_convertCards(vector<int> cards)
         int col = _card_color(cards[i]);
         int fig = _card_figure(cards[i]);
         if (col == pop_color)
-            converted_cards.push_back(1 + 4 * fig); // convert to hearts
+            converted_cards.push_back(1 + 4 * fig); // convert to clubs
         else if (col == 0)
-            converted_cards.push_back(1 + 4 * fig + pop_color); // convert hearts to pop_color
+            converted_cards.push_back(1 + 4 * fig + pop_color); // convert clubs to pop_color
         else
             converted_cards.push_back(cards[i]);
     }

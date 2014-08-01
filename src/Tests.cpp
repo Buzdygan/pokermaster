@@ -36,6 +36,39 @@ int get_random_action(dist distribution)
     return distribution[0].first;
 }
 
+void testBaskets(BasketManager* mng)
+{
+    //23 16 44 22 17
+    while(1)
+    {
+        int c1, c2, c3;
+        vector<int> cards;
+        printf("R1\n");
+        scanf("%d %d", &c1, &c2);
+        cards.push_back(c1);
+        cards.push_back(c2);
+        printf(" Basket: %d\n", mng -> getBasket(cards));
+
+        printf("R2\n");
+        scanf("%d %d %d", &c1, &c2, &c3);
+        cards.push_back(c1);
+        cards.push_back(c2);
+        cards.push_back(c3);
+        printf(" Basket: %d\n", mng -> getBasket(cards));
+
+        printf("R3\n");
+        scanf("%d", &c1);
+        cards.push_back(c1);
+        printf(" Basket: %d\n", mng -> getBasket(cards));
+
+        printf("R4\n");
+        scanf("%d", &c1);
+        cards.push_back(c1);
+        printf(" Basket: %d\n", mng -> getBasket(cards));
+    }
+
+}
+
 int main(int argc, char* argv[])
 {
     srand(time(NULL));
@@ -59,62 +92,10 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {5,5,5,5};
-    sprintf(strategy_filename, "cfr.mod.strategy%s-%d-%d-%d-%d-%d.stg", EHS_STR,
-                                                                       basket_sizes[0],
-                                                                       basket_sizes[1],
-                                                                       basket_sizes[2],
-                                                                       basket_sizes[3],
-                                                                       strategy_repetitions);
+    int basket_sizes[4] = {12,10,10,10};
     HandEvaluator evaluator;
 
     BasketManager mng(0, basket_sizes, &evaluator, EHS_POTENTIAL, EHS_STR);
-    Cfr *cfr_mod_strategy = new Cfr(new HoldemPokerModAbstraction(&mng), strategy_repetitions, strategy_filename, true);
-
-    for (int r = 0; r < rounds_number; r++)
-    {
-        // new round
-        GameAbstraction* game = new HoldemPokerModAbstraction(&mng);
-        printf("RUNDAAAAAAAAAAAAAAAAAAAAAAAAAA: %d\n", r);
-
-
-        players[r & 1] = new CfrAbstractionPlayer(r & 1,
-                                       cfr_mod_strategy,
-                                       new HoldemPokerModAbstraction(&mng));
-
-        players[(r + 1) & 1] = new DummyPlayer();
-
-        vector<int> players_cards[2];
-
-        printf("CFR: %d, DUMMY: %d\n", r & 1, (r+1) & 1);
-        while (!game -> isFinal())
-        {
-            int pnum = game -> getPlayerId();
-            if (pnum == RANDOM_PLAYER_NR)
-            {
-                dist distr = game -> getActionDistribution();
-                int action_id = get_random_action(distr);
-                game -> makeAction(action_id);
-                for (int p = 0; p < 2; p++)
-                    players[p] -> annotateRandomAction(action_id);
-            }
-            else
-            {
-                int action_id = players[pnum] -> getAction(game -> getActionIds());
-                log(0, "Player %d plays %d\n", pnum, action_id);
-                game -> makeAction(action_id);
-                players[other(pnum)] -> annotateOpponentAction(action_id);
-                players[pnum] -> annotatePlayerAction(action_id);
-            }
-        }
-        utility round_result = game -> getUtility();
-        players[0] -> endRound(round_result.first);
-        players[1] -> endRound(round_result.second);
-        score[r & 1] += round_result.first;
-        score[(r + 1) & 1] += round_result.second;
-        printf("End of round %d, results: %1.f:%1.f, current score: %d:%d\n", r, round_result.first,
-                round_result.second, score[0], score[1]);
-        delete game;
-    }
+    testBaskets(&mng);
     return 0;
 }

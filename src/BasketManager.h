@@ -48,6 +48,7 @@ class BasketManager
         int getIndex(int stage, vector<int> cards);
         int getBasketsNumber(int stage);
         int cardsCode(vector<int> cards);
+        double checkEHS(vector<int> cards);
         dist getBasketPairsDistribution(int stage, int basket0, int basket1);
         void test();
     private:

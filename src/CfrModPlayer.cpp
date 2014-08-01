@@ -30,8 +30,8 @@ void CfrModPlayer::annotateRandomAction(int card_id)
     if (all_cards.size() == CARDS_FOR_PHASE[random_phase])
     {
         int bnum = game -> getBasketManager() -> getBasket(all_cards);
-        prev_opp_dist = game -> getBasketManager() -> getOpponentBasketDist(random_phase, all_cards);
         printf("Player%d basket: %d\n", player_num, bnum);
+        prev_opp_dist = game -> getBasketManager() -> getOpponentBasketDist(random_phase, all_cards);
         int action_id;
         if (player_num == 0)
             action_id = encode_basket_pair(bnum, 0);
