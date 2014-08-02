@@ -40,8 +40,11 @@ ModCfr::ModCfr(GameAbstraction* gm, int iterations, const char* strategy_file)
     {
         printf("Mod Cfr: Building Tree\n");
         start_is = _exploreTree();
+        printf("Mod Cfr: Tree Built\n");
         in_edges[start_is] = 0;
+        printf("Mod Cfr: Topo ordering\n");
         _topo_order_isets();
+        printf("Mod Cfr: Topo ordered\n");
         for (int it = 0; it < iterations; it++)
         {
             printf("Mod Cfr, Iteration %d\n", it);
@@ -206,6 +209,7 @@ int ModCfr::_exploreTree()
 {
     int game_is_id = game -> getInformationSetId();
     int is_id;
+    printf("explore Tree, game_is_id: %d\n", game_is_id);
     if(!is_to_id[game_is_id])
     {
         is_id = is_cnt;
@@ -214,6 +218,7 @@ int ModCfr::_exploreTree()
     }
     else
         is_id = is_to_id[game_is_id];
+    printf("explore Tree, game_is_id, is_id: %d, is_cnt: %d\n", game_is_id, is_id, is_cnt);
 
     if (!in_edges.count(is_id))
         in_edges[is_id] = 1;
@@ -221,6 +226,8 @@ int ModCfr::_exploreTree()
         in_edges[is_id] += 1;
     if (visited[is_id])
         return is_id;
+
+    printf("check1\n");
 
     visited[is_id] = true;
     all_isets.push_back(is_id);
@@ -231,6 +238,7 @@ int ModCfr::_exploreTree()
         is_utility[is_id] = game -> getUtility();
         return is_id;
     }
+    printf("check2\n");
 
     int p = game -> getPlayerId();
     is_player[is_id] = p;
@@ -238,6 +246,7 @@ int ModCfr::_exploreTree()
     Nlist nlist;
     if (p == RANDOM_PLAYER_NR)
     {
+        printf("check3\n");
         dist action_distr = game -> getActionDistribution();
         for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
         {
@@ -249,6 +258,7 @@ int ModCfr::_exploreTree()
     }
     else
     {
+        printf("check4\n");
         player_isets.push_back(is_id);
         vector<int> action_ids = game -> getActionIds();
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
@@ -263,6 +273,7 @@ int ModCfr::_exploreTree()
             nlist.push_back(make_pair(make_pair(n_id, *a_id), 0.0));
         }
     }
+    printf("check5\n");
     is_graph[is_id] = nlist;
     return is_id;
 }
