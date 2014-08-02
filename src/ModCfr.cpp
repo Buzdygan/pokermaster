@@ -11,7 +11,7 @@ const char* ModCfr::DEFAULT_FILE = "mod-cfr.stg";
 const char ModCfr::FILE_DELIM = '\n';
 const int ModCfr::ITERATIONS = 2000;
 
-const int MAX_ISETS = 10000;
+const int MAX_ISETS = 20000;
 
 double tab_R[MAX_ISETS][5];
 double tab_S[MAX_ISETS][5];
