@@ -11,7 +11,6 @@ const char* ModCfr::DEFAULT_FILE = "mod-cfr.stg";
 const char ModCfr::FILE_DELIM = '\n';
 const int ModCfr::ITERATIONS = 2000;
 
-const int MAX_ISETS = 18000;
 
 double tab_R[MAX_ISETS][5];
 double tab_S[MAX_ISETS][5];
@@ -50,12 +49,12 @@ ModCfr::ModCfr(GameAbstraction* gm, int iterations, const char* strategy_file)
             printf("Mod Cfr, Iteration %d\n", it);
             _recomputeRegrets();
             printf("Regrets recomputed\n");
-            double it_err = _recomputeStrategy() / (it + 1);
+            double it_err = _recomputeStrategy(tab_R) / (it + 1);
             err_sum += it_err;
             printf("It err: %0.5f Err: %0.5f\n", it_err, err_sum / (it + 1));
 
         }
-        //_recomputeStrategy((double**)tab_S);
+        _recomputeStrategy(tab_S);
         _copyStrategy();
         srand(time(0));
         saveToFile(strategy_file);
@@ -273,9 +272,9 @@ int ModCfr::_exploreTree()
     return is_id;
 }
 
-double ModCfr::_recomputeStrategy()
+double ModCfr::_recomputeStrategy(double reg[MAX_ISETS][5])
 {
-    printf("recompute Strategy\n");
+    printf("recompute Strategy R\n");
     double is_r_sums [MAX_ISETS];
     double is_r_cnt [MAX_ISETS];
     double mregret [MAX_ISETS];
@@ -291,37 +290,27 @@ double ModCfr::_recomputeStrategy()
         int is_id = player_isets[i];
         for (int j = 0; j < is_graph[is_id].size(); j++)
         {
-            printf("checka\n");
-            int a_id = is_graph[is_id][j].first.first;
-            printf("checkb\n");
-            double r = tab_R[is_id][a_id];
+            int a_id = is_graph[is_id][j].first.second;
+            double r = reg[is_id][a_id];
             printf("is_id: %d, a_id: %d, r: %lf\n", is_id, a_id, r);
             double val = max(r, 0.0);
-            printf("checkc\n");
             is_r_sums[is_id] = is_r_sums[is_id] + val;
-            printf("checkd\n");
             is_r_cnt[is_id] = is_r_cnt[is_id] + 1.0;
-            printf("checke\n");
             regret_sum -= mregret[is_id];
-            printf("checkf\n");
             mregret[is_id] = max(mregret[is_id], val);
-            printf("checkg\n");
             regret_sum += mregret[is_id];
-            printf("checkh\n");
 
         }
     }
-    printf("check2\n");
     for (int i = 0; i < player_isets.size(); i++)
     {
         int is_id = player_isets[i];
         for (int j = 0; j < is_graph[is_id].size(); j++)
         {
-            int a_id = is_graph[is_id][j].first.first;
-            double r = tab_R[is_id][a_id];
+            int a_id = is_graph[is_id][j].first.second;
+            double r = reg[is_id][a_id];
             double val = max(r, 0.0);
             double sum = is_r_sums[is_id];
-            printf("is_id: %d, a_id: %d, r: %lf, sum: %lf \n", is_id, a_id, r, sum);
             if (sum > 0.0)
                 tab_strategy[is_id][a_id] = val / sum;
             else

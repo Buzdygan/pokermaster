@@ -8,6 +8,8 @@
 #include "GameAbstraction.h"
 using namespace std;
 
+const int MAX_ISETS = 18000;
+
 typedef map<pair<int, int>, double> Smap;
 typedef map<pair<int, int>, double>::iterator Sit;
 typedef vector<pair<pair<int, int>, double> > Nlist; // neighbour list
@@ -55,7 +57,7 @@ class ModCfr
         int _exploreTree();
         void _topo_order_isets();
         utility _walkTree(int is_id);
-        double _recomputeStrategy();
+        double _recomputeStrategy(double t[MAX_ISETS][5]);
         void _copyStrategy();
         int getActionId(dist action_dist);
         bool loadFromFile(const char* filename);
