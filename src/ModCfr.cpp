@@ -233,7 +233,6 @@ int ModCfr::_exploreTree()
         is_id = is_cnt;
         id_to_is[is_cnt] = game_is_id;
         is_to_id[game_is_id] = is_cnt ++;
-        state_to_is[s_id] = is_id;
 
         // init regrets and strategy
         if (p != RANDOM_PLAYER_NR)
@@ -251,6 +250,7 @@ int ModCfr::_exploreTree()
     }
     else
         is_id = is_to_id[game_is_id];
+    state_to_is[s_id] = is_id;
     //printf("explore Tree, game_s_id: %d, s_id: %d, state_cnt: %d\n", game_s_id, s_id, state_cnt);
 
     if (!in_edges.count(s_id))
