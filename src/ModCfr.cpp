@@ -218,7 +218,7 @@ int ModCfr::_exploreTree()
     }
     else
         is_id = is_to_id[game_is_id];
-    printf("explore Tree, game_is_id, is_id: %d, is_cnt: %d\n", game_is_id, is_id, is_cnt);
+    printf("explore Tree, game_is_id: %d, is_id: %d, is_cnt: %d\n", game_is_id, is_id, is_cnt);
 
     if (!in_edges.count(is_id))
         in_edges[is_id] = 1;
