@@ -1,5 +1,6 @@
 #include <set>
 #include <fstream>
+#include <cstring>
 #include <queue>
 #include "ModCfr.h"
 #include "GameAbstraction.h"
