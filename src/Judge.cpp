@@ -2,6 +2,7 @@
 #include <ctime>
 #include <vector>
 #include <cstdio>
+#include <algorithm>
 
 #include "GameAbstraction.h"
 #include "HoldemPoker.h"
@@ -136,6 +137,8 @@ int main(int argc, char* argv[])
     Cfr *cfr_strategy = new Cfr(new HoldemPokerAbstraction(&mng2), strategy_repetitions2, strategy_filename2, false);
 
     vector<int> random_actions;
+    for (int i = 1; i <= 52; i++)
+        random_actions.push_back(i);
     for (int r = 0; r < rounds_number; r++)
     {
         // new round
@@ -176,23 +179,15 @@ int main(int argc, char* argv[])
 
         printf("CFR MOD: %d, CFR: %d\n", r & 1, (r+1) & 1);
         int random_action_index = 0;
-        bool even_round = bool(r & 1);
-        if (even_round)
-            random_actions.clear();
+        if (!(r & 1))
+            random_shuffle(random_actions.begin(), random_actions.end());
         while (!game -> isFinal())
         {
             int pnum = game -> getPlayerId();
             if (pnum == RANDOM_PLAYER_NR)
             {
-                dist distr = game -> getActionDistribution();
-                int action_id;
-                if (even_round)
-                {
-                    action_id = get_random_action(distr);
-                    random_actions.push_back(action_id);
-                }
-                else
-                    action_id = random_actions[random_action_index ++];
+                //dist distr = game -> getActionDistribution();
+                int action_id = random_actions[random_action_index ++];
                 int seeing_player = game -> randomActionPlayer();
                 game -> makeAction(action_id);
                 if (seeing_player == ALL_PLAYERS)
