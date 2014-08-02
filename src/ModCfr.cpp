@@ -340,6 +340,7 @@ int ModCfr::getActionId(dist action_dist)
     for (int i = 0; i < action_dist.size(); i++)
         printf("a_id: %d, prob: %lf\n", action_dist[i].first, action_dist[i].second);
 
+    /*
     double random_double = ((double) rand() / (RAND_MAX));
     double prob_sum = 0;
     int choice = -1;
@@ -352,6 +353,22 @@ int ModCfr::getActionId(dist action_dist)
             return action_id;
     }
     return action_dist[0].first;
+    */
+    // deterministic
+
+    double max_prob = 0.0;
+    int res = action_dist[0].first;
+    for (int i = 0; i < action_dist.size(); i++)
+    {
+        int action_id = action_dist[i].first;
+        double prob = action_dist[i].second;
+        if (prob > max_prob)
+        {
+            max_prob = prob;
+            res = action_id;
+        }
+    }
+    return res;
 
 }
 
