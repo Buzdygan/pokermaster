@@ -11,7 +11,7 @@ const char* ModCfr::DEFAULT_FILE = "mod-cfr.stg";
 const char ModCfr::FILE_DELIM = '\n';
 const int ModCfr::ITERATIONS = 2000;
 
-const int MAX_ISETS = 30000;
+const int MAX_ISETS = 18000;
 
 double tab_R[MAX_ISETS][5];
 double tab_S[MAX_ISETS][5];
@@ -209,7 +209,7 @@ int ModCfr::_exploreTree()
 {
     int game_is_id = game -> getInformationSetId();
     int is_id;
-    printf("explore Tree, game_is_id: %d\n", game_is_id);
+    //printf("explore Tree, game_is_id: %d\n", game_is_id);
     if(!is_to_id[game_is_id])
     {
         is_id = is_cnt;
@@ -218,7 +218,7 @@ int ModCfr::_exploreTree()
     }
     else
         is_id = is_to_id[game_is_id];
-    printf("explore Tree, game_is_id: %d, is_id: %d, is_cnt: %d\n", game_is_id, is_id, is_cnt);
+    //printf("explore Tree, game_is_id: %d, is_id: %d, is_cnt: %d\n", game_is_id, is_id, is_cnt);
 
     if (!in_edges.count(is_id))
         in_edges[is_id] = 1;
@@ -227,7 +227,6 @@ int ModCfr::_exploreTree()
     if (visited[is_id])
         return is_id;
 
-    printf("check1\n");
 
     visited[is_id] = true;
     all_isets.push_back(is_id);
@@ -238,7 +237,6 @@ int ModCfr::_exploreTree()
         is_utility[is_id] = game -> getUtility();
         return is_id;
     }
-    printf("check2\n");
 
     int p = game -> getPlayerId();
     is_player[is_id] = p;
@@ -246,7 +244,6 @@ int ModCfr::_exploreTree()
     Nlist nlist;
     if (p == RANDOM_PLAYER_NR)
     {
-        printf("check3\n");
         dist action_distr = game -> getActionDistribution();
         for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
         {
@@ -258,7 +255,6 @@ int ModCfr::_exploreTree()
     }
     else
     {
-        printf("check4\n");
         player_isets.push_back(is_id);
         vector<int> action_ids = game -> getActionIds();
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
@@ -273,13 +269,13 @@ int ModCfr::_exploreTree()
             nlist.push_back(make_pair(make_pair(n_id, *a_id), 0.0));
         }
     }
-    printf("check5\n");
     is_graph[is_id] = nlist;
     return is_id;
 }
 
 double ModCfr::_recomputeStrategy(double ** reg)
 {
+    printf("recompute Strategy\n");
     double is_r_sums [MAX_ISETS];
     double is_r_cnt [MAX_ISETS];
     double mregret [MAX_ISETS];
@@ -289,6 +285,7 @@ double ModCfr::_recomputeStrategy(double ** reg)
 
     double regret_sum = 0;
 
+    printf("check1, player_isets.size: %d\n", (int)player_isets.size());
     for (int i = 0; i < player_isets.size(); i++)
     {
         int is_id = player_isets[i];
@@ -296,6 +293,7 @@ double ModCfr::_recomputeStrategy(double ** reg)
         {
             int a_id = is_graph[is_id][j].first.first;
             double r = reg[is_id][a_id];
+            printf("is_id: %d, a_id: %d, r: %lf\n", is_id, a_id, r);
             double val = max(r, 0.0);
             is_r_sums[is_id] = is_r_sums[is_id] + val;
             is_r_cnt[is_id] = is_r_cnt[is_id] + 1.0;
@@ -305,6 +303,7 @@ double ModCfr::_recomputeStrategy(double ** reg)
 
         }
     }
+    printf("check2\n");
     for (int i = 0; i < player_isets.size(); i++)
     {
         int is_id = player_isets[i];
@@ -314,12 +313,14 @@ double ModCfr::_recomputeStrategy(double ** reg)
             double r = reg[is_id][a_id];
             double val = max(r, 0.0);
             double sum = is_r_sums[is_id];
+            printf("is_id: %d, a_id: %d, r: %lf, sum: %lf \n", is_id, a_id, r, sum);
             if (sum > 0.0)
                 tab_strategy[is_id][a_id] = val / sum;
             else
                 tab_strategy[is_id][a_id] = 1.0 / is_r_cnt[is_id];
         }
     }
+    printf("end recompute Strategy\n");
     return regret_sum;
 }
 
