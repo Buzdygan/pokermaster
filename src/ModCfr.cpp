@@ -50,12 +50,12 @@ ModCfr::ModCfr(GameAbstraction* gm, int iterations, const char* strategy_file)
             printf("Mod Cfr, Iteration %d\n", it);
             _recomputeRegrets();
             printf("Regrets recomputed\n");
-            double it_err = _recomputeStrategy((double**)tab_R) / (it + 1);
+            double it_err = _recomputeStrategy() / (it + 1);
             err_sum += it_err;
             printf("It err: %0.5f Err: %0.5f\n", it_err, err_sum / (it + 1));
 
         }
-        _recomputeStrategy((double**)tab_S);
+        //_recomputeStrategy((double**)tab_S);
         _copyStrategy();
         srand(time(0));
         saveToFile(strategy_file);
@@ -273,7 +273,7 @@ int ModCfr::_exploreTree()
     return is_id;
 }
 
-double ModCfr::_recomputeStrategy(double ** reg)
+double ModCfr::_recomputeStrategy()
 {
     printf("recompute Strategy\n");
     double is_r_sums [MAX_ISETS];
@@ -292,7 +292,7 @@ double ModCfr::_recomputeStrategy(double ** reg)
         for (int j = 0; j < is_graph[is_id].size(); j++)
         {
             int a_id = is_graph[is_id][j].first.first;
-            double r = reg[is_id][a_id];
+            double r = tab_R[is_id][a_id];
             printf("is_id: %d, a_id: %d, r: %lf\n", is_id, a_id, r);
             double val = max(r, 0.0);
             is_r_sums[is_id] = is_r_sums[is_id] + val;
@@ -310,7 +310,7 @@ double ModCfr::_recomputeStrategy(double ** reg)
         for (int j = 0; j < is_graph[is_id].size(); j++)
         {
             int a_id = is_graph[is_id][j].first.first;
-            double r = reg[is_id][a_id];
+            double r = tab_R[is_id][a_id];
             double val = max(r, 0.0);
             double sum = is_r_sums[is_id];
             printf("is_id: %d, a_id: %d, r: %lf, sum: %lf \n", is_id, a_id, r, sum);

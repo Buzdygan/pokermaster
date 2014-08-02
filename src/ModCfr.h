@@ -55,7 +55,7 @@ class ModCfr
         int _exploreTree();
         void _topo_order_isets();
         utility _walkTree(int is_id);
-        double _recomputeStrategy(double**);
+        double _recomputeStrategy();
         void _copyStrategy();
         int getActionId(dist action_dist);
         bool loadFromFile(const char* filename);
