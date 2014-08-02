@@ -78,9 +78,8 @@ class HoldemPoker : public GameAbstraction
         virtual int _evaluateHand(int player_number);
         virtual void _init();
         void _endOfBiddingPhase();
-        void _startOfBiddingPhase();
-        void _endGame(int winner);
-        void _endGame();
+        virtual void _startOfBiddingPhase();
+        virtual void _endGame(int winner);
 
     private:
         vector<int> deck;

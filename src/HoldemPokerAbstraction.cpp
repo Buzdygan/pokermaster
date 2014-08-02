@@ -11,6 +11,7 @@ const int HoldemPokerAbstraction::ACTION_ALL_IN = 3;
 const int HoldemPokerAbstraction::PHASE_FIRST_BID = 4;
 const int HoldemPokerAbstraction::PHASE_MIDDLE_BID = 5;
 const int HoldemPokerAbstraction::PHASE_LAST_BID = 6;
+const int HoldemPokerAbstraction::LOG_MAX_STAKE = 8;
 
 
 void HoldemPokerAbstraction::_init()
@@ -18,7 +19,8 @@ void HoldemPokerAbstraction::_init()
     // 0 player always starts
     start_player = 0;
     cur_player = RANDOM_PLAYER_NR;
-    cur_stake = agreed_stake = 1;
+    cur_stake = 1;
+    agreed_stake = 0;
     bidding_phase = 0;
     bids_number = 1;
     random_phase = 0;
@@ -77,30 +79,33 @@ void HoldemPokerAbstraction::makeAction(int action_id)
         if (action_id == ACTION_CALL)
         {
             agreed_stake = cur_stake;
-            if (agreed_stake == MAX_STAKE)
-                _endGame();
+            /* Second player agrees */
+            if (bids_number >= 2)
+                _endOfBiddingPhase();
             else
-            {
-                /* Second player agrees */
-                if (bids_number >= 2)
-                    _endOfBiddingPhase();
-                else
-                    cur_player = other(cur_player);
-            }
+                cur_player = other(cur_player);
         }
         if (action_id == ACTION_RAISE)
         {
             agreed_stake = cur_stake;
-            cur_stake *= 2;
+            cur_stake += 1;
             cur_player = other(cur_player);
         }
         if (action_id == ACTION_ALL_IN)
         {
             agreed_stake = cur_stake;
-            cur_stake = MAX_STAKE;
+            cur_stake = LOG_MAX_STAKE;
             cur_player = other(cur_player);
         }
     }
+}
+
+void HoldemPokerAbstraction::_startOfBiddingPhase()
+{
+    if (agreed_stake == LOG_MAX_STAKE)
+        _endOfBiddingPhase();
+    else
+        cur_player = (start_player + bids_number) & 1;
 }
 
 vector<int> HoldemPokerAbstraction::getActionIds()
@@ -111,10 +116,10 @@ vector<int> HoldemPokerAbstraction::getActionIds()
 vector<int> HoldemPokerAbstraction::getActionIds(int bids_num)
 {
     vector<int> action_ids;
-    if (bids_num > 0)
+    if (cur_stake > agreed_stake)
         action_ids.push_back(ACTION_FOLD);
     action_ids.push_back(ACTION_CALL);
-    if (bids_num < MAX_BIDS_NUMBER && cur_stake < MAX_STAKE)
+    if (bids_num < MAX_BIDS_NUMBER && cur_stake < LOG_MAX_STAKE)
     {
         action_ids.push_back(ACTION_RAISE);
         action_ids.push_back(ACTION_ALL_IN);
@@ -127,6 +132,20 @@ int HoldemPokerAbstraction::getInformationSetId()
     if (cur_player == RANDOM_PLAYER_NR)
         return -1;
     return is_id[cur_player];
+}
+
+void HoldemPokerAbstraction::_endGame(int winner)
+{
+    int stake = 0;
+    if (agreed_stake > 0)
+        stake = 1 << (agreed_stake - 1);
+    if (winner == 0)
+        results = make_pair(stake, -stake);
+    else if (winner == 1)
+        results = make_pair(-stake, stake);
+    else
+        results = make_pair(0.0, 0.0);
+    is_final = true;
 }
 
 

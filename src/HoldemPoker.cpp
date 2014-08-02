@@ -27,7 +27,8 @@ void HoldemPoker::_init()
     // 0 player always starts
     start_player = 0;
     cur_player = RANDOM_PLAYER_NR;
-    cur_stake = agreed_stake = 1;
+    cur_stake = 1;
+    agreed_stake = 0;
     cards_dealt = 0;
     random_phase = 0;
     bidding_phase = 0;
@@ -106,18 +107,6 @@ vector<int> HoldemPoker::getActionIds()
     return action_ids;
 }
 
-void HoldemPoker::_endGame()
-{
-    int strength0 = _evaluateHand(0);
-    int strength1 = _evaluateHand(1);
-    if (strength0 > strength1)
-        _endGame(0);
-    else if (strength1 > strength0)
-        _endGame(1);
-    else
-        _endGame(DRAW);
-}
-
 void HoldemPoker::_endGame(int winner)
 {
     if (winner == 0)
@@ -178,17 +167,11 @@ void HoldemPoker::makeAction(int action_id)
         else if (bet == cur_stake)
         {
             agreed_stake = cur_stake;
-            /* all in */
-            if (agreed_stake == MAX_STAKE)
-                _endGame();
+            /* Second player agrees */
+            if (bids_number >= 2)
+                _endOfBiddingPhase();
             else
-            {
-                /* Second player agrees */
-                if (bids_number >= 2)
-                    _endOfBiddingPhase();
-                else
-                    cur_player = other(cur_player);
-            }
+                cur_player = other(cur_player);
         }
         if (bet > cur_stake)
         {
@@ -214,7 +197,10 @@ void HoldemPoker::unmakeAction(int action_id)
 
 void HoldemPoker::_startOfBiddingPhase()
 {
-    cur_player = (start_player + bids_number) & 1;
+    if (agreed_stake == MAX_STAKE)
+        _endOfBiddingPhase();
+    else
+        cur_player = (start_player + bids_number) & 1;
 }
 
 void HoldemPoker::_endOfBiddingPhase()

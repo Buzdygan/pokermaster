@@ -42,6 +42,7 @@ class HoldemPokerAbstraction : public HoldemPoker
         static const int PHASE_FIRST_BID;
         static const int PHASE_MIDDLE_BID;
         static const int PHASE_LAST_BID;
+        static const int LOG_MAX_STAKE;
 
     protected:
         BasketManager *manager;
@@ -54,6 +55,8 @@ class HoldemPokerAbstraction : public HoldemPoker
         void _init();
         void _backup();
         void _restore();
+        void _startOfBiddingPhase();
+        void _endGame(int winner);
         int _evaluateHand(int player_num);
 };
 

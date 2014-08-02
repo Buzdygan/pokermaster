@@ -39,7 +39,7 @@ int HoldemPokerModAbstraction::getInformationSetId()
     mult *= 3;
 
     res += cur_stake * mult;
-    mult *= 20;
+    mult *= 9;
 
     res += agreed_stake * mult;
 
@@ -111,10 +111,9 @@ dist HoldemPokerModAbstraction::getInformationSetIds(dist baskets)
     mult *= 3;
 
     res += cur_stake * mult;
-    mult *= 20;
+    mult *= 9;
 
     res += agreed_stake * mult;
-    mult *= 20;
 
     dist information_sets;
     for (int i = 0; i < baskets.size(); i ++)
