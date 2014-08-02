@@ -291,15 +291,23 @@ double ModCfr::_recomputeStrategy()
         int is_id = player_isets[i];
         for (int j = 0; j < is_graph[is_id].size(); j++)
         {
+            printf("checka\n");
             int a_id = is_graph[is_id][j].first.first;
+            printf("checkb\n");
             double r = tab_R[is_id][a_id];
             printf("is_id: %d, a_id: %d, r: %lf\n", is_id, a_id, r);
             double val = max(r, 0.0);
+            printf("checkc\n");
             is_r_sums[is_id] = is_r_sums[is_id] + val;
+            printf("checkd\n");
             is_r_cnt[is_id] = is_r_cnt[is_id] + 1.0;
+            printf("checke\n");
             regret_sum -= mregret[is_id];
+            printf("checkf\n");
             mregret[is_id] = max(mregret[is_id], val);
+            printf("checkg\n");
             regret_sum += mregret[is_id];
+            printf("checkh\n");
 
         }
     }
