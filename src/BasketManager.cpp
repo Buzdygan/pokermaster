@@ -1193,7 +1193,7 @@ vector<int> BasketManager::_convertCards(vector<int> cards)
             pop_color = col;
         }
     }
-    printf("pop color: %d, pop score: %d\n", pop_color, pop_color_score);
+    //printf("pop color: %d, pop score: %d\n", pop_color, pop_color_score);
     // clubs are already the most common color
     if (pop_color == 0)
         return cards;
