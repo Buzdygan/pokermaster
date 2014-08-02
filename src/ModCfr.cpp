@@ -328,7 +328,7 @@ void ModCfr::_copyStrategy()
         int is_id = player_isets[i];
         for (int j = 0; j < is_graph[is_id].size(); j++)
         {
-            int a_id = is_graph[is_id][j].first.first;
+            int a_id = is_graph[is_id][j].first.second;
             pair<int, int> decision_id = make_pair(id_to_is[is_id], a_id);
             strategy[decision_id] = tab_strategy[is_id][a_id];
         }
