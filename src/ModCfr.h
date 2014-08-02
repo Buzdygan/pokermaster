@@ -5,10 +5,11 @@
 #include <map>
 #include <set>
 #include <cstdlib>
-#include "GameAbstraction.h"
+#include "HoldemPokerModAbstraction.h"
 using namespace std;
 
-const int MAX_ISETS = 18000;
+const int MAX_STATES = 18000;
+const int MAX_ISETS = 10000;
 
 typedef map<pair<int, int>, double> Smap;
 typedef map<pair<int, int>, double>::iterator Sit;
@@ -17,7 +18,7 @@ typedef vector<pair<pair<int, int>, double> > Nlist; // neighbour list
 class ModCfr
 {
     public:
-        ModCfr(GameAbstraction* game, int iterations=ITERATIONS, const char* strategy_file=DEFAULT_FILE);
+        ModCfr(HoldemPokerModAbstraction* game, int iterations=ITERATIONS, const char* strategy_file=DEFAULT_FILE);
         int getActionId(int information_set_id, vector<int> action_ids);
         int getActionId(dist information_set_ids, vector<int> action_ids);
 
@@ -25,39 +26,25 @@ class ModCfr
         static const char* DEFAULT_FILE;
         static const char FILE_DELIM;
         static const int ITERATIONS;
-        GameAbstraction* game;
+        HoldemPokerModAbstraction* game;
 
         Smap strategy;
-        /*
-        Smap R;
-        Smap S;
-        */
 
         // stable part of graph
-        vector<int> all_isets;
+        vector<int> all_states;
         vector<int> player_isets;
-        vector<int> isets_topo_ordered;
+        vector<int> states_topo_ordered;
         map<int, int> in_edges;
-        /*
-        map<int, bool> is_final;
-        map<int, int> is_player;
-        map<int, Nlist> is_graph;
-        */
-        int start_is;
 
-        // variables
-        /*
-        map<int, bool> visited;
-        map<int, utility> is_utility;
-        map<int, double> probs [4]; // 0 - prob[0], 1 - prob[1], 2 - prob[0] * prob[2], 3 - prob[1] * prob[2]
-        */
+        int start_state;
+
 
         void _recomputeRegrets();
         void _probsBfs();
         int _exploreTree();
-        void _topo_order_isets();
+        void _topo_order_states();
         utility _walkTree(int is_id);
-        double _recomputeStrategy(double t[MAX_ISETS][5]);
+        double _recomputeStrategy(double t[MAX_STATES][5]);
         void _copyStrategy();
         int getActionId(dist action_dist);
         bool loadFromFile(const char* filename);

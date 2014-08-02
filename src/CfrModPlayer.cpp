@@ -31,7 +31,7 @@ void CfrModPlayer::annotateRandomAction(int card_id)
     {
         int bnum = game -> getBasketManager() -> getBasket(all_cards);
         printf("Player%d basket: %d\n", player_num, bnum);
-        prev_opp_dist = game -> getBasketManager() -> getOpponentBasketDist(random_phase, all_cards);
+        //prev_opp_dist = game -> getBasketManager() -> getOpponentBasketDist(random_phase, all_cards);
         int action_id;
         if (player_num == 0)
             action_id = encode_basket_pair(bnum, 0);
@@ -58,9 +58,10 @@ void CfrModPlayer::annotateOpponentAction(int action_id)
 /* Get player's action */
 int CfrModPlayer::getAction(vector<int> available_actions)
 {
-    dist isets_dist = game -> getInformationSetIds(prev_opp_dist);
+    //dist isets_dist = game -> getInformationSetIds(prev_opp_dist);
     printf("Player%d making decision\n", player_num);
-    int action_id = strategy -> getActionId(isets_dist, game -> getActionIds(bids_number));
+    //int action_id = strategy -> getActionId(isets_dist, game -> getActionIds(bids_number));
+    int action_id = strategy -> getActionId(game -> getInformationSetId(), game -> getActionIds(bids_number));
     if (action_id == game -> ACTION_FOLD)
         return 0;
     if (action_id == game -> ACTION_CALL)
