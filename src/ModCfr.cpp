@@ -292,7 +292,7 @@ double ModCfr::_recomputeStrategy(double reg[MAX_ISETS][5])
         {
             int a_id = is_graph[is_id][j].first.second;
             double r = reg[is_id][a_id];
-            printf("is_id: %d, a_id: %d, r: %lf\n", is_id, a_id, r);
+            //printf("is_id: %d, a_id: %d, r: %lf\n", is_id, a_id, r);
             double val = max(r, 0.0);
             is_r_sums[is_id] = is_r_sums[is_id] + val;
             is_r_cnt[is_id] = is_r_cnt[is_id] + 1.0;
