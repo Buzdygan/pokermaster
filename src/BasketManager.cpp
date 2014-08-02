@@ -892,7 +892,6 @@ void BasketManager::_computeTransitions()
                             {
                                 F[tc5] ++;
                                 int basket4 = _determineBasket(3, EHS4[i4][i3][i2][i1]);
-                                printf("index: %d, i4: %d, i3: %d, i2: %d, i1: %d\n", index, i4, i3, i2, i1);
                                 B4[index][i4][i3][i2][i1] = basket4;
                                 // setting basket3 to basket4 transition for all the cards
                                 vector<int> cards = v4[i4].second;

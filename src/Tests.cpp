@@ -47,6 +47,7 @@ void testBaskets(BasketManager* mng)
         scanf("%d %d", &c1, &c2);
         cards.push_back(c1);
         cards.push_back(c2);
+        printHand(cards);
         printf(" Basket: %d\n", mng -> getBasket(cards));
 
         printf("R2\n");
@@ -54,16 +55,19 @@ void testBaskets(BasketManager* mng)
         cards.push_back(c1);
         cards.push_back(c2);
         cards.push_back(c3);
+        printHand(cards);
         printf(" Basket: %d\n", mng -> getBasket(cards));
 
         printf("R3\n");
         scanf("%d", &c1);
         cards.push_back(c1);
+        printHand(cards);
         printf(" Basket: %d\n", mng -> getBasket(cards));
 
         printf("R4\n");
         scanf("%d", &c1);
         cards.push_back(c1);
+        printHand(cards);
         printf(" Basket: %d\n", mng -> getBasket(cards));
     }
 
