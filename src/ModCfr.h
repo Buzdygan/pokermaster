@@ -26,29 +26,37 @@ class ModCfr
         GameAbstraction* game;
 
         Smap strategy;
+        /*
         Smap R;
         Smap S;
+        */
 
         // stable part of graph
         vector<int> all_isets;
+        vector<int> player_isets;
         vector<int> isets_topo_ordered;
         map<int, int> in_edges;
+        /*
         map<int, bool> is_final;
         map<int, int> is_player;
         map<int, Nlist> is_graph;
+        */
         int start_is;
 
         // variables
+        /*
         map<int, bool> visited;
         map<int, utility> is_utility;
         map<int, double> probs [4]; // 0 - prob[0], 1 - prob[1], 2 - prob[0] * prob[2], 3 - prob[1] * prob[2]
+        */
 
         void _recomputeRegrets();
         void _probsBfs();
         int _exploreTree();
         void _topo_order_isets();
         utility _walkTree(int is_id);
-        double _recomputeStrategy(Smap &r);
+        double _recomputeStrategy(double**);
+        void _copyStrategy();
         int getActionId(dist action_dist);
         bool loadFromFile(const char* filename);
         void saveToFile(const char* filename);

@@ -10,11 +10,31 @@ const char* ModCfr::DEFAULT_FILE = "mod-cfr.stg";
 const char ModCfr::FILE_DELIM = '\n';
 const int ModCfr::ITERATIONS = 2000;
 
+const int MAX_ISETS = 10000;
+
+double tab_R[MAX_ISETS][5];
+double tab_S[MAX_ISETS][5];
+double tab_strategy[MAX_ISETS][5];
+
+map<int, int> is_to_id;
+int id_to_is[MAX_ISETS];
+
+Nlist is_graph[MAX_ISETS];
+int is_player[MAX_ISETS];
+bool is_final[MAX_ISETS];
+
+bool visited[MAX_ISETS];
+utility is_utility[MAX_ISETS];
+double probs[4][MAX_ISETS];
+
+int is_cnt = 1;
+
 ModCfr::ModCfr(GameAbstraction* gm, int iterations, const char* strategy_file)
 {
     printf("Init Mod Cfr, iterations: %d\n", iterations);
     game = gm;
     double err_sum = 0.0;
+    memset(is_final, false, sizeof(is_final));
     if (!loadFromFile(strategy_file))
     {
         printf("Mod Cfr: Building Tree\n");
@@ -26,12 +46,13 @@ ModCfr::ModCfr(GameAbstraction* gm, int iterations, const char* strategy_file)
             printf("Mod Cfr, Iteration %d\n", it);
             _recomputeRegrets();
             printf("Regrets recomputed\n");
-            double it_err = _recomputeStrategy(R) / (it + 1);
+            double it_err = _recomputeStrategy((double**)tab_R) / (it + 1);
             err_sum += it_err;
             printf("It err: %0.5f Err: %0.5f\n", it_err, err_sum / (it + 1));
 
         }
-        _recomputeStrategy(S);
+        _recomputeStrategy((double**)tab_S);
+        _copyStrategy();
         srand(time(0));
         saveToFile(strategy_file);
     }
@@ -40,7 +61,7 @@ ModCfr::ModCfr(GameAbstraction* gm, int iterations, const char* strategy_file)
 void ModCfr::_recomputeRegrets()
 {
     _probsBfs();
-    visited.clear();
+    memset(visited, false, sizeof(visited));
     _walkTree(start_is);
 }
 
@@ -57,7 +78,7 @@ void ModCfr::_topo_order_isets()
         for (int i = 0; i < nlist.size(); i++)
         {
             int n_id = nlist[i].first.first;
-            if(!is_final.count(n_id))
+            if(!is_final[n_id])
             {
                 in_edges[n_id] -= 1;
                 if (!in_edges[n_id])
@@ -113,8 +134,7 @@ void ModCfr::_probsBfs()
             else
             {
                 int a_id = nlist[j].first.second;
-                pair<int, int> decision_id = make_pair(is_id, a_id);
-                double prob = strategy[decision_id];
+                double prob = tab_strategy[is_id][a_id];
                 int oth = (pnum + 1) & 1;
                 probs[oth][n_id] += pbs[oth];
                 probs[oth + 2][n_id] += pbs[oth + 2];
@@ -127,7 +147,7 @@ void ModCfr::_probsBfs()
 
 utility ModCfr::_walkTree(int is_id)
 {
-    if (is_final.count(is_id) || visited.count(is_id))
+    if (is_final[is_id] || visited[is_id])
         return is_utility[is_id];
     visited[is_id] = true;
 
@@ -147,7 +167,7 @@ utility ModCfr::_walkTree(int is_id)
         if (pnum == 2)
             prob = nlist[i].second;
         else
-            prob = strategy[decision_id];
+            prob = tab_strategy[is_id][a_id];
 
         utility n_util = _walkTree(n_id);
         //printf("    neigbour %d, prob: %lf : <%lf, %lf>\n", n_id, prob, n_util.first, n_util.second);
@@ -156,13 +176,13 @@ utility ModCfr::_walkTree(int is_id)
 
         if (pnum == 0)
         {
-            R[decision_id] += pbs[3] * n_util.first;
-            S[decision_id] += pbs[0] * prob;
+            tab_R[is_id][a_id] += pbs[3] * n_util.first;
+            tab_S[is_id][a_id] += pbs[0] * prob;
         }
         else if (pnum == 1)
         {
-            R[decision_id] += pbs[2] * n_util.second;
-            S[decision_id] += pbs[1] * prob;
+            tab_R[is_id][a_id] += pbs[2] * n_util.second;
+            tab_S[is_id][a_id] += pbs[1] * prob;
         }
     }
     if (pnum < 2)
@@ -171,9 +191,9 @@ utility ModCfr::_walkTree(int is_id)
             int a_id = nlist[i].first.second;
             pair<int, int> decision_id = make_pair(is_id, a_id);
             if (pnum == 0)
-                R[decision_id] -= final_util.first * pbs[3];
+                tab_R[is_id][a_id] -= final_util.first * pbs[3];
             else
-                R[decision_id] -= final_util.second * pbs[2];
+                tab_R[is_id][a_id] -= final_util.second * pbs[2];
         }
 
     is_utility[is_id] = final_util;
@@ -183,12 +203,22 @@ utility ModCfr::_walkTree(int is_id)
 
 int ModCfr::_exploreTree()
 {
-    int is_id = game -> getInformationSetId();
+    int game_is_id = game -> getInformationSetId();
+    int is_id;
+    if(!is_to_id[game_is_id])
+    {
+        is_id = is_cnt;
+        id_to_is[is_cnt] = game_is_id;
+        is_to_id[game_is_id] = is_cnt ++;
+    }
+    else
+        is_id = is_to_id[game_is_id];
+
     if (!in_edges.count(is_id))
         in_edges[is_id] = 1;
     else
         in_edges[is_id] += 1;
-    if (visited.count(is_id))
+    if (visited[is_id])
         return is_id;
 
     visited[is_id] = true;
@@ -218,13 +248,14 @@ int ModCfr::_exploreTree()
     }
     else
     {
+        player_isets.push_back(is_id);
         vector<int> action_ids = game -> getActionIds();
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
         {
             pair<int, int> decision_id = make_pair(is_id, *a_id);
-            strategy[decision_id] = 1.0 / action_ids.size();
-            R[decision_id] = 0.0;
-            S[decision_id] = 0.0;
+            tab_strategy[is_id][*a_id] = 1.0 / action_ids.size();
+            tab_R[is_id][*a_id] = 0.0;
+            tab_S[is_id][*a_id] = 0.0;
             game -> makeAction(*a_id);
             int n_id = _exploreTree();
             game -> unmakeAction(*a_id);
@@ -235,48 +266,63 @@ int ModCfr::_exploreTree()
     return is_id;
 }
 
-double ModCfr::_recomputeStrategy(Smap &reg)
+double ModCfr::_recomputeStrategy(double ** reg)
 {
-    map<int, double> is_r_sums;
-    map<int, double> is_r_cnt;
-    map<int, double> mregret;
-    for (Sit iter = reg.begin(); iter != reg.end(); iter++)
-    {
-        int is_id = iter -> first.first;
-        double val = max(iter -> second, 0.0);
-
-        if (!is_r_sums.count(is_id))
-            is_r_sums[is_id] = val;
-        else
-            is_r_sums[is_id] = is_r_sums[is_id] + val;
-
-        if (!is_r_cnt.count(is_id))
-            is_r_cnt[is_id] = 1.0;
-        else
-            is_r_cnt[is_id] = is_r_cnt[is_id] + 1.0;
-
-        if (!mregret.count(is_id))
-            mregret[is_id] = val;
-        else
-            mregret[is_id] = max(mregret[is_id], val);
-    }
+    double is_r_sums [MAX_ISETS];
+    double is_r_cnt [MAX_ISETS];
+    double mregret [MAX_ISETS];
+    memset(is_r_sums, 0.0, sizeof(is_r_sums));
+    memset(is_r_cnt, 0.0, sizeof(is_r_cnt));
+    memset(mregret, 0.0, sizeof(mregret));
 
     double regret_sum = 0;
-    for (map<int, double>::iterator it = mregret.begin(); it != mregret.end(); it++)
-        regret_sum += it -> second;
 
-    for (Sit iter = reg.begin(); iter != reg.end(); iter++)
+    for (int i = 0; i < player_isets.size(); i++)
     {
-        int is_id = iter -> first.first;
-        double val = max(iter -> second, 0.0);
-        double sum = is_r_sums[is_id];
-        if (sum > 0.0)
-            strategy[iter -> first] = val / sum;
-        else
-            strategy[iter -> first] = 1.0 / is_r_cnt[is_id];
+        int is_id = player_isets[i];
+        for (int j = 0; j < is_graph[is_id].size(); j++)
+        {
+            int a_id = is_graph[is_id][j].first.first;
+            double r = reg[is_id][a_id];
+            double val = max(r, 0.0);
+            is_r_sums[is_id] = is_r_sums[is_id] + val;
+            is_r_cnt[is_id] = is_r_cnt[is_id] + 1.0;
+            regret_sum -= mregret[is_id];
+            mregret[is_id] = max(mregret[is_id], val);
+            regret_sum += mregret[is_id];
+
+        }
     }
-    printf("TOTAL_SIZE: %d, IS_SIZE: %d\n", (int)reg.size(), (int)mregret.size());
+    for (int i = 0; i < player_isets.size(); i++)
+    {
+        int is_id = player_isets[i];
+        for (int j = 0; j < is_graph[is_id].size(); j++)
+        {
+            int a_id = is_graph[is_id][j].first.first;
+            double r = reg[is_id][a_id];
+            double val = max(r, 0.0);
+            double sum = is_r_sums[is_id];
+            if (sum > 0.0)
+                tab_strategy[is_id][a_id] = val / sum;
+            else
+                tab_strategy[is_id][a_id] = 1.0 / is_r_cnt[is_id];
+        }
+    }
     return regret_sum;
+}
+
+void ModCfr::_copyStrategy()
+{
+    for (int i = 0; i < player_isets.size(); i++)
+    {
+        int is_id = player_isets[i];
+        for (int j = 0; j < is_graph[is_id].size(); j++)
+        {
+            int a_id = is_graph[is_id][j].first.first;
+            pair<int, int> decision_id = make_pair(id_to_is[is_id], a_id);
+            strategy[decision_id] = tab_strategy[is_id][a_id];
+        }
+    }
 }
 
 int ModCfr::getActionId(dist action_dist)
