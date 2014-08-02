@@ -12,9 +12,9 @@ const char ModCfr::FILE_DELIM = '\n';
 const int ModCfr::ITERATIONS = 2000;
 
 
-double tab_R[MAX_STATES][5];
-double tab_S[MAX_STATES][5];
-double tab_strategy[MAX_STATES][5];
+double tab_R[MAX_ISETS][5];
+double tab_S[MAX_ISETS][5];
+double tab_strategy[MAX_ISETS][5];
 
 map<int, int> state_to_id;
 int id_to_state[MAX_STATES];
@@ -240,6 +240,7 @@ int ModCfr::_exploreTree()
         {
             player_isets.push_back(is_id);
             vector<int> action_ids = game -> getActionIds();
+            is_actions[is_id] = action_ids;
             for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
             {
                 tab_strategy[is_id][*a_id] = 1.0 / action_ids.size();
@@ -299,12 +300,12 @@ int ModCfr::_exploreTree()
     return s_id;
 }
 
-double ModCfr::_recomputeStrategy(double reg[MAX_STATES][5])
+double ModCfr::_recomputeStrategy(double reg[MAX_ISETS][5])
 {
     printf("recompute Strategy R\n");
-    double is_r_sums [MAX_STATES];
-    double is_r_cnt [MAX_STATES];
-    double mregret [MAX_STATES];
+    double is_r_sums [MAX_ISETS];
+    double is_r_cnt [MAX_ISETS];
+    double mregret [MAX_ISETS];
     memset(is_r_sums, 0.0, sizeof(is_r_sums));
     memset(is_r_cnt, 0.0, sizeof(is_r_cnt));
     memset(mregret, 0.0, sizeof(mregret));

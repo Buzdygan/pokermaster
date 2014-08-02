@@ -9,7 +9,7 @@
 using namespace std;
 
 const int MAX_STATES = 18000;
-const int MAX_ISETS = 10000;
+const int MAX_ISETS = 3000;
 
 typedef map<pair<int, int>, double> Smap;
 typedef map<pair<int, int>, double>::iterator Sit;
@@ -44,7 +44,7 @@ class ModCfr
         int _exploreTree();
         void _topo_order_states();
         utility _walkTree(int is_id);
-        double _recomputeStrategy(double t[MAX_STATES][5]);
+        double _recomputeStrategy(double t[MAX_ISETS][5]);
         void _copyStrategy();
         int getActionId(dist action_dist);
         bool loadFromFile(const char* filename);
