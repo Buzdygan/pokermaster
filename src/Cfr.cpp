@@ -51,7 +51,6 @@ utility Cfr::walkTree(long double probs[3])
     cnt ++;
     if (game -> isFinal())
     {
-        printf("Final\n");
         return game -> getUtility();
     }
 
@@ -77,7 +76,6 @@ utility Cfr::walkTree(long double probs[3])
     else
     {
         long long is_id = game -> getInformationSetId();
-        printf("is_id: %lld\n", is_id);
         vector<int> action_ids = game -> getActionIds();
         if (first_iteration)
             for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)

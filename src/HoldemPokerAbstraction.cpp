@@ -127,7 +127,6 @@ long long HoldemPokerAbstraction::getInformationSetId()
 {
     if (cur_player == RANDOM_PLAYER_NR)
         return -1;
-    printf("cur_player: %d, is_id[cur_player]: %lld\n", cur_player, is_id[cur_player]);
     return is_id[cur_player];
 }
 
@@ -163,11 +162,8 @@ dist HoldemPokerAbstraction::getActionDistribution()
 
 void HoldemPokerAbstraction::logAction(int pnum, int action_id)
 {
-    printf("pnum: %d, is_id[pnum]: %lld, action_id: %d, random_phase: %d, bidding_phase: %d, winner: %d, cur_stake: %d\n", pnum,
-                is_id[pnum], action_id, random_phase, bidding_phase, winner, cur_stake);
     is_id[pnum] *= IS_BASE;
     is_id[pnum] += action_id;
-    printf("after: is_id[pnum]: %lld\n", is_id[pnum]);
 }
 
 void HoldemPokerAbstraction::_backup()
