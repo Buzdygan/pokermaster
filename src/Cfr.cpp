@@ -9,6 +9,8 @@ const char* Cfr::DEFAULT_FILE = "cfr.stg";
 const char Cfr::FILE_DELIM = '\n';
 const int Cfr::ITERATIONS = 2000;
 
+int cnt = 0;
+
 Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file, bool information_tree)
 {
     printf("Init Cfr, iterations: %d\n", iterations);
@@ -32,8 +34,9 @@ void Cfr::computeVanillaCfr(int iterations)
         printf("Iteration %d\n", i);
         util_map.clear();
         long double probs [3] = {1.0L, 1.0L, 1.0L};
+        cnt = 0;
         walkTree(probs);
-        printf("UTIL MAP SIZE: %d\n", (int)util_map.size());
+        printf("TREE SIZE: %d\n", cnt);
         recomputeStrategy(R);
         double it_err = current_regret_sum / (i + 1);
         sum += it_err;
@@ -44,6 +47,7 @@ void Cfr::computeVanillaCfr(int iterations)
 
 utility Cfr::walkTree(long double probs[3])
 {
+    cnt ++;
     if (game -> isFinal())
     {
         return game -> getUtility();
