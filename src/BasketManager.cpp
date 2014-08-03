@@ -867,6 +867,15 @@ int BasketManager::_getBasket4(int i1, int i2, int i3, int i4)
     return _determineBasket(3, _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5)));
 }
 
+int BasketManager::_getBasket4(vector<int> cards)
+{
+    int F[ONE_CARD_CODES + 3];
+    memset(F, 0, sizeof(F));
+    for (int i = 0; i < cards.size(); i++)
+        F[cards[i]] ++;
+    return _determineBasket(3, _perc(_EHS(F, cards[0], cards[1], cards[2], cards[3], cards[4], cards[5], cards[6])));
+}
+
 void BasketManager::_computeTransitions()
 {
     _computeCardCombinations();
@@ -1162,6 +1171,8 @@ int BasketManager::getBasket(vector<int> cds)
 {
     vector<int> cards = _convertCards(cds);
     int n = cards.size();
+    if (n == 7)
+        return _getBasket4(cds);
     int i1 = CARD_CODES_MAP[0][_cardsCode(cards[0], cards[1])];
     if(n <= 2)
         return B1[index][i1];
@@ -1169,10 +1180,9 @@ int BasketManager::getBasket(vector<int> cds)
     if(n <= 5)
         return B2[index][i2][i1];
     int i3 = CARD_CODES_MAP[2][cards[5]];
-    if(n <= 6)
-        return B3[index][i3][i2][i1];
-    int i4 = CARD_CODES_MAP[3][cards[6]];
-    return _getBasket4(i1, i2, i3, i4);
+    return B3[index][i3][i2][i1];
+
+    //int i4 = CARD_CODES_MAP[3][cards[6]];
     //return B4[index][i4][i3][i2][i1];
 }
 
