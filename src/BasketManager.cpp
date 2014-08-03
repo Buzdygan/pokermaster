@@ -144,7 +144,6 @@ void BasketManager::_init(char* ehs_str)
         }
         _computeEHSDistribution();
     }
-    _saveTransitions();
 }
 
 dist BasketManager::_normalizeDistribution(dist d)
