@@ -1,4 +1,5 @@
 #include <vector>
+#include <cstdio>
 #include "HoldemPokerAbstraction.h"
 #include "BasketManager.h"
 
