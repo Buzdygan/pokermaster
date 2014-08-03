@@ -52,15 +52,18 @@ utility Cfr::walkTree(long double probs[3])
     printf("cnt: %d\n", cnt);
     if (game -> isFinal())
     {
+        printf("check1\n");
         return game -> getUtility();
     }
 
     int p = game -> getPlayerId();
     utility final_util = make_pair(0.0, 0.0);
+    printf("check2\n");
 
     /* If it is a turn of a chance player */
     if (p == RANDOM_PLAYER_NR)
     {
+        printf("check3\n");
         dist action_distr = game -> getActionDistribution();
         long double backup_prob = probs[RANDOM_PLAYER_NR];
         for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
@@ -76,6 +79,7 @@ utility Cfr::walkTree(long double probs[3])
     }
     else
     {
+        printf("check4\n");
         long long is_id = game -> getInformationSetId();
         vector<int> action_ids = game -> getActionIds();
         if (first_iteration)
@@ -89,6 +93,7 @@ utility Cfr::walkTree(long double probs[3])
                     S[decision_id] = 0.0;
                 }
             }
+        printf("check5\n");
 
         long double prob_mult = probs[RANDOM_PLAYER_NR] * probs[(p + 1) & 1];
         long double backup_prob = probs[p];
@@ -110,6 +115,7 @@ utility Cfr::walkTree(long double probs[3])
             final_util.second += temp_util.second * action_prob;
             S[decision_id] += probs[p] * action_prob;
         }
+        printf("check6\n");
 
         double add = prob_mult;
         if (p == 0)
@@ -122,6 +128,7 @@ utility Cfr::walkTree(long double probs[3])
             pair<long long, int> decision_id = make_pair(is_id, *a_id);
             R[decision_id] -= add;
         }
+        printf("check7\n");
     }
     return final_util;
 }
