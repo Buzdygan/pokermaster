@@ -51,6 +51,7 @@ utility Cfr::walkTree(long double probs[3])
     cnt ++;
     if (game -> isFinal())
     {
+        printf("Final\n");
         return game -> getUtility();
     }
 
