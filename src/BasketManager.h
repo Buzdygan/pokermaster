@@ -43,8 +43,8 @@ class BasketManager
         BasketManager(int index, HandEvaluator*, bool ehs_potential, char* ehs_str);
         int getNextBasket(int stage, int current, int cards_code);
         int getBasket(vector<int> cards);
-        dist getOpponentBasketDist(int stage, int pbasket, dist current_dist, vector<int> cards);
-        dist getOpponentBasketDist(int stage, vector<int> ind);
+        //dist getOpponentBasketDist(int stage, int pbasket, dist current_dist, vector<int> cards);
+        //dist getOpponentBasketDist(int stage, vector<int> ind);
         int getIndex(int stage, vector<int> cards);
         int getBasketsNumber(int stage);
         int cardsCode(vector<int> cards);
@@ -79,6 +79,7 @@ class BasketManager
         void _computeBasketsDistribution();
         int _computeBasket(int stage, int* F, int pc1, int pc2, int tc1=0, int tc2=0, int tc3=0, int tc4=0, int tc5=0);
         int _determineBasket(int stage, int ehs_int);
+        int _getBasket4(int i1, int i2, int i3, int i4);
         int _evaluateCards(int p1, int p2, int o1, int o2, int t1, int t2, int t3, int t4=0, int t5=0);
         double _EHS(int* F, int pc1, int pc2, int tc1=0, int tc2=0, int tc3=0, int tc4=0, int tc5=0);
         int _computePotential(int* HP, int* F, int pc1, int pc2, int oc1, int oc2, int tc1=0, int tc2=0, int tc3=0, int tc4=0, int tc5=0);

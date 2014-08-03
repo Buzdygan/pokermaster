@@ -28,7 +28,7 @@ int EHS_DIST[4][PRECISION + 2];
 int B1[2][EHS_SIZE1];
 int B2[2][EHS_SIZE2][EHS_SIZE1];
 int B3[2][EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
-int B4[2][EHS_SIZE4][EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
+//int B4[2][EHS_SIZE4][EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
 
 
 
@@ -144,6 +144,7 @@ void BasketManager::_init(char* ehs_str)
         }
         _computeEHSDistribution();
     }
+    _saveTransitions();
 }
 
 dist BasketManager::_normalizeDistribution(dist d)
@@ -365,6 +366,7 @@ void BasketManager::_saveTransitions()
             for (int i1 = 0; i1 < EHS_SIZE1; i1++)
                 fprintf(f, "%d\n", B3[index][i3][i2][i1]);
 
+    /*
     for (int i4 = 0; i4 < EHS_SIZE4; i4++)
         for (int i3 = 0; i3 < EHS_SIZE3; i3++)
             for (int i2 = 0; i2 < EHS_SIZE2; i2++)
@@ -382,6 +384,7 @@ void BasketManager::_saveTransitions()
 
     for (int i = 0; i < EHS_SIZE4; i++)
         fprintf(f, "%d\n", S4[i]);
+                    */
 
     fclose(f);
 }
@@ -434,6 +437,7 @@ bool BasketManager::_loadTransitions()
                 for (int i1 = 0; i1 < EHS_SIZE1; i1++)
                     fscanf(f, "%d\n", &B3[index][i3][i2][i1]);
 
+        /*
         for (int i4 = 0; i4 < EHS_SIZE4; i4++)
             for (int i3 = 0; i3 < EHS_SIZE3; i3++)
                 for (int i2 = 0; i2 < EHS_SIZE2; i2++)
@@ -451,6 +455,7 @@ bool BasketManager::_loadTransitions()
 
         for (int i = 0; i < EHS_SIZE4; i++)
             fscanf(f, "%d\n", &S4[i]);
+                        */
 
         fclose(f);
         return true;
@@ -841,6 +846,27 @@ void BasketManager::_computeEHSDistribution()
     }
 }
 
+int BasketManager::_getBasket4(int i1, int i2, int i3, int i4)
+{
+    int F[ONE_CARD_CODES + 3];
+    memset(F, 0, sizeof(F));
+    int pc1 = v1[i1].first.p1();
+    int pc2 = v1[i1].first.p2();
+    F[pc1] ++; F[pc2] ++;
+    int tc1 = v2[i2].first.p1();
+    int tc2 = v2[i2].first.p2();
+    int tc3 = v2[i2].first.p3();
+    _adjustCards(F, tc1, tc2, tc3);
+    F[tc1] ++; F[tc2] ++; F[tc3] ++;
+    int tc4 = v3[i3].first;
+    _switchCard(F, tc4);
+    F[tc4] ++;
+    int tc5 = v4[i4].first;
+    _switchCard(F, tc5);
+    F[tc5] ++;
+    return _determineBasket(3, _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5)));
+}
+
 void BasketManager::_computeTransitions()
 {
     _computeCardCombinations();
@@ -892,7 +918,7 @@ void BasketManager::_computeTransitions()
                             {
                                 F[tc5] ++;
                                 int basket4 = _determineBasket(3, EHS4[i4][i3][i2][i1]);
-                                B4[index][i4][i3][i2][i1] = basket4;
+                                //B4[index][i4][i3][i2][i1] = basket4;
                                 // setting basket3 to basket4 transition for all the cards
                                 vector<int> cards = v4[i4].second;
                                 for (int j4 = 0; j4 < cards.size(); j4 ++)
@@ -1146,7 +1172,8 @@ int BasketManager::getBasket(vector<int> cds)
     if(n <= 6)
         return B3[index][i3][i2][i1];
     int i4 = CARD_CODES_MAP[3][cards[6]];
-    return B4[index][i4][i3][i2][i1];
+    return _getBasket4(i1, i2, i3, i4);
+    //return B4[index][i4][i3][i2][i1];
 }
 
 int BasketManager::getIndex(int stage, vector<int> cards)
@@ -1212,6 +1239,7 @@ vector<int> BasketManager::_convertCards(vector<int> cards)
     return converted_cards;
 }
 
+/*
 dist BasketManager::getOpponentBasketDist(int stage, vector<int> cards)
 {
     vector<int> ind = _getIndexes(stage, _convertCards(cards));
@@ -1240,7 +1268,9 @@ dist BasketManager::getOpponentBasketDist(int stage, vector<int> cards)
             res.push_back(make_pair(basket, d[basket] / sum));
     return res;
 }
+*/
 
+/*
 dist BasketManager::getOpponentBasketDist(int stage, int player_basket, dist current_dist, vector<int> cards)
 {
     // przerobic na iterowanie po i1 i jak wyzej
@@ -1283,6 +1313,7 @@ dist BasketManager::getOpponentBasketDist(int stage, int player_basket, dist cur
             res.push_back(make_pair(basket, d[basket] / sum));
     return res;
 }
+*/
 
 int BasketManager::getNextBasket(int stage, int current, int cards_code)
 {
