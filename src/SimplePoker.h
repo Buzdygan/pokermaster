@@ -28,7 +28,7 @@ struct Backup
 class SimplePoker : public GameAbstraction
 {
     public:
-        int getInformationSetId();
+        long long getInformationSetId();
         utility getUtility();
         int getPlayerId();
         dist getActionDistribution();

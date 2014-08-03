@@ -42,7 +42,7 @@ SimplePoker::~SimplePoker()
 {
 }
 
-int SimplePoker::getInformationSetId()
+long long SimplePoker::getInformationSetId()
 {
     if (cur_player == RANDOM_PLAYER_NR)
         return -1;

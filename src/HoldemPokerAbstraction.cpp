@@ -12,6 +12,8 @@ const int HoldemPokerAbstraction::PHASE_FIRST_BID = 4;
 const int HoldemPokerAbstraction::PHASE_MIDDLE_BID = 5;
 const int HoldemPokerAbstraction::PHASE_LAST_BID = 6;
 const int HoldemPokerAbstraction::LOG_MAX_STAKE = 8;
+const int HoldemPokerAbstraction::IS_BASE = 5;
+const int HoldemPokerAbstraction::NO_WINNER = -1;
 
 
 void HoldemPokerAbstraction::_init()
@@ -24,23 +26,16 @@ void HoldemPokerAbstraction::_init()
     bidding_phase = 0;
     bids_number = 1;
     random_phase = 0;
-    is_final = false;
-    results = make_pair(0.0, 0.0);
-    is_id[0] = 0;
-    is_id[1] = 1;
+    winner = NO_WINNER;
+    is_id[0] = 1;
+    is_id[1] = 2;
     player_basket[0] = player_basket[1] = 0;
-    mults[0] = mults[1] = 2;
 }
 
 HoldemPokerAbstraction::HoldemPokerAbstraction(BasketManager* mng)
 {
     _init();
     manager = mng;
-    for (int phase = 0; phase < 4; phase++)
-        phase_actions[phase] = mng -> getBasketsNumber(phase);
-    phase_actions[PHASE_FIRST_BID] = 2;
-    phase_actions[PHASE_MIDDLE_BID] = 3;
-    phase_actions[PHASE_LAST_BID] = 2;
 }
 
 HoldemPokerAbstraction::~HoldemPokerAbstraction()
@@ -61,15 +56,15 @@ void HoldemPokerAbstraction::makeAction(int action_id)
         pair<int, int> basket_pair = decode_basket_pair(action_id);
         player_basket[0] = basket_pair.first;
         player_basket[1] = basket_pair.second;
-        logAction(0, player_basket[0], random_phase);
-        logAction(1, player_basket[1], random_phase);
+        logAction(0, player_basket[0]);
+        logAction(1, player_basket[1]);
         random_phase ++;
         _startOfBiddingPhase();
     }
     else
     {
-        logAction(0, action_id, 4 + bids_number);
-        logAction(1, action_id, 4 + bids_number);
+        logAction(0, action_id);
+        logAction(1, action_id);
         bids_number ++;
         /* player looses */
         if (action_id == ACTION_FOLD)
@@ -127,25 +122,35 @@ vector<int> HoldemPokerAbstraction::getActionIds(int bids_num)
     return action_ids;
 }
 
-int HoldemPokerAbstraction::getInformationSetId()
+long long HoldemPokerAbstraction::getInformationSetId()
 {
     if (cur_player == RANDOM_PLAYER_NR)
         return -1;
     return is_id[cur_player];
 }
 
-void HoldemPokerAbstraction::_endGame(int winner)
+utility HoldemPokerAbstraction::getUtility()
 {
     int stake = 0;
     if (agreed_stake > 0)
         stake = 1 << (agreed_stake - 1);
     if (winner == 0)
-        results = make_pair(stake, -stake);
+        return  make_pair(stake, -stake);
     else if (winner == 1)
-        results = make_pair(-stake, stake);
+        return make_pair(-stake, stake);
     else
-        results = make_pair(0.0, 0.0);
-    is_final = true;
+        return make_pair(0.0, 0.0);
+}
+
+bool HoldemPokerAbstraction::isFinal()
+{
+    return winner != NO_WINNER;
+
+}
+
+void HoldemPokerAbstraction::_endGame(int win)
+{
+    winner = win;
 }
 
 
@@ -154,27 +159,10 @@ dist HoldemPokerAbstraction::getActionDistribution()
     return manager -> getBasketPairsDistribution(random_phase, player_basket[0], player_basket[1]);
 }
 
-void HoldemPokerAbstraction::logAction(int pnum, int action_id, int phase_id)
+void HoldemPokerAbstraction::logAction(int pnum, int action_id)
 {
-    //printf("is_id before: %d | ", is_id[pnum]);
-    is_id[pnum] += (action_id + 1) * mults[pnum];
-    //printf("logging action %d by %d in phase %d, is_id: %d, mults: %d\n", action_id, pnum,
-    //                                                    phase_id, is_id[pnum], mults[pnum]);
-    mults[pnum] *= (phase_actions[phase_id] + 1);
-}
-
-void HoldemPokerAbstraction::logCards(int pnum, vector<int> cards, int random_phase)
-{
-    int cards_code = manager -> cardsCode(cards);
-    int bnum = manager -> getNextBasket(random_phase,
-                                        player_basket[pnum],
-                                        cards_code);
-    log(1, "HPA: logCards: bnum: %d, random_phase: %d, player_basket[%d]: %d\n", bnum,
-                                                                              random_phase,
-                                                                              pnum,
-                                                                              player_basket[pnum]);
-    player_basket[pnum] = bnum;
-    logAction(pnum, bnum, random_phase);
+    is_id[pnum] *= IS_BASE;
+    is_id[pnum] += action_id;
 }
 
 void HoldemPokerAbstraction::_backup()
@@ -186,15 +174,12 @@ void HoldemPokerAbstraction::_backup()
     backup -> random_phase = random_phase;
     backup -> bidding_phase = bidding_phase;
     backup -> bids_number = bids_number;
-    backup -> results = results;
-    backup -> is_final = is_final;
+    backup -> winner = winner;
     backup -> prev = prev_backup;
     backup -> player_basket[0] = player_basket[0];
     backup -> player_basket[1] = player_basket[1];
     backup -> is_id[0] = is_id[0];
     backup -> is_id[1] = is_id[1];
-    backup -> mults[0] = mults[0];
-    backup -> mults[1] = mults[1];
     prev_backup = backup;
 
 }
@@ -206,14 +191,11 @@ void HoldemPokerAbstraction::_restore()
     random_phase = prev_backup -> random_phase;
     bidding_phase = prev_backup -> bidding_phase;
     bids_number = prev_backup -> bids_number;
-    results = prev_backup -> results;
-    is_final = prev_backup -> is_final;
+    winner = prev_backup -> winner;
     player_basket[0] = prev_backup -> player_basket[0];
     player_basket[1] = prev_backup -> player_basket[1];
     is_id[0] = prev_backup -> is_id[0];
     is_id[1] = prev_backup -> is_id[1];
-    mults[0] = prev_backup -> mults[0];
-    mults[1] = prev_backup -> mults[1];
     AbsBackup* temp = prev_backup -> prev;
     delete prev_backup;
     prev_backup = temp;

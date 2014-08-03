@@ -61,7 +61,7 @@ int CfrModPlayer::getAction(vector<int> available_actions)
     //dist isets_dist = game -> getInformationSetIds(prev_opp_dist);
     printf("Player%d making decision\n", player_num);
     //int action_id = strategy -> getActionId(isets_dist, game -> getActionIds(bids_number));
-    int action_id = strategy -> getActionId(game -> getInformationSetId(), game -> getActionIds(bids_number));
+    int action_id = strategy -> getActionId(game -> getISetId(), game -> getActionIds(bids_number));
     if (action_id == game -> ACTION_FOLD)
         return 0;
     if (action_id == game -> ACTION_CALL)

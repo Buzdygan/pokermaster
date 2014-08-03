@@ -11,8 +11,8 @@ using namespace std;
 const int MAX_STATES = 18000;
 const int MAX_ISETS = 3000;
 
-typedef map<pair<int, int>, double> Smap;
-typedef map<pair<int, int>, double>::iterator Sit;
+typedef map<pair<int, int>, double> iSmap;
+typedef map<pair<int, int>, double>::iterator iSit;
 typedef vector<pair<pair<int, int>, double> > Nlist; // neighbour list
 
 class ModCfr
@@ -28,7 +28,7 @@ class ModCfr
         static const int ITERATIONS;
         HoldemPokerModAbstraction* game;
 
-        Smap strategy;
+        iSmap strategy;
 
         // stable part of graph
         vector<int> all_states;

@@ -17,7 +17,7 @@ HoldemPokerModAbstraction::~HoldemPokerModAbstraction()
 {
 }
 
-int HoldemPokerModAbstraction::getInformationSetId()
+int HoldemPokerModAbstraction::getISetId()
 {
     int res = 0;
     int mult = 1;

@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
                                                                        basket_sizes[3],
                                                                        strategy_repetitions);
 
-    int basket_sizes2[4] = {5,4,4,3};
+    int basket_sizes2[4] = {4,3,3,3};
 
     sprintf(strategy_filename2, "cfr.strategy%s-%d-%d-%d-%d-%d.stg", EHS_STR,
                                                                        basket_sizes2[0],

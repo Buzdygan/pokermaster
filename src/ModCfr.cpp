@@ -214,7 +214,7 @@ utility ModCfr::_walkTree(int s_id)
 int ModCfr::_exploreTree()
 {
     int game_s_id = game -> getStateId();
-    int game_is_id = game -> getInformationSetId();
+    int game_is_id = game -> getISetId();
     int s_id, is_id;
     int p = game -> getPlayerId();
     //printf("explore Tree, game_s_id: %d\n", game_s_id);

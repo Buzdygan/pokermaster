@@ -54,7 +54,7 @@ HoldemPoker::~HoldemPoker()
 {
 }
 
-int HoldemPoker::getInformationSetId()
+long long HoldemPoker::getInformationSetId()
 {
     return -1;
 }

@@ -29,16 +29,16 @@ struct Backup
 class HoldemPoker : public GameAbstraction
 {
     public:
-        virtual int getInformationSetId();
+        virtual long long getInformationSetId();
         virtual dist getActionDistribution();
         virtual vector<int> getActionIds();
         virtual void makeAction(int action_id);
-        utility getUtility();
+        virtual utility getUtility();
         int getPlayerId();
         /* returns player that sees the random action.
          * -1 means all players */
         int randomActionPlayer();
-        bool isFinal();
+        virtual bool isFinal();
         void unmakeAction(int action_id);
         ~HoldemPoker();
         HoldemPoker();

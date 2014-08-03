@@ -20,7 +20,7 @@ int other(int player_number);
 class GameAbstraction
 {
     public:
-        virtual int getInformationSetId() = 0;
+        virtual long long getInformationSetId() = 0;
         virtual utility getUtility() = 0;
         virtual int getPlayerId() = 0;
         virtual dist getActionDistribution() = 0;

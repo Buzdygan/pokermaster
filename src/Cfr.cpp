@@ -32,10 +32,9 @@ void Cfr::computeVanillaCfr(int iterations)
         printf("Iteration %d\n", i);
         util_map.clear();
         long double probs [3] = {1.0L, 1.0L, 1.0L};
-        newR.clear();
-        walkTree(0, probs);
+        walkTree(probs);
         printf("UTIL MAP SIZE: %d\n", (int)util_map.size());
-        recomputeStrategy(newR);
+        recomputeStrategy(R);
         double it_err = current_regret_sum / (i + 1);
         sum += it_err;
         printf("It err: %0.5f Err: %0.5f\n", it_err, sum / (i+1));
@@ -43,7 +42,7 @@ void Cfr::computeVanillaCfr(int iterations)
     recomputeStrategy(S);
 }
 
-utility Cfr::walkTree(int lev, long double probs[3], int prev_is_id)
+utility Cfr::walkTree(long double probs[3])
 {
     if (game -> isFinal())
     {
@@ -51,11 +50,6 @@ utility Cfr::walkTree(int lev, long double probs[3], int prev_is_id)
     }
 
     int p = game -> getPlayerId();
-    int is_id = game -> getInformationSetId();
-
-    if (itree && is_id >= 0 && util_map.count(is_id))
-        return util_map[is_id];
-
     utility final_util = make_pair(0.0, 0.0);
 
     /* If it is a turn of a chance player */
@@ -67,7 +61,7 @@ utility Cfr::walkTree(int lev, long double probs[3], int prev_is_id)
         {
             probs[RANDOM_PLAYER_NR] *= (long double) iter -> second;
             game -> makeAction(iter -> first);
-            utility res_util = walkTree(lev + 1, probs, prev_is_id);
+            utility res_util = walkTree(probs);
             game -> unmakeAction(iter -> first);
             probs[RANDOM_PLAYER_NR] = backup_prob;
             final_util.first += res_util.first * iter -> second;
@@ -76,10 +70,11 @@ utility Cfr::walkTree(int lev, long double probs[3], int prev_is_id)
     }
     else
     {
+        long long is_id = game -> getInformationSetId();
         vector<int> action_ids = game -> getActionIds();
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
         {
-            pair<int, int> decision_id = make_pair(is_id, *a_id);
+            pair<long long, int> decision_id = make_pair(is_id, *a_id);
             if (!strategy.count(decision_id))
             {
                 strategy[decision_id] = 1.0 / action_ids.size();
@@ -92,12 +87,12 @@ utility Cfr::walkTree(int lev, long double probs[3], int prev_is_id)
         long double backup_prob = probs[p];
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
         {
-            pair<int, int> decision_id = make_pair(is_id, *a_id);
+            pair<long long, int> decision_id = make_pair(is_id, *a_id);
             long double action_prob = (long double) strategy[decision_id];
             probs[p] *= action_prob;
 
             game -> makeAction(*a_id);
-            utility temp_util = walkTree(lev + 1, probs, is_id);
+            utility temp_util = walkTree(probs);
             double res_util [2] = {temp_util.first, temp_util.second};
             game -> unmakeAction(*a_id);
 
@@ -117,14 +112,10 @@ utility Cfr::walkTree(int lev, long double probs[3], int prev_is_id)
 
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
         {
-            pair<int, int> decision_id = make_pair(is_id, *a_id);
+            pair<long long, int> decision_id = make_pair(is_id, *a_id);
             R[decision_id] -= add;
-            newR[decision_id] = R[decision_id];
         }
     }
-    if (itree && is_id >= 0)
-        util_map[is_id] = final_util;
-
     return final_util;
 }
 
@@ -148,13 +139,13 @@ int Cfr::getActionId(dist action_dist)
 
 }
 
-int Cfr::getActionId(int information_set_id, vector<int> action_ids)
+int Cfr::getActionId(long long information_set_id, vector<int> action_ids)
 {
     dist action_dist;
     for (int i = 0; i < action_ids.size(); i++)
     {
         int action_id = action_ids[i];
-        pair<int,int> pair_id = make_pair(information_set_id, action_id);
+        pair<long long, int> pair_id = make_pair(information_set_id, action_id);
         if (strategy.count(pair_id))
             action_dist.push_back(make_pair(action_id, strategy[pair_id]));
     }
@@ -173,11 +164,11 @@ int Cfr::getActionId(dist information_set_ids, vector<int> action_ids)
         double sum = 0.0;
         for (int j = 0; j < information_set_ids.size(); j++)
         {
-            int information_set_id = information_set_ids[j].first;
-            pair<int,int> pair_id = make_pair(information_set_id, action_id);
+            long long information_set_id = information_set_ids[j].first;
+            pair<long long, int> pair_id = make_pair(information_set_id, action_id);
             if (strategy.count(pair_id))
             {
-                printf("is: %d, a: %d, prob: %.03lf, weight: %.03lf\n", information_set_id, action_id,
+                printf("is: %lld, a: %d, prob: %.03lf, weight: %.03lf\n", information_set_id, action_id,
                                                         strategy[pair_id], information_set_ids[j].second);
                 sum += strategy[pair_id] * information_set_ids[j].second;
             }
@@ -205,12 +196,12 @@ int Cfr::getActionId(dist information_set_ids, vector<int> action_ids)
 
 double Cfr::recomputeStrategy(Smap &reg)
 {
-    map<int, double> is_r_sums;
-    map<int, double> is_r_cnt;
-    map<int, double> mregret;
+    map<long long, double> is_r_sums;
+    map<long long, double> is_r_cnt;
+    map<long long, double> mregret;
     for (Sit iter = reg.begin(); iter != reg.end(); iter++)
     {
-        int is_id = iter -> first.first;
+        long long is_id = iter -> first.first;
         double val = max(iter -> second, 0.0);
 
         if (!is_r_sums.count(is_id))
@@ -229,9 +220,9 @@ double Cfr::recomputeStrategy(Smap &reg)
             mregret[is_id] = max(mregret[is_id], val);
     }
 
-    for (map<int, double>::iterator it = mregret.begin(); it != mregret.end(); it++)
+    for (map<long long, double>::iterator it = mregret.begin(); it != mregret.end(); it++)
     {
-        int is_id = it -> first;
+        long long is_id = it -> first;
         double val = it -> second;
         if(!regrets.count(is_id))
         {
@@ -249,7 +240,7 @@ double Cfr::recomputeStrategy(Smap &reg)
     set<int> isets;
     for (Sit iter = reg.begin(); iter != reg.end(); iter++)
     {
-        int is_id = iter -> first.first;
+        long long is_id = iter -> first.first;
         isets.insert(is_id);
         int a_id = iter -> first.second;
         double val = max(iter -> second, 0.0);
@@ -275,9 +266,10 @@ bool Cfr::loadFromFile(const char* filename)
         fscanf(f, "%d\n", &strategy_size);
         for (int i = 0 ; i < strategy_size; i++)
         {
-            int is_id, action_id;
+            long long is_id;
+            int action_id;
             double prob;
-            fscanf(f, "%d %d %lf\n", &is_id, &action_id, &prob);
+            fscanf(f, "%lld %d %lf\n", &is_id, &action_id, &prob);
             strategy[make_pair(is_id, action_id)] = prob;
         }
         fclose(f);
@@ -292,12 +284,12 @@ void Cfr::saveToFile(const char* filename)
 {
     FILE *f = fopen(filename, "w");
     fprintf(f, "%d\n", (int)strategy.size());
-    for (stg_it iter = strategy.begin(); iter != strategy.end(); iter++)
+    for (Sit iter = strategy.begin(); iter != strategy.end(); iter++)
     {
-        int is_id = iter -> first.first;
+        long long is_id = iter -> first.first;
         int action_id = iter -> first.second;
         double prob = iter -> second;
-        fprintf(f, "%d %d %lf%c", is_id, action_id, prob, FILE_DELIM);
+        fprintf(f, "%lld %d %lf%c", is_id, action_id, prob, FILE_DELIM);
     }
     fclose(f);
 }
