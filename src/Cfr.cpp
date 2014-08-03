@@ -10,6 +10,7 @@ const char Cfr::FILE_DELIM = '\n';
 const int Cfr::ITERATIONS = 2000;
 
 int cnt = 0;
+bool first_iteration = true;
 
 Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file, bool information_tree)
 {
@@ -32,7 +33,6 @@ void Cfr::computeVanillaCfr(int iterations)
     for (int i = 0; i < iterations; i++)
     {
         printf("Iteration %d\n", i);
-        util_map.clear();
         long double probs [3] = {1.0L, 1.0L, 1.0L};
         cnt = 0;
         walkTree(probs);
@@ -41,6 +41,7 @@ void Cfr::computeVanillaCfr(int iterations)
         double it_err = current_regret_sum / (i + 1);
         sum += it_err;
         printf("It err: %0.5f Err: %0.5f\n", it_err, sum / (i+1));
+        first_iteration = false;
     }
     recomputeStrategy(S);
 }
@@ -48,6 +49,7 @@ void Cfr::computeVanillaCfr(int iterations)
 utility Cfr::walkTree(long double probs[3])
 {
     cnt ++;
+    printf("cnt: %d\n", cnt);
     if (game -> isFinal())
     {
         return game -> getUtility();
@@ -76,16 +78,17 @@ utility Cfr::walkTree(long double probs[3])
     {
         long long is_id = game -> getInformationSetId();
         vector<int> action_ids = game -> getActionIds();
-        for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
-        {
-            pair<long long, int> decision_id = make_pair(is_id, *a_id);
-            if (!strategy.count(decision_id))
+        if (first_iteration)
+            for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
             {
-                strategy[decision_id] = 1.0 / action_ids.size();
-                R[decision_id] = 0.0;
-                S[decision_id] = 0.0;
+                pair<long long, int> decision_id = make_pair(is_id, *a_id);
+                if (!strategy.count(decision_id))
+                {
+                    strategy[decision_id] = 1.0 / action_ids.size();
+                    R[decision_id] = 0.0;
+                    S[decision_id] = 0.0;
+                }
             }
-        }
 
         long double prob_mult = probs[RANDOM_PLAYER_NR] * probs[(p + 1) & 1];
         long double backup_prob = probs[p];

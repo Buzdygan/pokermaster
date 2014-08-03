@@ -26,7 +26,6 @@ class Cfr
 
         double current_regret_sum;
         map<int, double> regrets;
-        map<int, utility> util_map;
         Smap strategy;
         Smap R;
         Smap S;
