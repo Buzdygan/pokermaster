@@ -123,14 +123,14 @@ należy do gatunku gier z niepełną informacją z ograniczoną liczbą stanów 
 
 \section{Texas Holdem Poker}
 
-Texas Holdem Poker to gra karciana przeznaczona dla co najmniej dwóch graczy. Na początku każdy z graczy
+Texas Holdem Poker to gra karciana przeznaczona dla co najmniej dwóch graczy. Na początku pojedynczej rozgrywki każdy z graczy
 dostaje dokładnie dwie karty, których nie pokazuje przeciwnikom. Następuje potem runda licytacji, w której
 gracze ustalają wysokość stawki. W pierwszej rundzie licytacji gracz zaczynający musi wejść do gry
 za stawkę ustaloną wielkością "small blind" a następny gracz w kolejności musi wejść stawką o wysokości
 "big blind". \\
 
 \noindent
-W licytacji gracze odzywają się w ustalonej kolejności. Mogą podbić stawkę (raise), pozostać przy
+W licytacji gracze odzywają się w ustalonej kolejności. Mogą wejść za całą dostępną im kwotę (all-in), podbić stawkę (raise), pozostać przy
 obecnej stawce (call) lub zrezygnować z udziału w licytacji (fold). W pierwszych dwóch przypadkach są
 zobowiązani oddać do puli stawkę na jaką się zgodzili. Różne wersje gry określają ograniczenia podnoszenia
 stawki. W tej pracy przyjęta jest wersja, w której można podnieść stawkę o dowolną kwotę całkowitą o ile stawka
@@ -414,19 +414,59 @@ wynosi $0$. Analogicznie wygląda obliczenie końcowej strategii przy czym patrz
 
 \chapter{Modyfikacja CFR}
 
-\section{Informacje ogólne}
+\section{Idea}
 
-Całość została zaprogramowana w języku C++. Do zaimplementowania zasad Texas Holdem Pokera oraz jego
-abstrakcji wykorzystano mechanizm dziedziczenia. Dla zasad pokera przyjęto 3-fazową licytację w każdej
-rundzie. Pierwszy gracz w rundzie flop musi zawsze zagrać za $1$. Podbijać można tylko w $1$ i $2$ fazie
-każdej rundy. Karty rozdawane są zgodnie z zasadami Texas Holdem Poker. Do porównywania siły rąk graczy
-wykorzystano gotowy algorytm 2+2.
+Drzewo gry pokera jest duże. Nawet przy zastosowaniu bardzo okrojonych abstrakcji, liczba historii przeglądanych w każdej
+iteracji algorytmu przekracza milion. Idea modyfikacji algorytmu CFR opiera się na porzuceniu założenia o pełnej pamięci rozgrywki.
+W oryginalnej wersji, każdy stan i zbiór informacyjny zawiera całą historię wykonanych w partii zagrań. Algorytm testowany
+w tej pracy redukuje liczbę stanów gry przez ignorowanie historii akcji wykonywanych
+przez graczy. Stan gry jest opisany przez następujące parametry: \\
 
+\begin{itemize}
+\item Aktualny gracz (łącznie z graczem losowym)
+\item Aktualna runda (runda licytacji bądź rozdawania kart, jeśli aktualny gracz to gracz losowy)
+\item Obecne koszyki obu graczy
+\item Liczba odzywek w aktualnej licytacji
+\item Proponowana stawka
+\item Uzgodniona stawka
+\end{itemize}
 
-\section{Obliczanie EHS}
+\noindent
+W jednym zbiorze informacyjnym są wszystkie stany, które są tożsame w powyższych parametrach, z wyłączeniem
+wiedzy o koszyku przeciwnika. \\
 
-Zaimplementowano osobny moduł, który odpowiada za przyporządkowywanie "koszyków" układom kart.
-Są 4 rodzaje układów: pre-flop (2 karty), flop(5 kart), turn(6 kart) i river(7 kart).
+\noindent
+Kluczowe dla zmniejszenia złożoności algorytmu było przeformułowanie algorytmu CFR tak, by każdy
+stan odwiedzany był tylko raz w jednej iteracji. Dzięki temu złożoność pojedynczej iteracji jest
+liniowa względem liczby stanów. Na początku algorytmu tworzony jest graf przejść między
+stanami co pozwala uniezależnić iteracje algorytmu od mechaniki gry. Przyspiesza to znacząco
+czas obliczeń w pojedynczym stanie.
+
+\section{Tworzenie abstrakcji}
+
+Drzewo gry zmniejszono przez wprowadzenie ograniczeń w licytacji oraz podział układów kart na koszyki.
+W każdej rundzie licytacji gracze mają prawo do jednokrotnego podbicia stawki. Łącznie dostępne są cztery akcje:
+
+\begin{itemize}
+\item \textbf{fold} - zrezygnowanie z udziału w rozgrywce.
+\item \textbf{call} - zgodzenie się na obecną stawkę.
+\item \textbf{raise} - zaproponowanie stawki dwukrotnie większej niż obecna
+\item \textbf{all in} - zaproponowanie maksymalnej stawki
+\end{itemize}
+
+\noindent
+Niektóre akcje są niedostępne jeżeli nie mają strategicznego sensu, np \textbf{fold} w przypadku gdy
+proponowana stawka nie jest wyższa niż stawka, na którą gracz już się zgodził. \\
+
+\noindent
+W celu podzielenia układów na koszyki, układy z jednej rundy są sortowane po wartości $EHS$. Jeżeli mają być podzielone na
+$n$ koszyków, to są dzielone tak, by w każdym koszyku znalazła się podobna liczba układów (czyli $\frac{1}{n}$ wszystkich układów). \\
+
+\noindent
+Na potrzebę wyliczania strategii liczone są prawdopodobieństwa przejść między parami koszyków. Czyli np dla każdej kombinacji
+trójek kart pojawiąjących się na stole na flopie, liczone jest prawdopodobieństwo zmiany koszyka o numerze $A$ z pierwszej
+rundy na koszyk $B$ w drugiej rundzie dla każdej takiej pary $(A, B)$. Dodatkowo liczone są rozkłady koszyków
+w każdej rundzie, zależne od koszyków z poprzedniej rundy. \\
 
 \noindent
 Wyliczenie wartości $EHS$ dla wszystkich możliwych układów wymaga przejrzenia wszystkich możliwych kombinacji 9 kart (2 kart gracza, 2 przeciwnika
@@ -481,15 +521,6 @@ By wyliczyć potencjał układu z rund $1$, $2$, $3$ (dla rundy $4$ liczenie pot
 możliwe kombinacje następnych kart na stole. Jeżeli po dodaniu następnych kart, układ zmienił się z przegrywającego w
 wygrywający, rośnie wartość $Ppot$. W odwrotnej sytuacj rośnie $Npot$.
 
-\section{Podział na koszyki}
-
-W celu podzielenia układów na koszyki, układy z jednej rundy są sortowane po wartości $EHS$. Jeżeli mają być podzielone na
-$n$ koszyków, to są dzielone tak, by w każdym koszyku znalazła się podobna liczba układów (czyli $\frac{1}{n}$ wszystkich układów). \\
-\noindent
-Na potrzebę wyliczania strategii liczone są prawdopodobieństwa przejść między parami koszyków. Czyli np dla każdej kombinacji
-trójek kart pojawiąjących się na stole na flopie, liczone jest prawdopodobieństwo zmiany koszyka o numerze $A$ z pierwszej
-rundy na koszyk $B$ w drugiej rundzie dla każdej takiej pary $(A, B)$. Dodatkowo liczone są rozkłady koszyków
-w każdej rundzie, zależne od koszyków z poprzedniej rundy.
 
 
 \section{Zmodyfikowany CFR}
