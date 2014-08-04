@@ -2,6 +2,7 @@
 #include <ctime>
 #include <vector>
 #include <cstdio>
+#include <cstring>
 
 #include "GameAbstraction.h"
 #include "HoldemPoker.h"
