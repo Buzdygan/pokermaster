@@ -1,3 +1,5 @@
+Do poprawki EHS_DIST - wyliczać z EHS a nie wczytywać
+
 Rozdział I - Wstęp
     Celem jest to że recenzent przeczyta i wszystko wie
     - historyjka że ludzie lubią grać w gry, czemu to jest ważna, zastosowania w ekonomii 

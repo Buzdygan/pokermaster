@@ -473,23 +473,37 @@ bool BasketManager::_loadEHS()
                 for (int p = 0; p <= PRECISION; p++)
                     fscanf(f, "%d\n", &EHS_DIST[st][p]);
 
+            memset(EHS_DIST, 0, sizeof(EHS_DIST));
+
             for (int i1 = 0; i1 < EHS_SIZE1; i1++)
+            {
                 fscanf(f, "%d\n", &EHS1[i1]);
+                EHS_DIST[0][EHS1[i1]] += S1[i1];
+            }
 
             for (int i2 = 0; i2 < EHS_SIZE2; i2++)
                 for (int i1 = 0; i1 < EHS_SIZE1; i1++)
+                {
                     fscanf(f, "%d\n", &EHS2[i2][i1]);
+                    EHS_DIST[1][EHS2[i2][i1]] += S1[i1] * S2[i2];
+                }
 
             for (int i3 = 0; i3 < EHS_SIZE3; i3++)
                 for (int i2 = 0; i2 < EHS_SIZE2; i2++)
                     for (int i1 = 0; i1 < EHS_SIZE1; i1++)
+                    {
                         fscanf(f, "%d\n", &EHS3[i3][i2][i1]);
+                        EHS_DIST[2][EHS3[i3][i2][i1]] += S1[i1] * S2[i2] * S3[i3];
+                    }
 
             for (int i4 = 0; i4 < EHS_SIZE4; i4++)
                 for (int i3 = 0; i3 < EHS_SIZE3; i3++)
                     for (int i2 = 0; i2 < EHS_SIZE2; i2++)
                         for (int i1 = 0; i1 < EHS_SIZE1; i1++)
+                        {
                             fscanf(f, "%d\n", &EHS4[i4][i3][i2][i1]);
+                            EHS_DIST[3][EHS4[i4][i3][i2][i1]] += S1[i1] * S2[i2] * S3[i3] * S4[i4];
+                        }
 
             fclose(f);
             ehs_loaded = true;
@@ -738,7 +752,7 @@ void BasketManager::_computeEHS()
                 F[tc1] ++; F[tc2] ++; F[tc3] ++;
                 ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3));
                 EHS2[i2][i1] = ehs;
-                EHS_DIST[1][ehs] += S2[i2];
+                EHS_DIST[1][ehs] += S1[i1] * S2[i2];
                 for (int i3 = 0; i3 < v3.size(); i3++)
                 {
                     int tc4 = v3[i3].first;
@@ -748,7 +762,7 @@ void BasketManager::_computeEHS()
                         F[tc4] ++;
                         ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4));
                         EHS3[i3][i2][i1] = ehs;
-                        EHS_DIST[2][ehs] += S3[i3];
+                        EHS_DIST[2][ehs] += S1[i1] * S2[i2] * S3[i3];
 
                         for (int i4 = 0; i4 < v4.size(); i4++)
                         {
@@ -759,7 +773,7 @@ void BasketManager::_computeEHS()
                                 F[tc5] ++;
                                 ehs = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5));
                                 EHS4[i4][i3][i2][i1] = ehs;
-                                EHS_DIST[3][ehs] += S4[i4];
+                                EHS_DIST[3][ehs] += S1[i1] * S2[i2] * S3[i3] * S4[i4];
                                 F[tc5] --;
                             }
                         }
@@ -836,8 +850,10 @@ void BasketManager::_computeTransitions()
         F[pc1] ++; F[pc2] ++;
 
         printf("Progress: %d / %d\n", i1 + 1, (int)v1.size());
+        /*
         if (!EHS1[i1])
             EHS1[i1] = _perc(_EHS(F, pc1, pc2));
+            */
         int basket1 = _determineBasket(0, EHS1[i1]);
         B1[index][i1] = basket1;
         printf("basket1: %d\n", basket1);
@@ -852,8 +868,10 @@ void BasketManager::_computeTransitions()
             if (F[tc1] + F[tc2] + F[tc3] == 0)
             {
                 F[tc1] ++; F[tc2] ++; F[tc3] ++;
+                /*
                 if (!EHS2[i2][i1])
                     EHS2[i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3));
+                    */
                 int basket2 = _determineBasket(1, EHS2[i2][i1]);
                 B2[index][i2][i1] = basket2;
                 for (int i3 = 0; i3 < v3.size(); i3++)
@@ -863,8 +881,10 @@ void BasketManager::_computeTransitions()
                     if (!F[tc4])
                     {
                         F[tc4] ++;
+                        /*
                         if (!EHS3[i3][i2][i1])
                             EHS3[i3][i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4));
+                            */
                         int basket3 = _determineBasket(2, EHS3[i3][i2][i1]);
                         B3[index][i3][i2][i1] = basket3;
 
@@ -875,8 +895,10 @@ void BasketManager::_computeTransitions()
                             if (!F[tc5])
                             {
                                 F[tc5] ++;
+                                /*
                                 if (!EHS4[i4][i3][i2][i1])
                                     EHS4[i4][i3][i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5));
+                                    */
                                 int basket4 = _determineBasket(3, EHS4[i4][i3][i2][i1]);
                                 // setting basket3 to basket4 transition for all the cards
                                 vector<int> cards = v4[i4].second;
