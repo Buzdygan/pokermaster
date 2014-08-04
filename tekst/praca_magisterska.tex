@@ -52,7 +52,7 @@
   Wydzia{\l} Matematyki Informatyki i Mechaniki\\
   }
   
-\date{Sierpież 2014}
+\date{Sierpień 2014}
 
 %TODO poprawić numerek
 \dziedzina{
@@ -77,6 +77,8 @@ D.0. General\\}
 \tableofcontents
 
 \chapter{Wstęp}
+
+\chapter{Wprowadzenie do Pokera}
 
 \section{Pomocnicze pojęcia}
 
@@ -104,6 +106,7 @@ D.0. General\\}
       Strategia może być deterministyczna, jeśli w każdym zbiorze informacyjnym jest wyznaczona dokładnie
       jedna podejmowana akcja, bądź mieszana jeśli na akcjach określony jest rozkład prawdopodobieństwa
       zagrania ich.
+\item Programy, które podejmują akcje w grze zgodnie z zaprogramowaną bądź wyliczoną strategią nazywamy botami
 \end{itemize}
 
 \section{Sztuczna inteligencja w grach}
@@ -131,9 +134,12 @@ W licytacji gracze odzywają się w ustalonej kolejności. Mogą podbić stawkę
 obecnej stawce (call) lub zrezygnować z udziału w licytacji (fold). W pierwszych dwóch przypadkach są
 zobowiązani oddać do puli stawkę na jaką się zgodzili. Różne wersje gry określają ograniczenia podnoszenia
 stawki. W tej pracy przyjęta jest wersja, w której można podnieść stawkę o dowolną kwotę całkowitą o ile stawka
-po podniesieniu nie przekracza 128 jednostek. Stawka na zakończenie licytacji zostaje ustalona, gdy
+po podniesieniu nie przekracza 128 jednostek. Popularną ale jednocześnie trudną obliczeniowo wersją
+jest wersja no-limit, w której nie nakłada się limitu na kwotę przebicia.
+Stawka na zakończenie licytacji zostaje ustalona, gdy
 wszyscy gracze biorący jeszcze udział w licytacji zaakceptują aktualną wysokość stawki. Jeśli będzie to
-tylko jedna osoba, zostaje ona zwycięzcą i zgarnia całą pulę a gra się kończy. \\
+tylko jedna osoba, zostaje ona zwycięzcą i zgarnia całą pulę a gra się kończy. W limit Texas Holdem Poker
+nakłada się ograniczenie na liczbę zagrywek jednego gracza w licytacji.\\
 
 \noindent
 Po pierwszej rundzie licytacji następuje wyłożenie trzech kart na stół, tak by widzieli je wszyscy gracze.
@@ -168,6 +174,43 @@ $(7\spadesuit, 7\diamondsuit, 7\clubsuit, K\spadesuit, 5\diamondsuit)$. \\
 \noindent
 Jeśli po uwzględnieniu wszystkich 5 kart układu nadal występuje remis (np gdy najsilniejszy układ stanowią karty na stole),
 pula jest dzielona między graczy z najwyższym układem.
+
+\section{Rozwój botów grających w Pokera}
+
+Pierwsze boty opierały swoją strategię na zbiorze zasad wpisanych ręcznie przez pokerowych graczy. Zasady określały
+sposób podejmowania decyzji w konkretnych sytuacjach, np "mając na ręku Asa i Damę" podbijaj stawkę trzykrotnie".
+W 2004 roku powstał program WinHoldem, który umożliwiał proste tworzyenie botów grających według pewnego zbioru zasad.
+Jednocześnie, w środowiskach akademickich rozwijały się podejścia oparte na znajdowaniu równowagi Nasha. Owocem tych
+badań jest między innymi opisywany w tej pracy algorytm CFR. Takie podejścia przeważają w długiej serii rozgrywek ale
+brakuje im umiejętności wykorzystania słabości w strategiach przeciwnika. Powstały również algorytmy, które w serii
+rozgrywek próbują estymować strategię przeciwnika i znajdują najlepszą dla niej kontrstrategię. \cite{exploit}
+
+\section{Zmniejszanie drzewa gry}
+
+Drzewo gry w pokerze jest bardzo duże. W dwuosobowym no-limit Texas Holdem Poker jest wielkości
+ok. $10^{70}$ stanów. \cite{monte-carlo}. Dlatego niezbędne jest wprowadzenie abstrakcji gry.
+Pierwsze ograniczenie, które zastosowano dotyczy licytacji. Dostępne są maksymalnie 4 akcje:
+fold (rezygnacja z licytacji), call (pozostanie przy obecnej stawce), raise(dwukrotne podbicie stawki) oraz
+all in(zalicytowanie maksymalnej stawki - 128). W ten sposób jedyne możliwe wysokości stawek w licytacji to: $1$, $2$,
+$4$, $8$, $16$, $32$, $64$ i $128$. \\\\
+\noindent
+Drugie ograniczenie przyporządkowuje układom kart graczy (karty na ręce wraz z kartami na stole) tzw "koszyki".
+W jednym "koszyku" są karty o podobnej sile. W każdej rundzie licytacji obowiązuje osobny podział, zmienna
+jest też liczba koszyków. Testowano różne liczby koszyków, w zależności od używanego algorytmu. \\\\
+\noindent
+Do oceny siły układów zastosowano miarę "Effective Hand Strength" (EHS). EHS układu wyliczany
+jest z trzech innych miar: "Hand Strength" ($HS$), "Positive Potential" ($Ppot$) oraz "Negative Potential" ($Npot$) według
+wzoru:
+
+\begin{align*}
+EHS = HS \cdot (1 - Npot) + (1 - HS) \cdot Ppot
+\end{align*}
+
+\noindent
+$HS$ to w przybliżeniu prawdopodobieństwo że nasza ręka jest lepsza od ręki przeciwnika. Miary $Ppot$ i $Npot$ oznaczają
+prawdopodobieństwo że nasza ręka stanie się lepsza (odpowiednio gorsza) od ręki przeciwnika po wyłożeniu kolejnych kart na stół. \\
+
+
 
 \chapter{Metoda CFR}
 
@@ -291,106 +334,6 @@ liczba stanów gry i zbiorów informacyjnych nawet w dwuosobowej wersji Texas Ho
 zastosować algorytm bezpośrednio. W tym celu wprowadza się abstrakcje pełnej wersji gry, przez ograniczenia w licytacji
 oraz dzielenie kart na niewielką liczbę grup (koszyków) ze względu na ich siłę. \\
 
-\chapter{Implementacja}
-
-\section{Informacje ogólne}
-
-Całość została zaprogramowana w języku C++. Do zaimplementowania zasad Texas Holdem Pokera oraz jego
-abstrakcji wykorzystano mechanizm dziedziczenia. Dla zasad pokera przyjęto 3-fazową licytację w każdej
-rundzie. Pierwszy gracz w rundzie flop musi zawsze zagrać za $1$. Podbijać można tylko w $1$ i $2$ fazie
-każdej rundy. Karty rozdawane są zgodnie z zasadami Texas Holdem Poker. Do porównywania siły rąk graczy
-wykorzystano gotowy algorytm 2+2.
-
-\section{Abstrakcje}
-
-W celu ograniczenia rozmiaru drzewa gry zastosowano abstrakcje. Pierwsze ograniczenie dotyczy
-licytacji. Dostępne są maksymalnie 3 akcje: fold (rezygnacja z licytacji), call (pozostanie przy obecnej stawce)
-oraz raise(dwukrotne podbicie stawki). W ten sposób jedyne możliwe wysokości stawek w licytacji to: $1$, $2$,
-$4$, $8$, $16$, $32$, $64$ i $128$. \\\\
-\noindent
-Drugie ograniczenie przyporządkowuje układom kart graczy (karty na ręce wraz z kartami na stole) tzw "koszyki".
-W jednym "koszyku" są karty o podobnej sile. W każdej rundzie licytacji obowiązuje osobny podział, zmienna
-jest też liczba koszyków. Testowano różne liczby koszyków, w zależności od używanego algorytmu.
-
-\section{Obliczanie EHS}
-
-Zaimplementowano osobny moduł, który odpowiada za przyporządkowywanie "koszyków" układom kart.
-Są 4 rodzaje układów: pre-flop (2 karty), flop(5 kart), turn(6 kart) i river(7 kart).
-Do oceny siły układów zastosowano miarę "Effective Hand Strength" (EHS). EHS układu wyliczany
-jest z trzech innych miar: "Hand Strength" ($HS$), "Positive Potential" ($Ppot$) oraz "Negative Potential" ($Npot$) według
-wzoru:
-
-\begin{align*}
-EHS = HS \cdot (1 - Npot) + (1 - HS) \cdot Ppot
-\end{align*}
-
-\noindent
-$HS$ to w przybliżeniu prawdopodobieństwo że nasza ręka jest lepsza od ręki przeciwnika. Miary $Ppot$ i $Npot$ oznaczają
-prawdopodobieństwo że nasza ręka stanie się lepsza (odpowiednio gorsza) od ręki przeciwnika po wyłożeniu kolejnych kart na stół. \\
-
-\noindent
-Wyliczenie wartości $EHS$ dla wszystkich możliwych układów wymaga przejrzenia wszystkich możliwych kombinacji 9 kart (2 kart gracza, 2 przeciwnika
-oraz 5 kart na stole). Jest to bardzo wymagające obliczeniowo. By skrócić obliczenia, EHS jest wyliczane jedynie dla niektórych układów
-kart gracza. Jest to oparte na obserwacji że niektóre układy powinny mieć taki sam $EHS$. Np $EHS$ pary As Kier i As Karo powinien być taki
-sam jak $EHS$ pary As Kier, As Trefl albo As Pik, As Karo. 
-
-\begin{align*}
-(A\heartsuit, A\spadesuit) = (A\heartsuit, A\diamondsuit) = (A\heartsuit, A\clubsuit) = (A\spadesuit, A\diamondsuit) =
-(A\spadesuit, A\clubsuit) = (A\diamondsuit, A\clubsuit)
-\end{align*}
-
-\noindent
-W ogólności, wyliczając $EHS$ układów operuję nie na pełnym zbiorze $52$ kart a na zbiorze $13$ figur. Dany układ figur
-może występować w kilku wersjach uwzględniających kolory kart. Para tych samych figur jest zawsze różnokolorowa ale w 
-parze różnych figur mogą one występować w tym samym kolorze bądź w różnych kolorach i wpływa to na $EHS$ takich układów.
-
-\begin{align*}
-EHS(A\heartsuit, K\heartsuit) \neq EHS(A\heartsuit, K\spadesuit)
-\end{align*}
-
-\noindent
-Stosując tę koncepcję wprowadzono klasy abstrakcji dla układów kart. Układy kart dochodzące w kolejnych rundach są traktowane
-osobno. Poniżej typy układów dla poszczególnych rund, napis $Fnx$ oznacza figurę numer $n$ w kolorze $x$. 
-
-\noindent
-\textbf{Pre-flop}:
-\begin{itemize}
-\item (F1a, F1b)
-\item (F1a, F2a)
-\item (F1a, F2b)
-\end{itemize}
-
-\noindent
-\textbf{Flop}:
-\begin{itemize}
-\item (F1a, F1b, F1c)
-\item (F1a, F1b, F2a)
-\item (F1a, F1b, F2c)
-\item (F1a, F2a, F3a)
-\item (F1a, F2a, F3b)
-\item (F1a, F2b, F3c)
-\end{itemize}
-
-\noindent
-Dla rund Turn i River w których dochodzi po jednej karcie, każda klasa abstrakcji to czwórka kart o tej samej figurze. \\
-
-\noindent
-W celu wyliczenia wartości $HS$ dla układu, przeglądane są wszystkie możliwe pary kart u przeciwnika i liczony jest procent
-przypadków gdy siła układu jest większa niż siła kart przeciwnika poszerzonych o karty ze stołu występujące w układzie.
-By wyliczyć potencjał układu z rund $1$, $2$, $3$ (dla rundy $4$ liczenie potencjału nie ma sensu) przeglądane są wszystkie
-możliwe kombinacje następnych kart na stole. Jeżeli po dodaniu następnych kart, układ zmienił się z przegrywającego w
-wygrywający, rośnie wartość $Ppot$. W odwrotnej sytuacj rośnie $Npot$.
-
-\section{Podział na koszyki}
-
-W celu podzielenia układów na koszyki, układy z jednej rundy są sortowane po wartości $EHS$. Jeżeli mają być podzielone na
-$n$ koszyków, to są dzielone tak, by w każdym koszyku znalazła się podobna liczba układów (czyli $\frac{1}{n}$ wszystkich układów). \\
-\noindent
-Na potrzebę wyliczania strategii liczone są prawdopodobieństwa przejść między parami koszyków. Czyli np dla każdej kombinacji
-trójek kart pojawiąjących się na stole na flopie, liczone jest prawdopodobieństwo zmiany koszyka o numerze $A$ z pierwszej
-rundy na koszyk $B$ w drugiej rundzie dla każdej takiej pary $(A, B)$. Dodatkowo liczone są rozkłady koszyków
-w każdej rundzie, zależne od koszyków z poprzedniej rundy.
-
 \section{Implementacja Vanilla CFR}
 
 Użyto rekurencyjnej implementacji algorytmu. W danej iteracji algorytmu, mapy $R$, $S$ oraz $\sigma$ przechowują informacje
@@ -468,6 +411,86 @@ $DefaultStrategy$ to strategia w której każda akcja jest wykonywana z takim sa
 $RecomputeStrategy(R)$ aktualizuje aktualną strategię tak że prawdopodobieństwo zagrania akcji $a$ w zbiorze informacyjnym
 $I$ jest proporcjonalne do wartości $R(I, a)$ o ile ta wartość jest nieujemna. Jeśli jest ujemna, prawdopodobieństwo
 wynosi $0$. Analogicznie wygląda obliczenie końcowej strategii przy czym patrzymy na wartości $S(I, a)$.
+
+\chapter{Modyfikacja CFR}
+
+\section{Informacje ogólne}
+
+Całość została zaprogramowana w języku C++. Do zaimplementowania zasad Texas Holdem Pokera oraz jego
+abstrakcji wykorzystano mechanizm dziedziczenia. Dla zasad pokera przyjęto 3-fazową licytację w każdej
+rundzie. Pierwszy gracz w rundzie flop musi zawsze zagrać za $1$. Podbijać można tylko w $1$ i $2$ fazie
+każdej rundy. Karty rozdawane są zgodnie z zasadami Texas Holdem Poker. Do porównywania siły rąk graczy
+wykorzystano gotowy algorytm 2+2.
+
+
+\section{Obliczanie EHS}
+
+Zaimplementowano osobny moduł, który odpowiada za przyporządkowywanie "koszyków" układom kart.
+Są 4 rodzaje układów: pre-flop (2 karty), flop(5 kart), turn(6 kart) i river(7 kart).
+
+\noindent
+Wyliczenie wartości $EHS$ dla wszystkich możliwych układów wymaga przejrzenia wszystkich możliwych kombinacji 9 kart (2 kart gracza, 2 przeciwnika
+oraz 5 kart na stole). Jest to bardzo wymagające obliczeniowo. By skrócić obliczenia, EHS jest wyliczane jedynie dla niektórych układów
+kart gracza. Jest to oparte na obserwacji że niektóre układy powinny mieć taki sam $EHS$. Np $EHS$ pary As Kier i As Karo powinien być taki
+sam jak $EHS$ pary As Kier, As Trefl albo As Pik, As Karo. 
+
+\begin{align*}
+(A\heartsuit, A\spadesuit) = (A\heartsuit, A\diamondsuit) = (A\heartsuit, A\clubsuit) = (A\spadesuit, A\diamondsuit) =
+(A\spadesuit, A\clubsuit) = (A\diamondsuit, A\clubsuit)
+\end{align*}
+
+\noindent
+W ogólności, wyliczając $EHS$ układów operuję nie na pełnym zbiorze $52$ kart a na zbiorze $13$ figur. Dany układ figur
+może występować w kilku wersjach uwzględniających kolory kart. Para tych samych figur jest zawsze różnokolorowa ale w 
+parze różnych figur mogą one występować w tym samym kolorze bądź w różnych kolorach i wpływa to na $EHS$ takich układów.
+
+\begin{align*}
+EHS(A\heartsuit, K\heartsuit) \neq EHS(A\heartsuit, K\spadesuit)
+\end{align*}
+
+\noindent
+Stosując tę koncepcję wprowadzono klasy abstrakcji dla układów kart. Układy kart dochodzące w kolejnych rundach są traktowane
+osobno. Poniżej typy układów dla poszczególnych rund, napis $Fnx$ oznacza figurę numer $n$ w kolorze $x$. 
+
+\noindent
+\textbf{Pre-flop}:
+\begin{itemize}
+\item (F1a, F1b)
+\item (F1a, F2a)
+\item (F1a, F2b)
+\end{itemize}
+
+\noindent
+\textbf{Flop}:
+\begin{itemize}
+\item (F1a, F1b, F1c)
+\item (F1a, F1b, F2a)
+\item (F1a, F1b, F2c)
+\item (F1a, F2a, F3a)
+\item (F1a, F2a, F3b)
+\item (F1a, F2b, F3c)
+\end{itemize}
+
+\noindent
+Dla rund Turn i River w których dochodzi po jednej karcie, każda klasa abstrakcji to czwórka kart o tej samej figurze. \\
+
+\noindent
+W celu wyliczenia wartości $HS$ dla układu, przeglądane są wszystkie możliwe pary kart u przeciwnika i liczony jest procent
+przypadków gdy siła układu jest większa niż siła kart przeciwnika poszerzonych o karty ze stołu występujące w układzie.
+By wyliczyć potencjał układu z rund $1$, $2$, $3$ (dla rundy $4$ liczenie potencjału nie ma sensu) przeglądane są wszystkie
+możliwe kombinacje następnych kart na stole. Jeżeli po dodaniu następnych kart, układ zmienił się z przegrywającego w
+wygrywający, rośnie wartość $Ppot$. W odwrotnej sytuacj rośnie $Npot$.
+
+\section{Podział na koszyki}
+
+W celu podzielenia układów na koszyki, układy z jednej rundy są sortowane po wartości $EHS$. Jeżeli mają być podzielone na
+$n$ koszyków, to są dzielone tak, by w każdym koszyku znalazła się podobna liczba układów (czyli $\frac{1}{n}$ wszystkich układów). \\
+\noindent
+Na potrzebę wyliczania strategii liczone są prawdopodobieństwa przejść między parami koszyków. Czyli np dla każdej kombinacji
+trójek kart pojawiąjących się na stole na flopie, liczone jest prawdopodobieństwo zmiany koszyka o numerze $A$ z pierwszej
+rundy na koszyk $B$ w drugiej rundzie dla każdej takiej pary $(A, B)$. Dodatkowo liczone są rozkłady koszyków
+w każdej rundzie, zależne od koszyków z poprzedniej rundy.
+
 
 \section{Zmodyfikowany CFR}
 
@@ -561,9 +584,17 @@ Metoda $modWalkTree$ przechodzi rekurencyjnie graf stanów, obliczając oczekiwa
 w każdym stanie przy obecnej strategii. Dodatkowo aktualizuje mapy $R$ oraz $S$ analogicznie do metody $WalkTree$ ze
 zwykłej wersji CFR.
 
-\chapter{Symulacje na dwóch wariantach Pokera}
+\chapter{Wyniki eksperymentalne}
 
 \chapter{Podsumowanie}
 
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{Bibliografia}
+\bibitem[1]{exploit} B. Hoehn, F. Southey, V.Bulitko and R.C. Holte, $\;\;\;$
+"Effective Short-Term Opponent Exploitation in Simplified Poker" $\;\;\;$ Mach. Learn., 2009. 74(2)
+\bibitem[2]{monte-carlo} G.V.D. Broeck, K. Driessens and J.Ramon, $\;\;\;$
+"Monte-Carlo Tree Search in Poker using Expected Reward Distributions" $\;\;\;$
+ACML 2009. LNCS (LNAI), vol. 5828
+\end{thebibliography}
 
 \end{document}

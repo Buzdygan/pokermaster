@@ -28,9 +28,6 @@ int EHS_DIST[4][PRECISION + 2];
 int B1[2][EHS_SIZE1];
 int B2[2][EHS_SIZE2][EHS_SIZE1];
 int B3[2][EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
-//int B4[2][EHS_SIZE4][EHS_SIZE3][EHS_SIZE2][EHS_SIZE1];
-
-
 
 // thresholds for the given baskets, THR[2][0] = 0.3 means that ehs < 0.3 in round 2 => basket0
 double THR[2][4][MAX_BASKETS_NUMBER + 2];
@@ -365,25 +362,9 @@ void BasketManager::_saveTransitions()
             for (int i1 = 0; i1 < EHS_SIZE1; i1++)
                 fprintf(f, "%d\n", B3[index][i3][i2][i1]);
 
-    /*
-    for (int i4 = 0; i4 < EHS_SIZE4; i4++)
-        for (int i3 = 0; i3 < EHS_SIZE3; i3++)
-            for (int i2 = 0; i2 < EHS_SIZE2; i2++)
-                for (int i1 = 0; i1 < EHS_SIZE1; i1++)
-                    fprintf(f, "%d\n", B4[index][i4][i3][i2][i1]);
-
-    for (int i = 0; i < EHS_SIZE1; i++)
-        fprintf(f, "%d\n", S1[i]);
-
-    for (int i = 0; i < EHS_SIZE2; i++)
-        fprintf(f, "%d\n", S2[i]);
-
-    for (int i = 0; i < EHS_SIZE3; i++)
-        fprintf(f, "%d\n", S3[i]);
-
-    for (int i = 0; i < EHS_SIZE4; i++)
-        fprintf(f, "%d\n", S4[i]);
-                    */
+    for (int st = 0; st < 4; st++)
+        for (int b = 0; b < basket_sizes[st]; b++)
+            fprintf(f, "%lf\n", THR[index][st][b]);
 
     fclose(f);
 }
@@ -436,25 +417,9 @@ bool BasketManager::_loadTransitions()
                 for (int i1 = 0; i1 < EHS_SIZE1; i1++)
                     fscanf(f, "%d\n", &B3[index][i3][i2][i1]);
 
-        /*
-        for (int i4 = 0; i4 < EHS_SIZE4; i4++)
-            for (int i3 = 0; i3 < EHS_SIZE3; i3++)
-                for (int i2 = 0; i2 < EHS_SIZE2; i2++)
-                    for (int i1 = 0; i1 < EHS_SIZE1; i1++)
-                        fscanf(f, "%d\n", &B4[index][i4][i3][i2][i1]);
-
-        for (int i = 0; i < EHS_SIZE1; i++)
-            fscanf(f, "%d\n", &S1[i]);
-
-        for (int i = 0; i < EHS_SIZE2; i++)
-            fscanf(f, "%d\n", &S2[i]);
-
-        for (int i = 0; i < EHS_SIZE3; i++)
-            fscanf(f, "%d\n", &S3[i]);
-
-        for (int i = 0; i < EHS_SIZE4; i++)
-            fscanf(f, "%d\n", &S4[i]);
-                        */
+        for (int st = 0; st < 4; st++)
+            for (int b = 0; b < basket_sizes[st]; b++)
+                fscanf(f, "%lf\n", &THR[index][st][b]);
 
         fclose(f);
         return true;
@@ -845,27 +810,6 @@ void BasketManager::_computeEHSDistribution()
     }
 }
 
-int BasketManager::_getBasket4(int i1, int i2, int i3, int i4)
-{
-    int F[ONE_CARD_CODES + 3];
-    memset(F, 0, sizeof(F));
-    int pc1 = v1[i1].first.p1();
-    int pc2 = v1[i1].first.p2();
-    F[pc1] ++; F[pc2] ++;
-    int tc1 = v2[i2].first.p1();
-    int tc2 = v2[i2].first.p2();
-    int tc3 = v2[i2].first.p3();
-    _adjustCards(F, tc1, tc2, tc3);
-    F[tc1] ++; F[tc2] ++; F[tc3] ++;
-    int tc4 = v3[i3].first;
-    _switchCard(F, tc4);
-    F[tc4] ++;
-    int tc5 = v4[i4].first;
-    _switchCard(F, tc5);
-    F[tc5] ++;
-    return _determineBasket(3, _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5)));
-}
-
 int BasketManager::_getBasket4(vector<int> cards)
 {
     int F[ONE_CARD_CODES + 3];
@@ -892,6 +836,8 @@ void BasketManager::_computeTransitions()
         F[pc1] ++; F[pc2] ++;
 
         printf("Progress: %d / %d\n", i1 + 1, (int)v1.size());
+        if (!EHS1[i1])
+            EHS1[i1] = _perc(_EHS(F, pc1, pc2));
         int basket1 = _determineBasket(0, EHS1[i1]);
         B1[index][i1] = basket1;
         printf("basket1: %d\n", basket1);
@@ -906,6 +852,8 @@ void BasketManager::_computeTransitions()
             if (F[tc1] + F[tc2] + F[tc3] == 0)
             {
                 F[tc1] ++; F[tc2] ++; F[tc3] ++;
+                if (!EHS2[i2][i1])
+                    EHS2[i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3));
                 int basket2 = _determineBasket(1, EHS2[i2][i1]);
                 B2[index][i2][i1] = basket2;
                 for (int i3 = 0; i3 < v3.size(); i3++)
@@ -915,6 +863,8 @@ void BasketManager::_computeTransitions()
                     if (!F[tc4])
                     {
                         F[tc4] ++;
+                        if (!EHS3[i3][i2][i1])
+                            EHS3[i3][i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4));
                         int basket3 = _determineBasket(2, EHS3[i3][i2][i1]);
                         B3[index][i3][i2][i1] = basket3;
 
@@ -925,8 +875,9 @@ void BasketManager::_computeTransitions()
                             if (!F[tc5])
                             {
                                 F[tc5] ++;
+                                if (!EHS4[i4][i3][i2][i1])
+                                    EHS4[i4][i3][i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5));
                                 int basket4 = _determineBasket(3, EHS4[i4][i3][i2][i1]);
-                                //B4[index][i4][i3][i2][i1] = basket4;
                                 // setting basket3 to basket4 transition for all the cards
                                 vector<int> cards = v4[i4].second;
                                 for (int j4 = 0; j4 < cards.size(); j4 ++)
@@ -961,6 +912,7 @@ void BasketManager::_computeTransitions()
         F[pc1] --; F[pc2] --;
     }
     _normalizeBasketTransitions();
+    _saveEHS();
 }
 
 void BasketManager::_normalizeBasketTransitions()
@@ -1004,6 +956,14 @@ inline int _card_map(int lev, int fig)
         return (fig - FIGS) * 4 + lev;
 }
 
+double BasketManager::EHS(int pc1, int pc2, int tc1, int tc2, int tc3, int tc4, int tc5)
+{
+    int F[55];
+    memset(F, 0, sizeof(F));
+    F[pc1] ++; F[pc2] ++; F[tc1] ++; F[tc2] ++; F[tc3] ++; F[tc4] ++; F[tc5] ++;
+    return _EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5);
+}
+
 double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1, int tc2, int tc3, int tc4, int tc5)
 {
     int ahead = 0, tied = 0, behind = 0;
@@ -1024,21 +984,6 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
                 F[oc1] --; F[oc2] --;
             }
 
-    /*
-    printf("BA: %d, BT: %d, BB: %d, TA: %d, TT: %d, TB: %d, AB: %d, AT: %d AA: %d, TOTA: %d, TOTT: %d, TOTB: %d\n",
-                                                               HP[BEHIND][AHEAD],
-                                                               HP[BEHIND][TIED],
-                                                               HP[BEHIND][BEHIND],
-                                                               HP[TIED][AHEAD],
-                                                               HP[TIED][TIED],
-                                                               HP[TIED][BEHIND],
-                                                               HP[AHEAD][BEHIND],
-                                                               HP[AHEAD][TIED],
-                                                               HP[AHEAD][AHEAD],
-                                                               HPTotal[AHEAD],
-                                                               HPTotal[TIED],
-                                                               HPTotal[BEHIND]);
-                                                               */
     double ppot = 0.0, npot = 0.0, hs = 0.0;
     if (ahead + tied + behind)
         hs = (double(ahead) + tied / 2.0) / (ahead + tied + behind);
@@ -1055,7 +1000,6 @@ double BasketManager::_EHS(int F[ONE_CARD_CODES + 3], int pc1, int pc2, int tc1,
         if (HPTotal[AHEAD] + HPTotal[TIED])
             npot = ((double)HP[AHEAD][BEHIND] + HP[TIED][BEHIND] / 2.0 + HP[AHEAD][TIED] / 2.0) / (double)(HPTotal[AHEAD] + HPTotal[TIED]);
         double score = hs * (1.0 - npot) + (1.0 - hs) * ppot;
-        //printf("hs: %lf ppot: %lf npot: %lf score: %lf\n", hs, ppot, npot, score);
         return score;
     }
 }
@@ -1123,8 +1067,11 @@ int BasketManager::_determineBasket(int stage, int ehs_int)
     double ehs = (double)ehs_int / PRECISION;
     //printf("stage: %d, ehs: %lf\n", stage, ehs);
     for (int b = 0; b < basket_sizes[stage]; b++)
+    {
+        printf("THR %d: %lf\n", b, THR[index][stage][b]);
         if (ehs <= THR[index][stage][b])
             return b;
+    }
     return basket_sizes[stage] - 1;
 }
 
@@ -1173,16 +1120,26 @@ int BasketManager::getBasket(vector<int> cds)
     if (n == 7)
         return _getBasket4(cds);
     int i1 = CARD_CODES_MAP[0][_cardsCode(cards[0], cards[1])];
+    printf("i1: %d\n", i1);
+    printCard(v1[i1].first.p1());
+    printCard(v1[i1].first.p2());
+    printf("\n");
     if(n <= 2)
         return B1[index][i1];
     int i2 = CARD_CODES_MAP[1][_cardsCode2(cards[2], cards[3], cards[4])];
+    printf("i2: %d\n", i2);
+    printCard(v2[i2].first.p1());
+    printCard(v2[i2].first.p2());
+    printCard(v2[i2].first.p3());
+    printf("\n");
     if(n <= 5)
         return B2[index][i2][i1];
     int i3 = CARD_CODES_MAP[2][cards[5]];
+    printf("i3: %d\n", i3);
+    printCard(v3[i3].first);
+    printf("\n");
     return B3[index][i3][i2][i1];
 
-    //int i4 = CARD_CODES_MAP[3][cards[6]];
-    //return B4[index][i4][i3][i2][i1];
 }
 
 int BasketManager::getIndex(int stage, vector<int> cards)
@@ -1248,81 +1205,6 @@ vector<int> BasketManager::_convertCards(vector<int> cards)
     return converted_cards;
 }
 
-/*
-dist BasketManager::getOpponentBasketDist(int stage, vector<int> cards)
-{
-    vector<int> ind = _getIndexes(stage, _convertCards(cards));
-    vector<double> d;
-    for (int i = 0; i < basket_sizes[stage]; i++)
-        d.push_back(0.0);
-
-    int* baskets_dist;
-    if (stage == 0)
-        baskets_dist = B1[index];
-    else if (stage == 1)
-        baskets_dist = B2[index][ind[1]];
-    else if (stage == 2)
-        baskets_dist = B3[index][ind[2]][ind[1]];
-    else
-        baskets_dist = B4[index][ind[3]][ind[2]][ind[1]];
-    for (int i = 0; i < EHS_SIZE1; i++)
-        d[baskets_dist[i]] += S1[i];
-
-    double sum = 0.0;
-    for (int i = 0; i < d.size(); i++)
-        sum += d[i];
-    dist res;
-    if (sum > 0.0)
-        for (int basket = 0; basket < d.size(); basket++)
-            res.push_back(make_pair(basket, d[basket] / sum));
-    return res;
-}
-*/
-
-/*
-dist BasketManager::getOpponentBasketDist(int stage, int player_basket, dist current_dist, vector<int> cards)
-{
-    // przerobic na iterowanie po i1 i jak wyzej
-    vector<double> d;
-    for (int i = 0; i < basket_sizes[stage]; i++)
-        d.push_back(0.0);
-
-    if (stage == 0)
-    {
-        dist pair_dist = BASKET_DISTRIBUTION[index][stage][0];
-        for (int i = 0; i < pair_dist.size(); i++)
-        {
-            pair<int, int> bpair = decode_basket_pair(pair_dist[i].first);
-            if (bpair.first == player_basket)
-                d[bpair.second] = pair_dist[i].second;
-        }
-    }
-    else
-    {
-        int cards_code = cardsCode(cards);
-        for (int i = 0; i < current_dist.size(); i++)
-        {
-            int b0 = current_dist[i].first;
-            double* trans;
-            if (stage == 1)
-                trans = FL[index][b0][cards_code];
-            else
-                trans = TR[index][stage-2][b0][cards_code];
-            for (int b1 = 0; b1 < d.size(); b1 ++)
-                d[b1] += trans[b1] * current_dist[i].second;
-        }
-    }
-
-    double sum = 0.0;
-    for (int i = 0; i < d.size(); i++)
-        sum += d[i];
-    dist res;
-    if (sum > 0.0)
-        for (int basket = 0; basket < d.size(); basket++)
-            res.push_back(make_pair(basket, d[basket] / sum));
-    return res;
-}
-*/
 
 int BasketManager::getNextBasket(int stage, int current, int cards_code)
 {

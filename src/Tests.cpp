@@ -38,37 +38,45 @@ int get_random_action(dist distribution)
 
 void testBaskets(BasketManager* mng)
 {
+    // Player 0 cards: 6c 9s Td 6h 4d 9d
+    // 17 32 34 19 10 30 50
     //23 16 44 22 17
+    int F[55];
+    memset(F, 0, sizeof(F));
     while(1)
     {
-        int c1, c2, c3;
+        int c1, c2, tc1, tc2, tc3, tc4, tc5;
         vector<int> cards;
         printf("R1\n");
         scanf("%d %d", &c1, &c2);
         cards.push_back(c1);
         cards.push_back(c2);
         printHand(cards);
-        printf(" Basket: %d\n", mng -> getBasket(cards));
+        printf("\n");
+        printf("Basket: %d, ehs: %lf\n", mng -> getBasket(cards), mng -> EHS(c1, c2));
 
         printf("R2\n");
-        scanf("%d %d %d", &c1, &c2, &c3);
-        cards.push_back(c1);
-        cards.push_back(c2);
-        cards.push_back(c3);
+        scanf("%d %d %d", &tc1, &tc2, &tc3);
+        cards.push_back(tc1);
+        cards.push_back(tc2);
+        cards.push_back(tc3);
         printHand(cards);
-        printf(" Basket: %d\n", mng -> getBasket(cards));
+        printf("\n");
+        printf("Basket: %d, ehs: %lf\n", mng -> getBasket(cards), mng -> EHS(c1, c2, tc1, tc2, tc3));
 
         printf("R3\n");
-        scanf("%d", &c1);
-        cards.push_back(c1);
+        scanf("%d", &tc4);
+        cards.push_back(tc4);
         printHand(cards);
-        printf(" Basket: %d\n", mng -> getBasket(cards));
+        printf("\n");
+        printf("Basket: %d, ehs: %lf\n", mng -> getBasket(cards), mng -> EHS(c1, c2, tc1, tc2, tc3, tc4));
 
         printf("R4\n");
-        scanf("%d", &c1);
-        cards.push_back(c1);
+        scanf("%d", &tc5);
+        cards.push_back(tc5);
         printHand(cards);
-        printf(" Basket: %d\n", mng -> getBasket(cards));
+        printf("\n");
+        printf("Basket: %d, ehs: %lf\n", mng -> getBasket(cards), mng -> EHS(c1, c2, tc1, tc2, tc3, tc4, tc5));
     }
 
 }
