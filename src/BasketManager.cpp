@@ -792,9 +792,9 @@ void BasketManager::_computeEHSDistribution()
     for (int st = 0; st < 4; st++)
     {
         int bnum = basket_sizes[st];
-        int total = 0;
+        long long total = 0;
         for (int p = 0; p <= PRECISION; p++)
-            total += EHS_DIST[st][p];
+            total += (long long) EHS_DIST[st][p];
 
         // computing percentage thresholds for the baskets;
         double thresholds[bnum + 1];
@@ -806,12 +806,12 @@ void BasketManager::_computeEHSDistribution()
         }
         thresholds[bnum - 1] = 0.99999;
 
-        int sum = 0;
+        double sum = 0;
         int current_basket = 0;
         for (int p = 0; p <= PRECISION; p++)
         {
-            sum += EHS_DIST[st][p];
-            if ((double)sum / total >= thresholds[current_basket])
+            sum += (double)EHS_DIST[st][p] / total;
+            if ((double)sum >= thresholds[current_basket])
             {
                 THR[index][st][current_basket] = (double)p / PRECISION;
                 printf("st: %d, basket: %d, threshold: %.02lf\n", st, current_basket, (double)p / PRECISION);
