@@ -1089,7 +1089,7 @@ int BasketManager::_determineBasket(int stage, int ehs_int)
     //printf("stage: %d, ehs: %lf\n", stage, ehs);
     for (int b = 0; b < basket_sizes[stage]; b++)
     {
-        printf("THR b %d: %lf\n", b, THR[index][stage][b]);
+        //printf("THR b %d: %lf\n", b, THR[index][stage][b]);
         if (ehs <= THR[index][stage][b])
             return b;
     }
