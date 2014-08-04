@@ -473,19 +473,19 @@ bool BasketManager::_loadEHS()
                 for (int p = 0; p <= PRECISION; p++)
                     fscanf(f, "%d\n", &EHS_DIST[st][p]);
 
-            memset(EHS_DIST, 0, sizeof(EHS_DIST));
+            //memset(EHS_DIST, 0, sizeof(EHS_DIST));
 
             for (int i1 = 0; i1 < EHS_SIZE1; i1++)
             {
                 fscanf(f, "%d\n", &EHS1[i1]);
-                EHS_DIST[0][EHS1[i1]] += S1[i1];
+                //EHS_DIST[0][EHS1[i1]] += S1[i1];
             }
 
             for (int i2 = 0; i2 < EHS_SIZE2; i2++)
                 for (int i1 = 0; i1 < EHS_SIZE1; i1++)
                 {
                     fscanf(f, "%d\n", &EHS2[i2][i1]);
-                    EHS_DIST[1][EHS2[i2][i1]] += S1[i1] * S2[i2];
+                    //EHS_DIST[1][EHS2[i2][i1]] += S1[i1] * S2[i2];
                 }
 
             for (int i3 = 0; i3 < EHS_SIZE3; i3++)
@@ -493,7 +493,7 @@ bool BasketManager::_loadEHS()
                     for (int i1 = 0; i1 < EHS_SIZE1; i1++)
                     {
                         fscanf(f, "%d\n", &EHS3[i3][i2][i1]);
-                        EHS_DIST[2][EHS3[i3][i2][i1]] += S1[i1] * S2[i2] * S3[i3];
+                        //EHS_DIST[2][EHS3[i3][i2][i1]] += S1[i1] * S2[i2] * S3[i3];
                     }
 
             for (int i4 = 0; i4 < EHS_SIZE4; i4++)
@@ -502,7 +502,7 @@ bool BasketManager::_loadEHS()
                         for (int i1 = 0; i1 < EHS_SIZE1; i1++)
                         {
                             fscanf(f, "%d\n", &EHS4[i4][i3][i2][i1]);
-                            EHS_DIST[3][EHS4[i4][i3][i2][i1]] += S1[i1] * S2[i2] * S3[i3] * S4[i4];
+                            //EHS_DIST[3][EHS4[i4][i3][i2][i1]] += S1[i1] * S2[i2] * S3[i3] * S4[i4];
                         }
 
             fclose(f);
@@ -785,7 +785,6 @@ void BasketManager::_computeEHS()
         }
         F[pc1] --; F[pc2] --;
     }
-    _saveEHS();
 }
 
 void BasketManager::_computeEHSDistribution()
@@ -1090,6 +1089,7 @@ int BasketManager::_determineBasket(int stage, int ehs_int)
     //printf("stage: %d, ehs: %lf\n", stage, ehs);
     for (int b = 0; b < basket_sizes[stage]; b++)
     {
+        printf("THR b %d: %lf\n", b, THR[index][stage][b]);
         if (ehs <= THR[index][stage][b])
             return b;
     }
