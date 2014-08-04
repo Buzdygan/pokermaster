@@ -1140,24 +1140,30 @@ int BasketManager::getBasket(vector<int> cds)
     if (n == 7)
         return _getBasket4(cds);
     int i1 = CARD_CODES_MAP[0][_cardsCode(cards[0], cards[1])];
+    /*
     printf("i1: %d\n", i1);
     printCard(v1[i1].first.p1());
     printCard(v1[i1].first.p2());
     printf("\n");
+    */
     if(n <= 2)
         return B1[index][i1];
     int i2 = CARD_CODES_MAP[1][_cardsCode2(cards[2], cards[3], cards[4])];
+    /*
     printf("i2: %d\n", i2);
     printCard(v2[i2].first.p1());
     printCard(v2[i2].first.p2());
     printCard(v2[i2].first.p3());
     printf("\n");
+    */
     if(n <= 5)
         return B2[index][i2][i1];
     int i3 = CARD_CODES_MAP[2][cards[5]];
+    /*
     printf("i3: %d\n", i3);
     printCard(v3[i3].first);
     printf("\n");
+    */
     return B3[index][i3][i2][i1];
 
 }
