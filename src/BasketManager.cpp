@@ -933,7 +933,6 @@ void BasketManager::_computeTransitions()
         F[pc1] --; F[pc2] --;
     }
     _normalizeBasketTransitions();
-    _saveEHS();
 }
 
 void BasketManager::_normalizeBasketTransitions()
