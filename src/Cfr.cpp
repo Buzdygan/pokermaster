@@ -43,6 +43,7 @@ void Cfr::computeVanillaCfr(int iterations)
         printf("Iteration %d\n", i);
         long double probs [3] = {1.0L, 1.0L, 1.0L};
         cnt = 0;
+        newR.clear();
         walkTree(probs);
         printf("TREE SIZE: %d\n", cnt);
         recomputeStrategy(newR);
