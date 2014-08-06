@@ -8,8 +8,8 @@
 #include "HoldemPokerModAbstraction.h"
 using namespace std;
 
-const int MAX_STATES = 18000;
-const int MAX_ISETS = 3000;
+const int MAX_STATES = 100000;
+const int MAX_ISETS = 15000;
 
 typedef map<pair<int, int>, double> iSmap;
 typedef map<pair<int, int>, double>::iterator iSit;

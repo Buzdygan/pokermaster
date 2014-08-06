@@ -1,4 +1,4 @@
-CXX = g++ -g -O3
+CXX = g++ -g -O3 -mcmodel=medium
 
 all: Judge Tests
 

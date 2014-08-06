@@ -110,8 +110,9 @@ int main(int argc, char* argv[])
     int score[2];
     score[0] = 0;
     score[1] = 0;
-    int basket_sizes[4] = {12,10,10,10};
-    //int basket_sizes[4] = {3,3,3,3};
+    //int basket_sizes[4] = {12,10,10,10};
+    //int basket_sizes[4] = {4,3,3,3};
+    int basket_sizes[4] = {19,19,19,19};
     sprintf(strategy_filename, "cfr.mod.strategy%s-%d-%d-%d-%d-%d.stg", EHS_STR,
                                                                        basket_sizes[0],
                                                                        basket_sizes[1],
