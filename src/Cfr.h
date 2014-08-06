@@ -25,6 +25,7 @@ class Cfr
         bool itree;
 
         double current_regret_sum;
+        double total_regret_sum;
         map<int, double> regrets;
         Smap strategy;
         Smap R;

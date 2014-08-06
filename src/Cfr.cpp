@@ -36,7 +36,7 @@ void Cfr::computeVanillaCfr(int iterations)
 {
     srand(time(0));
     printf("Computing CFR strategy\n");
-    current_regret_sum = 0.0;
+    current_regret_sum = total_regret_sum = 0.0;
     double sum = 0.0;
     for (int i = 0; i < iterations; i++)
     {
@@ -47,7 +47,8 @@ void Cfr::computeVanillaCfr(int iterations)
         walkTree(probs);
         printf("TREE SIZE: %d\n", cnt);
         recomputeStrategy(newR);
-        double it_err = current_regret_sum / (i + 1);
+        total_regret_sum += current_regret_sum;
+        double it_err = total_regret_sum / (i + 1);
         sum += it_err;
         printf("It err: %0.5f Err: %0.5f\n", it_err, sum / (i+1));
         first_iteration = false;
