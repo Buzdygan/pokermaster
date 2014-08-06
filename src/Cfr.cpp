@@ -148,12 +148,12 @@ utility Cfr::walkTree(long double probs[3])
     return final_util;
 }
 
-int Cfr::getActionId(dist action_dist)
+int Cfr::getActionId(dist action_dist, double total_prob_sum)
 {
     for (int i = 0; i < action_dist.size(); i++)
         printf("a_id: %d, prob: %lf\n", action_dist[i].first, action_dist[i].second);
 
-    double random_double = ((double) rand() / (RAND_MAX));
+    double random_double = ((double) rand() / (RAND_MAX)) * total_prob_sum;
     double prob_sum = 0;
     int choice = -1;
     for (int i = 0; i < action_dist.size(); i++)
@@ -171,12 +171,18 @@ int Cfr::getActionId(dist action_dist)
 int Cfr::getActionId(long long information_set_id, vector<int> action_ids)
 {
     dist action_dist;
+    double joined_prob;
     for (int i = 0; i < action_ids.size(); i++)
     {
         int action_id = action_ids[i];
         pair<long long, int> pair_id = make_pair(information_set_id, action_id);
         if (strategy.count(pair_id))
-            action_dist.push_back(make_pair(action_id, strategy[pair_id]));
+        {
+            double prob = strategy[pair_id];
+            action_dist.push_back(make_pair(action_id, prob));
+            joined_prob += prob;
+
+        }
     }
     if (!action_dist.size())
         return action_ids[0];

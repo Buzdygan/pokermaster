@@ -31,7 +31,7 @@ class Cfr
         Smap S;
         Smap newR;
 
-        int getActionId(dist action_dist);
+        int getActionId(dist action_dist, double prob_sum = 1.0);
         bool loadFromFile(const char* filename);
         void saveToFile(const char* filename);
 
