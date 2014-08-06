@@ -11,6 +11,13 @@ const int Cfr::ITERATIONS = 2000;
 
 int cnt = 0;
 bool first_iteration = true;
+bool sampled = false;
+map<pair<long long, int>, utility> util_map;
+
+inline int _rand_choice(int n)
+{
+    return rand() % n;
+}
 
 Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file, bool information_tree)
 {
@@ -27,6 +34,7 @@ Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file, bool in
 
 void Cfr::computeVanillaCfr(int iterations)
 {
+    srand(time(0));
     printf("Computing CFR strategy\n");
     current_regret_sum = 0.0;
     double sum = 0.0;
@@ -42,6 +50,7 @@ void Cfr::computeVanillaCfr(int iterations)
         sum += it_err;
         printf("It err: %0.5f Err: %0.5f\n", it_err, sum / (i+1));
         first_iteration = false;
+        sampled = true;
     }
     recomputeStrategy(S);
 }
@@ -62,15 +71,25 @@ utility Cfr::walkTree(long double probs[3])
     {
         dist action_distr = game -> getActionDistribution();
         long double backup_prob = probs[RANDOM_PLAYER_NR];
+        int choice = _rand_choice(action_distr.size());
+        int i = 0;
+        utility res_util;
         for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
         {
             probs[RANDOM_PLAYER_NR] *= (long double) iter -> second;
             game -> makeAction(iter -> first);
-            utility res_util = walkTree(probs);
+            long long is_id = game -> getInformationSetId();
+            pair<long long, int> rpair = make_pair(is_id, iter -> first);
+            if (!sampled || !util_map.count(rpair) || choice == i)
+                res_util = walkTree(probs);
+            else
+                res_util = util_map[rpair];
+            util_map[rpair] = res_util;
             game -> unmakeAction(iter -> first);
             probs[RANDOM_PLAYER_NR] = backup_prob;
             final_util.first += res_util.first * iter -> second;
             final_util.second += res_util.second * iter -> second;
+            i ++;
         }
     }
     else
