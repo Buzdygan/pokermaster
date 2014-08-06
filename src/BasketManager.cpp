@@ -171,13 +171,8 @@ void BasketManager::_computeBasketsDistribution()
                         for (int c3 = c2 + 1; c3 <= n; c3++)
                             if (c3 != c0 && c3 != c1)
                             {
-                                vector<int> cards0, cards1;
-                                cards0.push_back(c0);
-                                cards0.push_back(c1);
-                                cards1.push_back(c2);
-                                cards1.push_back(c3);
-                                int b0 = getNextBasket(0, 0, _cardsCode(c0, c1));
-                                int b1 = getNextBasket(0, 0, _cardsCode(c2, c3));
+                                int b0 = PF[index][_cardsCode(c0, c1)];
+                                int b1 = PF[index][_cardsCode(c2, c3)];
                                 DIST[encode_basket_pair(b0, b1)] ++;
                             }
     dist distribution0;
@@ -849,10 +844,6 @@ void BasketManager::_computeTransitions()
         F[pc1] ++; F[pc2] ++;
 
         printf("Progress: %d / %d\n", i1 + 1, (int)v1.size());
-        /*
-        if (!EHS1[i1])
-            EHS1[i1] = _perc(_EHS(F, pc1, pc2));
-            */
         int basket1 = _determineBasket(0, EHS1[i1]);
         B1[index][i1] = basket1;
         printf("basket1: %d\n", basket1);
@@ -867,10 +858,6 @@ void BasketManager::_computeTransitions()
             if (F[tc1] + F[tc2] + F[tc3] == 0)
             {
                 F[tc1] ++; F[tc2] ++; F[tc3] ++;
-                /*
-                if (!EHS2[i2][i1])
-                    EHS2[i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3));
-                    */
                 int basket2 = _determineBasket(1, EHS2[i2][i1]);
                 B2[index][i2][i1] = basket2;
                 for (int i3 = 0; i3 < v3.size(); i3++)
@@ -880,10 +867,6 @@ void BasketManager::_computeTransitions()
                     if (!F[tc4])
                     {
                         F[tc4] ++;
-                        /*
-                        if (!EHS3[i3][i2][i1])
-                            EHS3[i3][i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4));
-                            */
                         int basket3 = _determineBasket(2, EHS3[i3][i2][i1]);
                         B3[index][i3][i2][i1] = basket3;
 
@@ -894,22 +877,18 @@ void BasketManager::_computeTransitions()
                             if (!F[tc5])
                             {
                                 F[tc5] ++;
-                                /*
-                                if (!EHS4[i4][i3][i2][i1])
-                                    EHS4[i4][i3][i2][i1] = _perc(_EHS(F, pc1, pc2, tc1, tc2, tc3, tc4, tc5));
-                                    */
                                 int basket4 = _determineBasket(3, EHS4[i4][i3][i2][i1]);
                                 // setting basket3 to basket4 transition for all the cards
                                 vector<int> cards = v4[i4].second;
                                 for (int j4 = 0; j4 < cards.size(); j4 ++)
-                                    TR[index][1][basket3][cards[j4]][basket4] += 1.0;
+                                    TR[index][1][basket3][cards[j4]][basket4] += (double) S1[i1] * S2[i2] * S3[i3];
                                 F[tc5] --;
                             }
                         }
                         // setting basket2 to basket3 transition for all the cards
                         vector<int> cards = v3[i3].second;
                         for (int j3 = 0; j3 < cards.size(); j3 ++)
-                            TR[index][0][basket2][cards[j3]][basket3] += 1.0;
+                            TR[index][0][basket2][cards[j3]][basket3] += (double)S1[i1] * S2[i2];
                         F[tc4] --;
                     }
                 }
@@ -917,7 +896,7 @@ void BasketManager::_computeTransitions()
                 vector<int> card_codes = v2[i2].second;
                 for (int j2 = 0; j2 < card_codes.size(); j2 ++)
                 {
-                    FL[index][basket1][card_codes[j2]][basket2] += 1.0;
+                    FL[index][basket1][card_codes[j2]][basket2] += (double)S1[i1];
                 }
                 F[tc1] --; F[tc2] --; F[tc3] --;
             }

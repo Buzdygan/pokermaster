@@ -469,50 +469,11 @@ rundy na koszyk $B$ w drugiej rundzie dla każdej takiej pary $(A, B)$. Dodatkow
 w każdej rundzie, zależne od koszyków z poprzedniej rundy. \\
 
 \noindent
-Wyliczenie wartości $EHS$ dla wszystkich możliwych układów wymaga przejrzenia wszystkich możliwych kombinacji 9 kart (2 kart gracza, 2 przeciwnika
-oraz 5 kart na stole). Jest to bardzo wymagające obliczeniowo. By skrócić obliczenia, EHS jest wyliczane jedynie dla niektórych układów
-kart gracza. Jest to oparte na obserwacji że niektóre układy powinny mieć taki sam $EHS$. Np $EHS$ pary As Kier i As Karo powinien być taki
-sam jak $EHS$ pary As Kier, As Trefl albo As Pik, As Karo. 
+Wartość $EHS$ układu jest wyliczana na podstawie wzoru podanego w rozdziale 2:
 
 \begin{align*}
-(A\heartsuit, A\spadesuit) = (A\heartsuit, A\diamondsuit) = (A\heartsuit, A\clubsuit) = (A\spadesuit, A\diamondsuit) =
-(A\spadesuit, A\clubsuit) = (A\diamondsuit, A\clubsuit)
+EHS = HS \cdot (1 - Npot) + (1 - HS) \cdot Ppot
 \end{align*}
-
-\noindent
-W ogólności, wyliczając $EHS$ układów operuję nie na pełnym zbiorze $52$ kart a na zbiorze $13$ figur. Dany układ figur
-może występować w kilku wersjach uwzględniających kolory kart. Para tych samych figur jest zawsze różnokolorowa ale w 
-parze różnych figur mogą one występować w tym samym kolorze bądź w różnych kolorach i wpływa to na $EHS$ takich układów.
-
-\begin{align*}
-EHS(A\heartsuit, K\heartsuit) \neq EHS(A\heartsuit, K\spadesuit)
-\end{align*}
-
-\noindent
-Stosując tę koncepcję wprowadzono klasy abstrakcji dla układów kart. Układy kart dochodzące w kolejnych rundach są traktowane
-osobno. Poniżej typy układów dla poszczególnych rund, napis $Fnx$ oznacza figurę numer $n$ w kolorze $x$. 
-
-\noindent
-\textbf{Pre-flop}:
-\begin{itemize}
-\item (F1a, F1b)
-\item (F1a, F2a)
-\item (F1a, F2b)
-\end{itemize}
-
-\noindent
-\textbf{Flop}:
-\begin{itemize}
-\item (F1a, F1b, F1c)
-\item (F1a, F1b, F2a)
-\item (F1a, F1b, F2c)
-\item (F1a, F2a, F3a)
-\item (F1a, F2a, F3b)
-\item (F1a, F2b, F3c)
-\end{itemize}
-
-\noindent
-Dla rund Turn i River w których dochodzi po jednej karcie, każda klasa abstrakcji to czwórka kart o tej samej figurze. \\
 
 \noindent
 W celu wyliczenia wartości $HS$ dla układu, przeglądane są wszystkie możliwe pary kart u przeciwnika i liczony jest procent
@@ -521,52 +482,55 @@ By wyliczyć potencjał układu z rund $1$, $2$, $3$ (dla rundy $4$ liczenie pot
 możliwe kombinacje następnych kart na stole. Jeżeli po dodaniu następnych kart, układ zmienił się z przegrywającego w
 wygrywający, rośnie wartość $Ppot$. W odwrotnej sytuacj rośnie $Npot$.
 
+\noindent
+Wyliczenie wartości $EHS$ dla wszystkich możliwych układów wymaga przejrzenia wszystkich możliwych kombinacji 9 kart (2 kart gracza, 2 przeciwnika
+oraz 5 kart na stole). Jest to bardzo wymagające obliczeniowo. By skrócić obliczenia, EHS jest wyliczane jedynie dla niektórych układów
+kart gracza. Jest to oparte na obserwacji że niektóre układy powinny mieć taki sam $EHS$. Np $EHS$ pary As Kier i As Karo powinien być taki
+sam jak $EHS$ pary As Kier, As Trefl albo As Pik, As Karo. 
 
-
-\section{Zmodyfikowany CFR}
-
-Zmodyfikowany algorytm CFR redukuje liczbę stanów gry przez ignorowanie historii akcji wykonywanych
-przez graczy. Stan gry jest opisany przez następujące parametry: \\
-\begin{itemize}
-\item Aktualny gracz (łącznie z graczem losowym)
-\item Aktualna runda (runda licytacji bądź rozdawania kart, jeśli aktualny gracz to gracz losowy)
-\item Obecne koszyki obu graczy
-\item Liczba odzywek w aktualnej licytacji
-\item Proponowana stawka
-\item Uzgodniona stawka
-\end{itemize}
+\begin{align*}
+EHS(A\heartsuit, A\spadesuit) = EHS(A\heartsuit, A\diamondsuit) = EHS(A\heartsuit, A\clubsuit) = EHS(A\spadesuit, A\diamondsuit) = ...
+\end{align*}
 
 \noindent
-Algorytm zakłada że są to informacje wystarczające do podjęcia decyzji o wykonywanym ruchu.
-Ważną modyfikacją jest utożsamienie stanów gry i zbiorów informacyjnych. Algorytm liczy strategię
-tak jakby graczom była dostępna informacja o koszyku przeciwnika. Czyli abstrakcja gry jest grą
-z pełną informacją. Wymusza to zmianę sposobu korzystania z wyliczonej strategii. W normalnej wersji
-CFR, strategia jest określona dla zbioru informacyjnego gracza. W zmodyfikowanej wersji, gracz
-nie jest pewny w którym stanie gry się znajduje, ponieważ nie wie jaki koszyk ma jego przeciwnik.
-Zamiast tego, wylicza oczekiwany rozkład koszyków przeciwnika zgodnie z jego zagraniami i kartami
-widocznymi na stole. Następnie stosuje strategię, która jest ważoną sumą strategii wyliczonych
-przez algorytm dla każdego możliwego koszyka przeciwnika. Wagami są prawdopodobieństwa że
-przeciwnik znajduje się w danym koszyku. \\
+Dany układ figur (np $(A,A,D,9,4)$) może występować w wielu wariantach kolorystycznych. Nie wszystkie są równoważne ze względu
+na wartość $EHS$ gdyż różnią się potencjałem na bycie układem jednokolorowym. Uwzględniając te różnice obliczam $EHS$ jedynie
+dla niektórych wariantów kolorystycznych danego układu figur. \\
 
 \noindent
-Zauważmy, że złożoność jednego przebiegu metody $WalkTree$ w oryginalnym CFR jest liniowa w stosunku
-do rozmiaru drzewa gry. Przy dużej liczbie koszyków drzewo gry jest bardzo duże i uniemożliwia
-wykonanie potrzebnej liczby iteracji algorytmu w rozsądnym czasie. Autor pracy zmodyfikował algorytm
-Vanilla Cfr tak by wykonanie jednej iteracji miało złożoność liniową względem liczby stanów gry.
-W sytuacji gdy stan gry nie zawiera informacji o historii rozgrywki liczba stanów jest znacząco
-mniejsza od rozmiaru drzewa gry co pozwala na wykonanie znacznie większej liczby iteracji algorytmu. \\
+Każdemu układowi kart ($U$) przyporządkowany jest reprezentant ($R$) - układ figur, który ma taką samą wartość $EHS$.
+$R$ oraz $U$ są tożsame ze względu na zbiory figur. Dodatkowo, jeśli $x$ to kolor występujący najczęściej w $U$
+to zbiór figur o kolorze $x$ w układzie $U$ jest tożsamy ze zbiorem figur o kolorze $\clubsuit$ w układzie $R$.
+Kolory pozostałych kart w układzie $R$ są dowolne ale $\clubsuit$ jest najczęściej występującym kolorem. Wartość
+$EHS$ jest obliczana tylko dla jednego takiego układu $R$. Można to rozumieć jako klasę abstrakcji układów kart, gdzie
+relacja równoważności jest określona przez powyższe warunki. \\
 
 \noindent
-Dodatkową optymalizacją jest zlikwidowanie operacji wykonywanych przy każdym ruchu przez abstrakcję gry.
-Na początku algorytmu obliczany jest graf przejść między stanami gry. Wierzchołkami są stany gry. Krawędź
-skierowana między wierzchołkiem/stanem $s_1$ a stanem $s_2$ istnieje jeśli istnieje akcja $a$ w stanie
-$s_1$, która prowadzi do stanu $s_2$. Taka krawędź jest etykietowana akcją $a$. Jeśli była to akcja
-gracza losowego, dołączona jest informacja o prawdopodobieństwie zajścia tej akcji. W stanach końcowych
-zachowana jest informacja o zyskach obu graczy. Dzieki temu iteracje algorytmu są wyizolowane od samej
-mechaniki gry. \\
+Przykład: \\
 
 \noindent
-Wspomniany wyżej graf stanów jest budowany przy użyciu algorytmu DFS. W każdym nowo odwiedzanym stanie
+Reprezentantem układu $(K\heartsuit, W\clubsuit, 9\heartsuit, 9\spadesuit, 7\diamondsuit)$ może być układ
+$(K\clubsuit, W\heartsuit, 9\clubsuit, 9\diamondsuit, 7\spadesuit)$ \\
+
+\noindent
+Powyższa metoda pozwala nawet stukrotnie zmniejszyć liczbę układów, dla których liczona jest wartość $EHS$.
+
+\section{Modyfikacja algorytmu}
+
+\noindent
+Algorytm jest podzielony na dwie części. W pierwszej budowany jest graf stanów gry. W drugiej części
+wykonywane są kolejne iteracje obliczające wartość regretów we wszystkich zbiorach informacyjnych oraz
+modyfikowana jest strategia. \\
+
+\noindent
+W grafie stanów zbiór wierzchołków odpowiada zbiorowi stanów gry. Krawędź ze stanu $s_1$ do stanu $s_2$
+istnieje jeżeli będąc w stanie $s_1$ można wykonać akcję, której rezultatem jest przejście do stanu
+$s_2$. W krawędzi zapisujemy informację o akcji z nią powiązanej oraz o prawdopodobieństwie zajścia
+tej akcji jeżeli w stanie $s_1$ akcję podejmuje gracz losowy. W innych przypadkach prawdopodobieństwo
+zajścia akcji jest wyznaczone przez aktualną strategię gracza wykonującego akcję w $s_1$. \\
+
+\noindent
+Graf stanów jest budowany przy użyciu algorytmu DFS. W każdym nowo odwiedzanym stanie
 wyliczany jest jego identyfikator na podstawie aktualnych wartości parametrów. Dodatkowo dodawane
 są krawędzie prowadzące do sąsiednich stanów, a w stanach końcowych zapisywana jest informacja o
 zyskach graczy. Zauważmy, że w tak utworzonym grafie nie występują cykle. Po utworzeniu, wierzchołki
