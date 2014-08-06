@@ -36,7 +36,7 @@ void Cfr::computeVanillaCfr(int iterations)
 {
     srand(time(0));
     printf("Computing CFR strategy\n");
-    current_regret_sum = total_regret_sum = 0.0;
+    regret_change = total_regret_sum = 0.0;
     double sum = 0.0;
     for (int i = 0; i < iterations; i++)
     {
@@ -47,10 +47,8 @@ void Cfr::computeVanillaCfr(int iterations)
         walkTree(probs);
         printf("TREE SIZE: %d\n", cnt);
         recomputeStrategy(newR);
-        total_regret_sum += current_regret_sum;
-        double it_err = total_regret_sum / (i + 1);
-        sum += it_err;
-        printf("It err: %0.5f Err: %0.5f\n", it_err, sum / (i+1));
+        total_regret_sum += regret_change;
+        printf("It err: %0.5f Err: %0.5f\n", regret_change, total_regret_sum / (i+1));
         first_iteration = false;
         sampled = true;
     }
@@ -260,15 +258,18 @@ double Cfr::recomputeStrategy(Smap &reg)
     {
         long long is_id = it -> first;
         double val = it -> second;
-        if(!regrets.count(is_id))
+        if(!max_regrets.count(is_id))
         {
-            regrets[is_id] = val;
-            current_regret_sum += val;
+            max_regrets[is_id] = val;
+            regret_changes[is_id] = val;
+            regret_change += val;
         }
         else
         {
-            current_regret_sum += val - regrets[is_id];
-            regrets[is_id] = val;
+            double change = val - max_regrets[is_id];
+            max_regrets[is_id] = val;
+            regret_change += change - regret_changes[is_id];
+            regret_changes[is_id] = change;
         }
     }
 

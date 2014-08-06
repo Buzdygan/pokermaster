@@ -24,9 +24,10 @@ class Cfr
         GameAbstraction* game;
         bool itree;
 
-        double current_regret_sum;
+        double regret_change;
         double total_regret_sum;
-        map<int, double> regrets;
+        map<int, double> max_regrets;
+        map<int, double> regret_changes;
         Smap strategy;
         Smap R;
         Smap S;
