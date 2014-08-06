@@ -81,10 +81,12 @@ utility Cfr::walkTree(long double probs[3])
             long long is_id = game -> getInformationSetId();
             pair<long long, int> rpair = make_pair(is_id, iter -> first);
             if (!sampled || !util_map.count(rpair) || choice == i)
+            {
                 res_util = walkTree(probs);
+                util_map[rpair] = res_util;
+            }
             else
                 res_util = util_map[rpair];
-            util_map[rpair] = res_util;
             game -> unmakeAction(iter -> first);
             probs[RANDOM_PLAYER_NR] = backup_prob;
             final_util.first += res_util.first * iter -> second;
