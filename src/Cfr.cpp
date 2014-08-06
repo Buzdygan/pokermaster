@@ -45,7 +45,7 @@ void Cfr::computeVanillaCfr(int iterations)
         cnt = 0;
         walkTree(probs);
         printf("TREE SIZE: %d\n", cnt);
-        recomputeStrategy(R);
+        recomputeStrategy(newR);
         double it_err = current_regret_sum / (i + 1);
         sum += it_err;
         printf("It err: %0.5f Err: %0.5f\n", it_err, sum / (i+1));
@@ -141,6 +141,7 @@ utility Cfr::walkTree(long double probs[3])
         {
             pair<long long, int> decision_id = make_pair(is_id, *a_id);
             R[decision_id] -= add;
+            newR[decision_id] = R[decision_id];
         }
     }
     return final_util;
