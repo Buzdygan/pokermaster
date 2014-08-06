@@ -79,9 +79,11 @@ int CfrPlayer::_logBid(int bid)
     int action_id = game -> ACTION_FOLD;
     if (bid == cur_stake)
         action_id = game -> ACTION_CALL;
+    /*
     if (bid == game -> MAX_STAKE)
         action_id = game -> ACTION_ALL_IN;
-    else if (bid > cur_stake)
+        */
+    if (bid > cur_stake)
         action_id = game -> ACTION_RAISE;
     cur_stake = bid;
     return action_id;

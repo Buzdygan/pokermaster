@@ -27,7 +27,7 @@ class HoldemPokerAbstraction : public HoldemPoker
         long long getInformationSetId();
         dist getActionDistribution();
         vector<int> getActionIds();
-        vector<int> getActionIds(int bids_num);
+        virtual vector<int> getActionIds(int bids_num);
         void makeAction(int action_id);
         void logAction(int pnum, int action_id);
         utility getUtility();

@@ -17,6 +17,20 @@ HoldemPokerModAbstraction::~HoldemPokerModAbstraction()
 {
 }
 
+vector<int> HoldemPokerModAbstraction::getActionIds(int bids_num)
+{
+    vector<int> action_ids;
+    if (cur_stake > agreed_stake)
+        action_ids.push_back(ACTION_FOLD);
+    action_ids.push_back(ACTION_CALL);
+    if (bids_num < MAX_BIDS_NUMBER && cur_stake < LOG_MAX_STAKE)
+    {
+        action_ids.push_back(ACTION_RAISE);
+        action_ids.push_back(ACTION_ALL_IN);
+    }
+    return action_ids;
+}
+
 int HoldemPokerModAbstraction::getISetId()
 {
     int res = 0;

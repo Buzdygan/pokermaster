@@ -78,6 +78,29 @@ D.0. General\\}
 
 \chapter{Wstęp}
 
+\noindent
+Ludzie grają w gry już od kilku tysięcy lat. Od zawsze były formą rozrywki oraz integracji.
+Zarówno gry sportowe jak i umysłowe stwarzają okazje do rywalizacji, która ma charakter pozytywny ponieważ
+stymuluje do rozwoju nie tylko jednostki ale i całe społeczności. Rozwój gier komputerowych był równoległy
+z rozwojem sprzętu komputerowego. Gry znalazły zastosowanie również w naukach
+ekonomicznych. Rozwój teorii gier pomógł zrozumieć procesy rządzące rywalizacją w szeroko rozumianym
+znaczeniu. Zdefiniowanie pojęcia równowagi przez amerykańskiego matematyka Johna Nasha było przełomowym
+osiągnięciem w dziedzinie badań nad strategiami, nie tylko w grach ale i w ekonomii. \\
+
+\noindent
+Wraz z rozwojem technologii komputerowych uzyskano dostęp do narzędzi pozwalających na zastosowanie
+teorii do obliczania optymalnych strategii w grach. Powszechnie znana jest rywalizacja
+arcymistrzów szachowych z komputerowymi programami. W 1997 roku maszyna "Deep Blue" opracowana przez IBM
+specjalnie do celów rywalizacji szachowej, pokonała arcymistrza Garry'ego Kasparova. W przypadku gier
+o niewielkim zbiorze stanów, komputery są zdolne obliczyć strategię optymalną, czyli taką która
+gwarantuje najlepszy możliwy dla gracza wynik. Przykładem takiej gry są warcaby, w 2007
+roku magazyn $Science$ opublikował artykuł dowodzący że programu warcabowego "Chinook" nie da się pokonać. \\
+
+\noindent
+Wciąż pozostało jednak wiele gier o rozmiarze tak dużym, że znalezienie dla nich optymalnej strategii wydaje
+się poza zasięgiem współczesnych maszyn. Są natomiast bardzo udane próby znajdowania strategii aproksymacyjnych,
+które spisują się coraz lepiej w pojedynkach z ludźmi. Pojęciem
+
 \chapter{Wprowadzenie do Pokera}
 
 \section{Pomocnicze pojęcia}
@@ -242,8 +265,10 @@ przedstawić tu jego bazową wersję.
       $\pi^{\sigma}(I)$ to suma tych prawdopodobieństw po $h \in I$. $\pi_i^{\sigma}(h)$ to prawdopodobieństwo że grając
       zgodnie ze strategią $\sigma$, gracz $i$ będzie podejmował akcje z odpowiadającej historii $h$. Analogicznie
       $\pi_{-i}^{\sigma}(h)$ oznacza prawdopodobieństwo że pozostali gracze będą podejmowali akcje z historii $h$.
-\item Dla końcowych historii $h \in Z$ określamy funkcję użyteczności $u_i(h)$ oznaczającą zysk gracza $i$ w rozgrywce
-      określonej przez $h$.
+\item Dla końcowych historii $h \in Z$ określamy funkcję użyteczności $\mu_i(h)$ oznaczającą zysk gracza $i$ w rozgrywce
+      określonej przez $h$. Dla historii $h \notin H$ określamy $\mu_i^{\sigma}(h)$ oznaczającą oczekiwany zysk gracza $i$
+      przy założeniu że gracze grają strategią $\sigma$ i historia $h$ została osiągnięta. Funkcja $\mu^{\sigma}$ wyznacza
+      oczekiwane zyski graczy w grze przy ustalonej strategii $\sigma$.
 
 \end{itemize}
 
@@ -255,11 +280,11 @@ W dalszej części będziemy zajmować się grami dwuosobowymi, przede wszystkim
 $\epsilon$-równowagą Nasha nazywamy zespół strategii $\sigma$, taki że:
 
 \begin{align*}
-u_1(\sigma) + \epsilon \geq  \max_{\sigma_1'} \, u_1(\sigma_1', \sigma_2) 
+\mu_1^{\sigma} + \epsilon \geq  \max_{\sigma_1'} \, \mu_1^{\sigma_1', \sigma_2} 
 \end{align*}
 
 \begin{align*}
-u_2(\sigma) + \epsilon \geq  \max_{\sigma_2'} \, u_2(\sigma_1, \sigma_2') 
+\mu_2^{\sigma} + \epsilon \geq  \max_{\sigma_2'} \, \mu_2^{\sigma_1, \sigma_2'} 
 \end{align*}
 
 \noindent
@@ -281,7 +306,7 @@ przy założeniu że inni gracze pozostali by przy obecnych strategiach. Formaln
 w rozgrywce o numerze $T$ przez:
 
 \begin{align*}
-R_i^T = \frac{1}{T} \, \max_{\sigma_i'} \sum\limits_{t=1}^T \, (u_i(\sigma_i', \sigma_{-i}^t) - u_i(\sigma^t))
+R_i^T = \frac{1}{T} \, \max_{\sigma_i'} \sum\limits_{t=1}^T \, (\mu_i^{\sigma_i', \sigma_{-i}^t} - \mu_i^{\sigma^t})
 \end{align*}
 
 %todo dodaj referencje
@@ -297,7 +322,7 @@ a nie na całej grze. Dzięki temu można ją minimalizować osobno dla każdego
 
 \noindent
 Niech $\sigma_{|I \rightarrow a}$ oznacza strategię $\sigma$ zmodyfikowaną tak, że w zbiorze informacyjnym $I$ zawsze
-wykonywana jest akcja $a$. $u_i(\sigma, I)$ oznacza warunkową wartość oczekiwaną zysku gracza $i$ przy założeniu że
+wykonywana jest akcja $a$. $\mu_i(\sigma, I)$ oznacza warunkową wartość oczekiwaną zysku gracza $i$ przy założeniu że
 osiągnięty został zbiór informacyjny $I$ a gracze grają strategią $\sigma$ zmodyfikowaną tak, że gracz $i$
 podejmuje akcje prowadzące do zbioru informacyjnego $I$ z prawdopodobieństwem $1$. \\\\
 
@@ -305,7 +330,7 @@ podejmuje akcje prowadzące do zbioru informacyjnego $I$ z prawdopodobieństwem 
 Wtedy definiujemy:
 
 \begin{align*}
-R_i^T(I, a) = \frac{1}{T} \sum\limits_{t=1}^{T} \, \pi_{-i}^{\sigma^t}(I)(u_i(\sigma^t_{I \rightarrow a}, I) - u_i(\sigma^t, I))
+R_i^T(I, a) = \frac{1}{T} \sum\limits_{t=1}^{T} \, \pi_{-i}^{\sigma^t}(I)(\mu_i(\sigma^t_{I \rightarrow a}, I) - \mu_i(\sigma^t, I))
 \end{align*}
 \begin{align*}
 R_{i, imm}^T(I) = \max_{a \in A(I)} \, R_i^T(I, a)
@@ -321,7 +346,7 @@ Algorytm CFR w kolejnych iteracjach przechodzi drzewo gry i dla każdego zbioru 
 zgodnie z regułą:
 
 \begin{align*}
-\sigma_i^(T+1) (I, a) = \frac{max(R_i^T(I, a), 0)}{\sum\limits_{a' \in A(I)} \, max(R_i^T(I, a'), 0)}
+\sigma_i^{T+1} (I, a) = \frac{max(R_i^T(I, a), 0)}{\sum\limits_{a' \in A(I)} \, max(R_i^T(I, a'), 0)}
 \end{align*}
 
 \noindent
@@ -355,36 +380,36 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
         \If {$game \rightarrow finalState()$}
             \State \Return $game \rightarrow getUtility()$
         \EndIf
-        \State $finalUtility \gets 0$ 
+        \State $\mu \gets 0$ 
         \If {$game \rightarrow randomPlayer()$}
             \For {$(randomAction, randomProb) \, \in \, game \rightarrow distribution()$}
                 \State $modGame \gets game \rightarrow makeAction(randomAction)$
                 \State $modProb \gets [\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c \cdot randomProb ]$
-                \State $actionUtility \gets \Call{WalkTree}{modGame, modProb}$
-                \State $finalUtility \gets finalUtility + actionUtility \cdot randomProb$
+                \State $\mu(randomAction) \gets \Call{WalkTree}{modGame, modProb}$
+                \State $\mu \gets finalUtility + \mu(randomAction) \cdot randomProb$
             \EndFor
         \Else
-            \State $ply \gets game \rightarrow currentPlayer()$
-            \State $opp \gets game \rightarrow currentOpponent()$
+            \State $p \gets game \rightarrow currentPlayer()$
+            \State $o \gets game \rightarrow currentOpponent()$
             \State $I \gets game \rightarrow informationSet()$
             \For {$action \, \in \, game \rightarrow playerActions()$}
                 \State $actionProb \gets \sigma(I, action)$
                 \State $modGame \gets game \rightarrow makeAction(action)$
-                \If {$ply = 0$}
+                \If {$p = 0$}
                     \State $modProb \gets [\pi_0^{\sigma} \cdot actionProb, \pi_1^{\sigma}, \pi_c]$
                 \Else
                     \State $modProb \gets [\pi_0^{\sigma}, \pi_1^{\sigma} \cdot actionProb, \pi_c]$
                 \EndIf
-                \State $actionUtility \gets \Call{WalkTree}{modGame, modProb}$
-                \State $finalUtility \gets finalUtility + actionUtility \cdot randomProb$
-                \State $R(I, action) \gets R(I, action) + actionUtility_{ply} \cdot \pi_{opp}^{\sigma} \cdot \pi_c $
-                \State $S(I, action) \gets S(I, action) + actionProb $
+                \State $\mu(action) \gets \Call{WalkTree}{modGame, modProb}$
+                \State $\mu \gets \mu + \mu(action) \cdot randomProb$
+                \State $R(I, action) \gets R(I, action) + \mu_{p}(action) \cdot \pi_{o}^{\sigma} \cdot \pi_c $
+                \State $S(I, action) \gets S(I, action) + \pi_{p}^{\sigma} \cdot actionProb $
             \EndFor
             \For {$action \, \in \, game \rightarrow playerActions()$}
-                \State $R(I, action) \gets R(I, action) - finalUtility_{ply} \cdot \pi_{opp}^{\sigma} \cdot \pi_c $
+                \State $R(I, action) \gets R(I, action) - \mu_{p} \cdot \pi_{o}^{\sigma} \cdot \pi_c $
             \EndFor
         \EndIf
-    \State \Return finalUtility
+    \State \Return $\mu$
     \EndFunction
 \end{algorithmic}
 
@@ -523,7 +548,8 @@ wykonywane są kolejne iteracje obliczające wartość regretów we wszystkich z
 modyfikowana jest strategia. \\
 
 \noindent
-W grafie stanów zbiór wierzchołków odpowiada zbiorowi stanów gry. Krawędź ze stanu $s_1$ do stanu $s_2$
+W grafie stanów zbiór wierzchołków odpowiada zbiorowi stanów gry. Stany końcowe odpowiadają
+sytuacjom, w których rozgrywka się zakończyła i znany jest zysk obu graczy. Krawędź ze stanu $s_1$ do stanu $s_2$
 istnieje jeżeli będąc w stanie $s_1$ można wykonać akcję, której rezultatem jest przejście do stanu
 $s_2$. W krawędzi zapisujemy informację o akcji z nią powiązanej oraz o prawdopodobieństwie zajścia
 tej akcji jeżeli w stanie $s_1$ akcję podejmuje gracz losowy. W innych przypadkach prawdopodobieństwo
@@ -533,51 +559,72 @@ zajścia akcji jest wyznaczone przez aktualną strategię gracza wykonującego a
 Graf stanów jest budowany przy użyciu algorytmu DFS. W każdym nowo odwiedzanym stanie
 wyliczany jest jego identyfikator na podstawie aktualnych wartości parametrów. Dodatkowo dodawane
 są krawędzie prowadzące do sąsiednich stanów, a w stanach końcowych zapisywana jest informacja o
-zyskach graczy. Zauważmy, że w tak utworzonym grafie nie występują cykle. Po utworzeniu, wierzchołki
-są sortowane topologicznie co ułatwi potem wykonywanie iteracji. \\
+zyskach graczy. \\
 
 \noindent
-W każdej iteracji wykonywane są dwie metody: $computeProbs$ oraz $modWalkTree$. Pierwsza oblicza dla każdego stanu $s$
-wartości $\pi_0^{\sigma}(s)$, $\pi_1^{\sigma}(s)$, $\pi_0^{\sigma}(s) \cdot \pi_c(s)$ oraz $\pi_1^{\sigma}(s) \cdot \pi_c(s)$
-dla aktualnej strategii $\sigma$. Niech $H(s)$ oznacza zbiór historii $h$, których rezultatem jest stan $s$. Wtedy
-\begin{align*}
-\pi_i^{\sigma}(s) = \sum\limits_{h \in H(s)} \, \pi_i^{\sigma}(h)
-\end{align*}
-\begin{align*}
-\pi_i^{\sigma}(s) \cdot \pi_c(s) = \sum\limits_{h \in H(s)} \, \pi_i^{\sigma}(h) \cdot \pi_c(h)
-\end{align*}
+Dla każdego stanu $s$ może istnieć wiele ciągów akcji (historii), po których wykonaniu gra
+znajdzie się w stanie $s$. Niech $H(s)$ oznacza zbiór historii $h$, których rezultatem jest stan $s$.
+W algorytmie $VanillaCfr$ każda historia była przetwarzana osobno, tzn aktualizowane były wartości
+regretów w zbiorze informacyjnym jej odpowiadającym. Modyfikacja algorytmu grupuje obliczenia z
+wszystkich historii w $H(s)$ i wykonuje jedną zbiorczą aktualizację w stanie $s$. \\
 
 \noindent
-Zauważmy, że dla każdej historii $h \in H(s)$ zysk graczy jest taki sam. W takim razie można zamienić instrukcję
-\begin{algorithmic}
-    \State $R(I, action) \gets R(I, action) + actionUtility_{ply}(h) \cdot \pi_{opp}^{\sigma}(h) \cdot \pi_c(h) $
-\end{algorithmic}
-
-\noindent
-wykonywaną dla każdej historii $h \in H(s)$ na instrukcję
-
-\begin{algorithmic}
-    \State $R(I, action) \gets R(I, action) + actionUtility_{ply}(s) \cdot \pi_{opp}^{\sigma}(s) \cdot \pi_c(s) $
-\end{algorithmic}
-
-\noindent
-wykonywaną jednokrotnie w stanie $s$. Zauważmy, że zachodzi \\
+W algorytmie $VanillaCfr$ wartości map $R$ i $S$ dla historii $h$, zbioru informacyjnego $I(h)$ oraz akcji $a$ są modyfikowane
+wg następujących wzorów:
 
 \begin{align*}
-\pi_{p}^{\sigma}(s) = \sum\limits_{s' : E(s', s)} \pi_{p}^{\sigma}(s') \cdot prob_{p}(E(s', s))
+R(I(h), a) &\leftarrow R(I(h), a) + (\mu_p^{\sigma}(h \circ a) - \mu_p^{\sigma}(h)) \cdot \pi_{o}^{\sigma}(h) \cdot \pi_c(h) \\
+S(I(h), a) &\leftarrow S(I(h), a) + \sigma(I(h), a) \cdot \pi_p^{\sigma}(h)
 \end{align*}
-\begin{align*}
-\pi_p^{\sigma}(s) \cdot \pi_c(s) = \sum\limits_{s' : E(s', s)} \pi_{p}^{\sigma}(s') \pi_c(s') \cdot prob_p(E(s', s)) \cdot prob_c(E(s', s))
-\end{align*}
-
-gdzie $E(s_1, s_2)$ zachodzi gdy istnieje krawędź z $s_1$ do $s_2$ a $prob_{i}(E(s_1, s_2))$ oznacza prawdopodobieństwo przejścia ze stanu
-$s_1$ do $s_2$ jeżeli akcję wykonuje gracz $i$. W przeciwnym przypadku $prob_{i}(E(s_1, s_2)) = 1$. Metoda $computeProbs$ wykonuje algorytm
-BFS, który przechodzi stany w porządku topologicznym i oblicza powyższe wartości. \\
 
 \noindent
-Metoda $modWalkTree$ przechodzi rekurencyjnie graf stanów, obliczając oczekiwany zysk graczy
-w każdym stanie przy obecnej strategii. Dodatkowo aktualizuje mapy $R$ oraz $S$ analogicznie do metody $WalkTree$ ze
-zwykłej wersji CFR.
+($p$ to gracz wykonujący akcję a $o$ to przeciwnik) \\
+
+\noindent
+Zauważmy, że dla $h_1, h_2 \in H(s)$ zachodzi $\mu^{\sigma}(h_1) = \mu^{\sigma}(h_2) = \mu^{\sigma}(s)$.
+Jeśli przez $s(a)$ oznaczymy stan gry po wykonaniu akcji $a$ w stanie $s$, zachodzi: 
+
+\begin{align*}
+\sum\limits_{h \in H(s)} (\mu_p^{\sigma}(h \circ a) - \mu_p^{\sigma}(h)) \cdot \pi_o^{\sigma}(h) \cdot \pi_c(h) =
+(\mu_p^{\sigma}(s(a)) - \mu_p^{\sigma}(s)) \cdot \sum\limits_{h \in H(s)} \pi_o^{\sigma}(h) \cdot \pi_c(h)
+\end{align*}
+
+\noindent
+oraz
+
+\begin{align*}
+\sum\limits_{h \in H(s)} \sigma(I(h), a) \cdot \pi_p^{\sigma}(h) =
+\sigma(I(s), a) \cdot \sum\limits_{h \in H(s)} \pi_p^{\sigma}(h)
+\end{align*}
+
+\noindent
+Oznaczmy
+
+\begin{align*}
+\pi_i^{\sigma}(s) &= \sum\limits_{h \in H(s)} \, \pi_i^{\sigma}(h) \\
+\pi_i^{\sigma}(s) \cdot \pi_c(s) &= \sum\limits_{h \in H(s)} \, \pi_i^{\sigma}(h) \cdot \pi_c(h)
+\end{align*}
+
+\noindent
+Zgodnie z powyższymi, modyfikacje map $R$ i $S$ wykonywane w algorytmie $VanillaCfr$ są
+równoważne z następującymi:
+
+\begin{align*}
+R(I(s), a) &\leftarrow R(I(s), a) + (\mu_p^{\sigma}(s(a)) - \mu_p^{\sigma}(s)) \cdot \pi_{o}^{\sigma}(s) \cdot \pi_c(s) \\
+S(I(s), a) &\leftarrow S(I(s), a) + \sigma(I(s), a) \cdot \pi_p^{\sigma}(s)
+\end{align*}
+
+\noindent
+wykonywanymi w każdym, nie końcowym stanie $s$, w którym decyzji nie podejmuje gracz losowy. \\
+
+\noindent
+Każda iteracja zmodyfikowanego algorytmu podzielona jest na trzy części:
+\begin{enumerate}
+\item Przeliczenie wartości $\pi_i^{\sigma}(s)$ oraz $\pi_i^{\sigma}(s) \cdot \pi_c(s)$ w każdym stanie $s$.
+\item Przeliczenie wartości $\mu^{\sigma}(s)$ i zaktualizowanie map $R$ i $S$.
+\item Zaktualizowanie strategii na podstawie mapy $R$.
+\end{enumerate}
+
 
 \chapter{Wyniki eksperymentalne}
 

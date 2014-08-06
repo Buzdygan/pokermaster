@@ -118,7 +118,7 @@ vector<int> HoldemPokerAbstraction::getActionIds(int bids_num)
     if (bids_num < MAX_BIDS_NUMBER && cur_stake < LOG_MAX_STAKE)
     {
         action_ids.push_back(ACTION_RAISE);
-        action_ids.push_back(ACTION_ALL_IN);
+        //action_ids.push_back(ACTION_ALL_IN);
     }
     return action_ids;
 }
