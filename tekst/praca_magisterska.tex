@@ -99,11 +99,50 @@ roku magazyn $Science$ opublikował artykuł dowodzący że programu warcabowego
 \noindent
 Wciąż pozostało jednak wiele gier o rozmiarze tak dużym, że znalezienie dla nich optymalnej strategii wydaje
 się poza zasięgiem współczesnych maszyn. Są natomiast bardzo udane próby znajdowania strategii aproksymacyjnych,
-które spisują się coraz lepiej w pojedynkach z ludźmi. W trakcie badań nad strategiami rozwinęły się algorytmy
-takie jak "Monte Carlo Tree Search" czy opisywana w tej pracy metoda "Counterfactual Regret Minimization".
-Odkrycie tej ostatniej w 2007 roku\cite{cfr} było przełomem w znajdowaniu aproksymacji równowagi Nasha w grach w postaci
-ekstensywnej. Modyfikacje metody CFR są używane do znajdowania najlepszych istniejących strategii m.in w grze
-Texas Holdem Poker.
+liczonych dla abstrakcji rzeczywistych gier, które spisują się coraz lepiej w pojedynkach z ludźmi.
+Abstrakcje zawężają zbiór akcji dostępnych graczom i utożsamiają niektóre stany gry w celu zmniejszenia jej rozmiaru.
+W trakcie badań nad strategiami rozwinęły się algorytmy takie jak "Monte Carlo Tree Search" czy opisywana
+w tej pracy metoda "Counterfactual Regret Minimization". Odkrycie tej ostatniej w 2007 roku\cite{cfr} było przełomem
+w znajdowaniu aproksymacji równowagi Nasha w grach w postaci ekstensywnej. Modyfikacje metody CFR są używane
+do znajdowania najlepszych istniejących strategii m.in w grze Texas Holdem Poker. \\
+
+\noindent
+Celem tej pracy jest zbadanie modyfikacji algorytmu CFR, która pozwala na wyliczanie strategii w bardziej wiernej
+abstrakcji gry Texas Holdem Poker. Odbywa się to kosztem założenia o pełnej pamięci gry (tzw "perfect recall").
+Zignorowanie historii dotychczasowej rozgrywki przy obliczaniu strategii pozwala na znaczące zmniejszenie liczby
+stanów gry przeglądanych w każdej iteracji algorytmu. Pozwala to zmniejszyć liczbę ograniczeń nakładanych
+na oryginalną wersję Texas Holdem Poker. Praca bada czy tak zmodyfikowany algorytm pozwala na znalezienie
+lepszych strategii niż oryginalna wersja CFR. \\
+
+\noindent
+Rozdział 2 opisuje podstawowe pojęcia i zagadnienia sztucznej inteligencji w grach takie jak
+stan gry, zbiór informacyjny, drzewo gry, strategia. W dalszej części opisane są zasady gry
+Texas Holdem Poker, którą wykorzystano do porównania skuteczności metody CFR i jej modyfikacji.
+Zostanie też przybliżona historia rozwoju programów grających w gry oraz metody budowania abstrakcji gier. \\
+
+\noindent
+Rozdział 3 przedstawia algorytm CFR w wersji pierwszy raz przedstawionej w 2007 roku w pracy
+"Regret Minimization in Games with Incomplete Information" \cite{cfr}. Zostały w nim przytoczone pojęcia
+związane z grami ekstensywnymi oraz twierdzenia dowodzące skuteczności metody CFR. Na końcu rozdziału
+zamieszczony jest pseudokod algorytmu $VanillaCfr$, który jest jedną ze znanych realizacji tej metody. \\
+
+\noindent
+Rozdział 4 jest poświęcony modyfikacji metody CFR. Na początku przedstawiona jest idea algorytmu.
+Dalej opisana jest abstrakcja gry Texas Holdem Poker zastosowana w eksperymentach. Godny uwagi
+jest opisany w tej części pomysł na bardziej efektywne obliczanie metryki $EHS$ dla układów kart.
+Główna część rozdziału jest poświęcona efektywnej realizacji pomysłu na zmniejszenie złożoności
+metody CFR. Opisane są modyfikacje algorytmu $VanillaCfr$, które pozwalają zmniejszyć złożoność
+jego iteracji do liniowej względem liczby różnych stanów zamiast liniowej względem rozmiaru drzewa gry.
+Na końcu zamieszczony został pseudokod zmodyfikowanej wersji algorytmu. \\
+
+\noindent
+Rozdział 5 przedstawia wyniki eksperymentalne. Porównane są w nim strategie wyliczone metodą
+CFR i jej modyfikacją, przy zastosowaniu kilku wariantów abstrakcji. Podstawowym kryterium
+do porównywania jest wynik rzeczywistej rozgrywki Pokera między dwoma programami. \\
+
+\noindent
+Rozdział 6 przedstawia podsumowanie wyników pracy. Opisane są zalety badanego podejścia
+i możliwości jego poprawy w celu uzyskania jeszcze lepszych strategii.
 
 \chapter{Wprowadzenie do Pokera}
 

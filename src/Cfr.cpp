@@ -1,5 +1,6 @@
 #include <set>
 #include <fstream>
+#include <queue>
 #include "Cfr.h"
 #include "GameAbstraction.h"
 
@@ -13,6 +14,8 @@ int cnt = 0;
 bool first_iteration = true;
 bool sampled = false;
 map<pair<long long, int>, utility> util_map;
+
+queue<int> rand_action_choices;
 
 inline int _rand_choice(int n)
 {
@@ -56,12 +59,66 @@ void Cfr::computeVanillaCfr(int iterations)
         }
         printf("TREE SIZE: %d\n", cnt);
         recomputeStrategy(newR);
+        if(sampled)
+            repairUtilities();
+        if(!rand_action_choices.empty())
+            printf("QUEUE NOT EMPTY!\n");
+
         printf("It err: %0.5f Err: %0.5f\n", total_regret_sum - old_regret_sum, total_regret_sum / t);
         old_regret_sum = total_regret_sum;
         first_iteration = false;
         sampled = true;
     }
     recomputeStrategy(S);
+}
+
+utility Cfr::repairUtilities()
+{
+    if (game -> isFinal())
+        return game -> getUtility();
+    int p = game -> getPlayerId();
+    utility final_util = make_pair(0.0, 0.0);
+    if (p == RANDOM_PLAYER_NR)
+    {
+        dist action_distr = game -> getActionDistribution();
+        int choice = rand_action_choices.front();
+        rand_action_choices.pop();
+        int i = 0;
+        utility res_util;
+        for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
+        {
+            game -> makeAction(iter -> first);
+            long long is_id = game -> getInformationSetId();
+            pair<long long, int> rpair = make_pair(is_id, iter -> first);
+            if (choice == i)
+            {
+                res_util = repairUtilities();
+                util_map[rpair] = res_util;
+            }
+            else
+                res_util = util_map[rpair];
+            game -> unmakeAction(iter -> first);
+            final_util.first += res_util.first * iter -> second;
+            final_util.second += res_util.second * iter -> second;
+            i ++;
+        }
+    }
+    else
+    {
+        long long is_id = game -> getInformationSetId();
+        vector<int> action_ids = game -> getActionIds();
+        for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
+        {
+            pair<long long, int> decision_id = make_pair(is_id, *a_id);
+            long double action_prob = (long double) strategy[decision_id];
+            game -> makeAction(*a_id);
+            utility temp_util = repairUtilities();
+            game -> unmakeAction(*a_id);
+            final_util.first += temp_util.first * action_prob;
+            final_util.second += temp_util.second * action_prob;
+        }
+    }
+    return final_util;
 }
 
 utility Cfr::walkTree(long double probs[3])
@@ -93,6 +150,8 @@ utility Cfr::walkTree(long double probs[3])
             {
                 res_util = walkTree(probs);
                 util_map[rpair] = res_util;
+                if(sampled)
+                    rand_action_choices.push(choice);
             }
             else
                 res_util = util_map[rpair];

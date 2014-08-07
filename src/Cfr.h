@@ -38,6 +38,7 @@ class Cfr
         double recomputeStrategy(Smap &r);
         void computeVanillaCfr(int iterations);
         utility walkTree(long double probs[3]);
+        utility repairUtilities();
 };
 
 #endif
