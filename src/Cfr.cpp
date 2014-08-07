@@ -11,7 +11,7 @@ const int Cfr::ITERATIONS = 2000;
 
 int cnt = 0;
 bool first_iteration = true;
-bool sampled = true;
+bool sampled = false;
 map<pair<long long, int>, utility> util_map;
 
 inline int _rand_choice(int n)
@@ -59,6 +59,7 @@ void Cfr::computeVanillaCfr(int iterations)
         printf("It err: %0.5f Err: %0.5f\n", total_regret_sum - old_regret_sum, total_regret_sum / t);
         old_regret_sum = total_regret_sum;
         first_iteration = false;
+        sampled = true;
     }
     recomputeStrategy(S);
 }
