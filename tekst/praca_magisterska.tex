@@ -99,7 +99,11 @@ roku magazyn $Science$ opublikował artykuł dowodzący że programu warcabowego
 \noindent
 Wciąż pozostało jednak wiele gier o rozmiarze tak dużym, że znalezienie dla nich optymalnej strategii wydaje
 się poza zasięgiem współczesnych maszyn. Są natomiast bardzo udane próby znajdowania strategii aproksymacyjnych,
-które spisują się coraz lepiej w pojedynkach z ludźmi. Pojęciem
+które spisują się coraz lepiej w pojedynkach z ludźmi. W trakcie badań nad strategiami rozwinęły się algorytmy
+takie jak "Monte Carlo Tree Search" czy opisywana w tej pracy metoda "Counterfactual Regret Minimization".
+Odkrycie tej ostatniej w 2007 roku\cite{cfr} było przełomem w znajdowaniu aproksymacji równowagi Nasha w grach w postaci
+ekstensywnej. Modyfikacje metody CFR są używane do znajdowania najlepszych istniejących strategii m.in w grze
+Texas Holdem Poker.
 
 \chapter{Wprowadzenie do Pokera}
 
@@ -637,6 +641,8 @@ Każda iteracja zmodyfikowanego algorytmu podzielona jest na trzy części:
 \bibitem[2]{monte-carlo} G.V.D. Broeck, K. Driessens and J.Ramon, $\;\;\;$
 "Monte-Carlo Tree Search in Poker using Expected Reward Distributions" $\;\;\;$
 ACML 2009. LNCS (LNAI), vol. 5828
+\bibitem[3]{cfr} M.Zinkevich, M.Johanson, M.Bowling, C.Piccione $\;\;\;$ "Regret Minimization in Games with Incomplete
+Information" $\;\;\;$ NIPS 2007
 \end{thebibliography}
 
 \end{document}

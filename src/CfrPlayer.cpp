@@ -57,13 +57,6 @@ int CfrPlayer::getAction(vector<int> available_actions)
 {
     printf("Player%d making decision\n", player_num);
     vector<int> actions = game -> getActionIds(bids_number);
-    if (cur_stake == game -> MAX_STAKE)
-        for (int i = 0; i < actions.size(); i++)
-            if (actions[i] == game -> ACTION_RAISE)
-            {
-                actions.erase(actions.begin() + i);
-                break;
-            }
     int action_id = strategy -> getActionId(game -> getInformationSetId(),
                                             actions);
     if (action_id == game -> ACTION_FOLD)
@@ -72,10 +65,8 @@ int CfrPlayer::getAction(vector<int> available_actions)
         return cur_stake;
     if (action_id == game -> ACTION_RAISE)
         return cur_stake * 2;
-    /*
     if (action_id == game -> ACTION_ALL_IN)
         return game -> MAX_STAKE;
-        */
     return cur_stake;
 }
 
@@ -89,11 +80,9 @@ int CfrPlayer::_logBid(int bid)
     int action_id = game -> ACTION_FOLD;
     if (bid == cur_stake)
         action_id = game -> ACTION_CALL;
-    /*
     if (bid == game -> MAX_STAKE)
         action_id = game -> ACTION_ALL_IN;
-        */
-    if (bid > cur_stake)
+    else if (bid > cur_stake)
         action_id = game -> ACTION_RAISE;
     cur_stake = bid;
     return action_id;
