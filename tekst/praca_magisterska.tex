@@ -702,7 +702,11 @@ Czyli żeby obliczyć wartości $\pi_i^{\sigma}(s)$ oraz $\pi_i^{\sigma}(s) \cdo
 mieć je policzone dla każdego stanu $s'$ z którego prowadzi krawędź do $s$. Graf stanów to tzw "DAG", czyli
 skierowany graf acykliczny. W takim grafie wierzchołki można ułożyć w ciąg w porządku topologicznym, tzn
 jeżeli z wierzchołka $v$ prowadzi krawędź do wierzchołka $w$ to $v$ znajduje się w ciągu przed wierzchołkiem $w$.
-Metoda $computeProbs$ przegląda stany w porządku topologicznym i oblicza powyższe wartości.
+Metoda $computeProbs$ przegląda stany w porządku topologicznym i oblicza powyższe wartości. \\
+
+\noindent
+Metoda licząca wartości $\mu^{\sigma}(s)$ i zaktualizowanie map $R$ i $S$ jest analogiczna do metody
+$WalkTree$ ze standardowej wersji algorytmu przy czym każdy stan jest odwiedzany tylko raz.
 
 
 \chapter{Wyniki eksperymentalne}
