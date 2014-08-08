@@ -83,18 +83,19 @@ utility Cfr::repairUtilities()
     if (game -> isFinal())
         return game -> getUtility();
     int p = game -> getPlayerId();
+    long long is_id = game -> getInformationSetId();
     utility final_util = make_pair(0.0, 0.0);
     if (p == RANDOM_PLAYER_NR)
     {
         dist action_distr = game -> getActionDistribution();
         int choice = rand_action_choices.front();
         rand_action_choices.pop();
+        printf("pop in %lld : %d\n", is_id, choice);
         int i = 0;
         utility res_util;
         for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
         {
             game -> makeAction(iter -> first);
-            long long is_id = game -> getInformationSetId();
             pair<long long, int> rpair = make_pair(is_id, iter -> first);
             if (choice == i)
             {
@@ -111,7 +112,6 @@ utility Cfr::repairUtilities()
     }
     else
     {
-        long long is_id = game -> getInformationSetId();
         vector<int> action_ids = game -> getActionIds();
         for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)
         {
@@ -137,6 +137,7 @@ utility Cfr::walkTree(long double probs[3])
 
     int p = game -> getPlayerId();
     utility final_util = make_pair(0.0, 0.0);
+    long long is_id = game -> getInformationSetId();
 
     /* If it is a turn of a chance player */
     if (p == RANDOM_PLAYER_NR)
@@ -150,14 +151,17 @@ utility Cfr::walkTree(long double probs[3])
         {
             probs[RANDOM_PLAYER_NR] *= (long double) iter -> second;
             game -> makeAction(iter -> first);
-            long long is_id = game -> getInformationSetId();
             pair<long long, int> rpair = make_pair(is_id, iter -> first);
             if (!sampled || !util_map.count(rpair) || choice == i)
             {
                 res_util = walkTree(probs);
                 util_map[rpair] = res_util;
                 if(sampled)
+                {
                     rand_action_choices.push(choice);
+                    printf("push in %lld : %d\n", is_id, choice);
+
+                }
             }
             else
                 res_util = util_map[rpair];
@@ -170,7 +174,6 @@ utility Cfr::walkTree(long double probs[3])
     }
     else
     {
-        long long is_id = game -> getInformationSetId();
         vector<int> action_ids = game -> getActionIds();
         if (first_iteration)
             for (vi_it a_id = action_ids.begin(); a_id != action_ids.end(); a_id ++)

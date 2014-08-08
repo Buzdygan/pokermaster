@@ -30,6 +30,7 @@ void HoldemPokerAbstraction::_init()
     winner = NO_WINNER;
     is_id[0] = 1;
     is_id[1] = 2;
+    is_id[2] = 3;
     player_basket[0] = player_basket[1] = 0;
 }
 
@@ -59,6 +60,8 @@ void HoldemPokerAbstraction::makeAction(int action_id)
         player_basket[1] = basket_pair.second;
         logAction(0, player_basket[0]);
         logAction(1, player_basket[1]);
+        logAction(2, player_basket[0]);
+        logAction(2, player_basket[1]);
         random_phase ++;
         _startOfBiddingPhase();
     }
@@ -66,6 +69,7 @@ void HoldemPokerAbstraction::makeAction(int action_id)
     {
         logAction(0, action_id);
         logAction(1, action_id);
+        logAction(2, action_id);
         bids_number ++;
         /* player looses */
         if (action_id == ACTION_FOLD)
@@ -125,8 +129,6 @@ vector<int> HoldemPokerAbstraction::getActionIds(int bids_num)
 
 long long HoldemPokerAbstraction::getInformationSetId()
 {
-    if (cur_player == RANDOM_PLAYER_NR)
-        return -1;
     return is_id[cur_player];
 }
 
@@ -181,6 +183,7 @@ void HoldemPokerAbstraction::_backup()
     backup -> player_basket[1] = player_basket[1];
     backup -> is_id[0] = is_id[0];
     backup -> is_id[1] = is_id[1];
+    backup -> is_id[2] = is_id[2];
     prev_backup = backup;
 
 }
@@ -197,6 +200,7 @@ void HoldemPokerAbstraction::_restore()
     player_basket[1] = prev_backup -> player_basket[1];
     is_id[0] = prev_backup -> is_id[0];
     is_id[1] = prev_backup -> is_id[1];
+    is_id[2] = prev_backup -> is_id[2];
     AbsBackup* temp = prev_backup -> prev;
     delete prev_backup;
     prev_backup = temp;

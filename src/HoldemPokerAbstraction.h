@@ -15,7 +15,7 @@ struct AbsBackup
     int bids_number;
     int winner;
     int player_basket[2];
-    long long is_id[2];
+    long long is_id[3];
 };
 
 class HoldemPokerAbstraction : public HoldemPoker
@@ -48,7 +48,7 @@ class HoldemPokerAbstraction : public HoldemPoker
     protected:
         BasketManager *manager;
         int player_basket[2];
-        long long is_id[2];
+        long long is_id[3];
         int winner;
         AbsBackup* prev_backup;
 
