@@ -67,13 +67,14 @@ ModCfr::ModCfr(HoldemPokerModAbstraction* gm, int iterations, const char* strate
             if ((it + 1) % 1000000 == 0 && (iterations - it) >= 1e6)
             {
                 _recomputeStrategy(tab_S);
-                sprintf(temp_strategy_file, "%s-temp-%d.stg", strategy_file, it);
+                sprintf(temp_strategy_file, "%s-%d.stg", strategy_file, it);
                 _copyStrategy();
                 saveToFile(temp_strategy_file);
                 _recomputeStrategy(tab_R);
             }
 
         }
+        sprintf(temp_strategy_file, "%s-%d.stg", strategy_file, iterations);
         _recomputeStrategy(tab_S);
         _copyStrategy();
         saveToFile(strategy_file);
