@@ -90,7 +90,6 @@ utility Cfr::repairUtilities()
         dist action_distr = game -> getActionDistribution();
         int choice = rand_action_choices.front();
         rand_action_choices.pop();
-        printf("pop in %lld : %d\n", is_id, choice);
         int i = 0;
         utility res_util;
         for (dist_it iter = action_distr.begin(); iter != action_distr.end(); iter++)
@@ -154,14 +153,10 @@ utility Cfr::walkTree(long double probs[3])
             pair<long long, int> rpair = make_pair(is_id, iter -> first);
             if (!sampled || !util_map.count(rpair) || choice == i)
             {
+                if(sampled)
+                    rand_action_choices.push(choice);
                 res_util = walkTree(probs);
                 util_map[rpair] = res_util;
-                if(sampled)
-                {
-                    rand_action_choices.push(choice);
-                    printf("push in %lld : %d\n", is_id, choice);
-
-                }
             }
             else
                 res_util = util_map[rpair];
