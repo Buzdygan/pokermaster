@@ -11,6 +11,7 @@ class HoldemPokerModAbstraction : public HoldemPokerAbstraction
         ~HoldemPokerModAbstraction();
         int getStateId();
         int getISetId();
+        vector<int> getActionIds();
         vector<int> getActionIds(int bids_num);
         dist getInformationSetIds(dist baskets);
 };

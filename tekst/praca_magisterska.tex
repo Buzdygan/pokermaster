@@ -668,6 +668,42 @@ Każda iteracja zmodyfikowanego algorytmu podzielona jest na trzy części:
 \item Zaktualizowanie strategii na podstawie mapy $R$.
 \end{enumerate}
 
+\noindent
+Wprowadźmy następujące oznaczenia:
+
+\begin{itemize}
+\item $P(s)$ - gracz wykonujący akcję w stanie $s$.
+\item $\sigma(s_1, s_2)$ - prawdopodobieństwo wykonania akcji prowadzącej ze stanu $s_1$ do $s_2$ zgodnie ze strategią $\sigma$.
+\item $\pi(s_1, s_2)$ - prawdopodobieństwo wykonania akcji gracza losowego prowadzącej ze stanu $s_1$ do $s_2$.
+\item $E_{(s_1, s_2)}$ - krawędź ze stanu $s_1$ do $s_2$.
+\end{itemize}
+
+\noindent
+Zdefiniujmy funkcję $prob_i(E_{(s_1, s_2)})$ następująco 
+
+\begin{equation*}
+prob_i(E_{(s_1, s_2)}) = \begin{cases}
+                            1                & P(s_1) \neq i     \\
+                            \pi(s_1, s_2)    & P(s_1) = i = c    \\
+                            \sigma(s_1, s_2) & P(s_1) = i \neq c \\
+                          \end{cases}
+\end{equation*}
+
+\noindent
+Wtedy zachodzi:
+
+\begin{align*}
+\pi_i^{\sigma}(s) &= \sum\limits_{E_{(s', s)}} \pi_i^{\sigma}(s') \cdot prob_i(E_{(s', s)}) \\
+\pi_i^{\sigma}(s) \cdot \pi_c(s) &= \sum\limits_{E_{(s', s)}} \pi_i^{\sigma}(s') \cdot \pi_c(s') \cdot prob_i(E_{(s', s)}) \cdot prob_c(E_{(s', s)})
+\end{align*}
+
+\noindent
+Czyli żeby obliczyć wartości $\pi_i^{\sigma}(s)$ oraz $\pi_i^{\sigma}(s) \cdot \pi_c(s)$ w stanie $s$, wystarczy
+mieć je policzone dla każdego stanu $s'$ z którego prowadzi krawędź do $s$. Graf stanów to tzw "DAG", czyli
+skierowany graf acykliczny. W takim grafie wierzchołki można ułożyć w ciąg w porządku topologicznym, tzn
+jeżeli z wierzchołka $v$ prowadzi krawędź do wierzchołka $w$ to $v$ znajduje się w ciągu przed wierzchołkiem $w$.
+Metoda $computeProbs$ przegląda stany w porządku topologicznym i oblicza powyższe wartości.
+
 
 \chapter{Wyniki eksperymentalne}
 

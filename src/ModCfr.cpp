@@ -1,5 +1,8 @@
 #include <set>
 #include <fstream>
+#include <cstdio>
+#include <cstdlib>
+#include <algorithm>
 #include <cstring>
 #include <queue>
 #include "ModCfr.h"
@@ -42,6 +45,7 @@ ModCfr::ModCfr(HoldemPokerModAbstraction* gm, int iterations, const char* strate
     game = gm;
     double err_sum = 0.0;
     memset(is_final, false, sizeof(is_final));
+    char temp_strategy_file [100];
     if (!loadFromFile(strategy_file))
     {
         printf("Mod Cfr: Building Tree\n");
@@ -60,10 +64,18 @@ ModCfr::ModCfr(HoldemPokerModAbstraction* gm, int iterations, const char* strate
             err_sum += it_err;
             printf("It err: %0.5f Err: %0.5f\n", it_err, err_sum / (it + 1));
 
+            if ((it + 1) % 1000000 == 0 && (iterations - it) >= 1e6)
+            {
+                _recomputeStrategy(tab_S);
+                sprintf(temp_strategy_file, "%s-temp-%d.stg", strategy_file, it);
+                _copyStrategy();
+                saveToFile(temp_strategy_file);
+                _recomputeStrategy(tab_R);
+            }
+
         }
         _recomputeStrategy(tab_S);
         _copyStrategy();
-        srand(time(0));
         saveToFile(strategy_file);
     }
 }

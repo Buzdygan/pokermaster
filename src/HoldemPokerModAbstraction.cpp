@@ -17,6 +17,11 @@ HoldemPokerModAbstraction::~HoldemPokerModAbstraction()
 {
 }
 
+vector<int> HoldemPokerModAbstraction::getActionIds()
+{
+    return getActionIds(bids_number);
+}
+
 vector<int> HoldemPokerModAbstraction::getActionIds(int bids_num)
 {
     vector<int> action_ids;
