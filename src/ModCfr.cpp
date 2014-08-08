@@ -64,7 +64,7 @@ ModCfr::ModCfr(HoldemPokerModAbstraction* gm, int iterations, const char* strate
             err_sum += it_err;
             printf("It err: %0.5f Err: %0.5f\n", it_err, err_sum / (it + 1));
 
-            if ((it + 1) % 1000000 == 0 && (iterations - it) >= 1000000)
+            if ((it + 1) % 100000 == 0 && (iterations - it) >= 100000)
             {
                 _recomputeStrategy(tab_S);
                 sprintf(temp_strategy_file, "%s-%d.stg", strategy_file, it);

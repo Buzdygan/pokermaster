@@ -111,22 +111,22 @@ int main(int argc, char* argv[])
     score[0] = 0;
     score[1] = 0;
     //int basket_sizes[4] = {12,10,10,10};
-    //int basket_sizes[4] = {4,3,3,3};
-    int basket_sizes[4] = {19,19,19,19};
-    sprintf(strategy_filename, "cfr.mod.strategy%s-%d-%d-%d-%d-%d.stg", EHS_STR,
+    int basket_sizes[4] = {4,3,3,3};
+    //int basket_sizes[4] = {19,19,19,19};
+    sprintf(strategy_filename, "cfr.mod.strategy%s-%d-%d-%d-%d", EHS_STR,
                                                                        basket_sizes[0],
                                                                        basket_sizes[1],
                                                                        basket_sizes[2],
-                                                                       basket_sizes[3],
-                                                                       strategy_repetitions);
+                                                                       basket_sizes[3]);
 
     int basket_sizes2[4] = {4,3,3,3};
 
-    sprintf(strategy_filename2, "cfr.strategy%s-%d-%d-%d-%d", EHS_STR,
+    sprintf(strategy_filename2, "cfr.strategy%s-%d-%d-%d-%d-%d.stg", EHS_STR,
                                                                        basket_sizes2[0],
                                                                        basket_sizes2[1],
                                                                        basket_sizes2[2],
-                                                                       basket_sizes2[3]);
+                                                                       basket_sizes2[3],
+                                                                       strategy_repetitions2);
 
 
     HandEvaluator evaluator;
