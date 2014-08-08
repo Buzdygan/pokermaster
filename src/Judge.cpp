@@ -121,12 +121,11 @@ int main(int argc, char* argv[])
 
     int basket_sizes2[4] = {4,3,3,3};
 
-    sprintf(strategy_filename2, "cfr.strategy%s-%d-%d-%d-%d-%d.stg", EHS_STR,
+    sprintf(strategy_filename2, "cfr.strategy%s-%d-%d-%d-%d", EHS_STR,
                                                                        basket_sizes2[0],
                                                                        basket_sizes2[1],
                                                                        basket_sizes2[2],
-                                                                       basket_sizes2[3],
-                                                                       strategy_repetitions2);
+                                                                       basket_sizes2[3]);
 
 
     HandEvaluator evaluator;

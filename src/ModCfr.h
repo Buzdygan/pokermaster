@@ -48,7 +48,7 @@ class ModCfr
         void _copyStrategy();
         int getActionId(dist action_dist);
         bool loadFromFile(const char* filename);
-        void saveToFile(const char* filename);
+        void saveToFile(const char* filename, double error);
 };
 
 #endif

@@ -33,10 +33,9 @@ class Cfr
 
         int getActionId(dist action_dist, double prob_sum = 1.0);
         bool loadFromFile(const char* filename);
-        void saveToFile(const char* filename);
+        void saveToFile(const char* filename, double error);
 
         double recomputeStrategy(Smap &r);
-        void computeVanillaCfr(int iterations);
         utility walkTree(long double probs[3]);
         utility repairUtilities();
 };

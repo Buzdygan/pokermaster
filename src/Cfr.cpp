@@ -22,54 +22,58 @@ inline int _rand_choice(int n)
     return rand() % n;
 }
 
-Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file, bool information_tree)
+Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file_template, bool information_tree)
 {
     printf("Init Cfr, iterations: %d\n", iterations);
     itree = information_tree;
     game = gm;
+    char strategy_file [100];
+    sprintf(strategy_file, "%s-%d.stg", strategy_file_template, iterations);
     if (!loadFromFile(strategy_file))
     {
         srand(time(0));
-        computeVanillaCfr(iterations);
-        saveToFile(strategy_file);
-    }
-}
-
-void Cfr::computeVanillaCfr(int iterations)
-{
-    srand(time(0));
-    printf("Computing CFR strategy\n");
-    total_regret_sum = 0.0;
-    int t = 0;
-    int visited_is_cnt = 0;
-    double sum = 0.0;
-    double old_regret_sum = 0.0;
-    for (int i = 0; i < iterations; i++)
-    {
-        printf("Iteration %d\n", i);
-        long double probs [3] = {1.0L, 1.0L, 1.0L};
-        cnt = 0;
-        newR.clear();
-        walkTree(probs);
-        visited_is_cnt += newR.size();
-        if (!sampled || visited_is_cnt >= R.size())
+        printf("Computing CFR strategy\n");
+        total_regret_sum = 0.0;
+        int t = 0;
+        int visited_is_cnt = 0;
+        double sum = 0.0;
+        double old_regret_sum = 0.0;
+        for (int i = 0; i < iterations; i++)
         {
-            t ++;
-            visited_is_cnt = 0;
-        }
-        printf("TREE SIZE: %d\n", cnt);
-        recomputeStrategy(newR);
-        if(sampled)
-            repairUtilities();
-        if(!rand_action_choices.empty())
-            printf("QUEUE NOT EMPTY!\n");
+            printf("Iteration %d\n", i);
+            long double probs [3] = {1.0L, 1.0L, 1.0L};
+            cnt = 0;
+            newR.clear();
+            walkTree(probs);
+            visited_is_cnt += newR.size();
+            if (!sampled || visited_is_cnt >= R.size())
+            {
+                t ++;
+                visited_is_cnt = 0;
+            }
+            printf("TREE SIZE: %d\n", cnt);
+            recomputeStrategy(newR);
+            if(sampled)
+                repairUtilities();
+            if(!rand_action_choices.empty())
+                printf("QUEUE NOT EMPTY!\n");
 
-        printf("It err: %0.5f Err: %0.5f\n", total_regret_sum - old_regret_sum, total_regret_sum / t);
-        old_regret_sum = total_regret_sum;
-        first_iteration = false;
-        sampled = true;
+            printf("It err: %0.5f Err: %0.5f\n", total_regret_sum - old_regret_sum, total_regret_sum / t);
+            old_regret_sum = total_regret_sum;
+            first_iteration = false;
+            sampled = true;
+            if (i > 0 && i % 1000000 == 0 && i < iterations)
+            {
+                recomputeStrategy(S);
+                sprintf(strategy_file, "%s-%d.stg", strategy_file_template, i);
+                saveToFile(strategy_file, total_regret_sum / t);
+                recomputeStrategy(R);
+            }
+        }
+        recomputeStrategy(S);
+        sprintf(strategy_file, "%s-%d.stg", strategy_file_template, iterations);
+        saveToFile(strategy_file, total_regret_sum / t);
     }
-    recomputeStrategy(S);
 }
 
 utility Cfr::repairUtilities()
@@ -382,7 +386,7 @@ bool Cfr::loadFromFile(const char* filename)
         return false;
     }
 }
-void Cfr::saveToFile(const char* filename)
+void Cfr::saveToFile(const char* filename, double error)
 {
     FILE *f = fopen(filename, "w");
     fprintf(f, "%d\n", (int)strategy.size());
@@ -393,5 +397,6 @@ void Cfr::saveToFile(const char* filename)
         double prob = iter -> second;
         fprintf(f, "%lld %d %lf%c", is_id, action_id, prob, FILE_DELIM);
     }
+    fprintf(f, "ERROR: %lf\n", error);
     fclose(f);
 }

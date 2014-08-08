@@ -65,12 +65,12 @@ ModCfr::ModCfr(HoldemPokerModAbstraction* gm, int iterations, const char* strate
             err_sum += it_err;
             printf("It err: %0.5f Err: %0.5f\n", it_err, err_sum / (it + 1));
 
-            if ((it + 1) % 100000 == 0 && (iterations - it) >= 100000)
+            if (it > 0 && it % 1000000 == 0 && it < iterations)
             {
                 _recomputeStrategy(tab_S);
                 sprintf(strategy_file, "%s-%d.stg", strategy_file_template, it);
                 _copyStrategy();
-                saveToFile(strategy_file);
+                saveToFile(strategy_file, err_sum / (it + 1));
                 _recomputeStrategy(tab_R);
             }
 
@@ -78,7 +78,7 @@ ModCfr::ModCfr(HoldemPokerModAbstraction* gm, int iterations, const char* strate
         sprintf(strategy_file, "%s-%d.stg", strategy_file_template, iterations);
         _recomputeStrategy(tab_S);
         _copyStrategy();
-        saveToFile(strategy_file);
+        saveToFile(strategy_file, err_sum / iterations);
     }
 }
 
@@ -476,7 +476,7 @@ bool ModCfr::loadFromFile(const char* filename)
         return false;
     }
 }
-void ModCfr::saveToFile(const char* filename)
+void ModCfr::saveToFile(const char* filename, double error)
 {
     FILE *f = fopen(filename, "w");
     fprintf(f, "%d\n", (int)strategy.size());
@@ -487,5 +487,6 @@ void ModCfr::saveToFile(const char* filename)
         double prob = iter -> second;
         fprintf(f, "%d %d %lf%c", is_id, action_id, prob, FILE_DELIM);
     }
+    fprintf(f, "ERROR: %lf\n", error);
     fclose(f);
 }
