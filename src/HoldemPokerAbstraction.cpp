@@ -13,7 +13,7 @@ const int HoldemPokerAbstraction::PHASE_FIRST_BID = 4;
 const int HoldemPokerAbstraction::PHASE_MIDDLE_BID = 5;
 const int HoldemPokerAbstraction::PHASE_LAST_BID = 6;
 const int HoldemPokerAbstraction::LOG_MAX_STAKE = 8;
-const int HoldemPokerAbstraction::IS_BASE = 5;
+const int HoldemPokerAbstraction::IS_BASE = 6;
 const int HoldemPokerAbstraction::NO_WINNER = -1;
 
 
