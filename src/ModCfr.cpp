@@ -39,13 +39,14 @@ double probs[4][MAX_STATES];
 int state_cnt = 1;
 int is_cnt = 1;
 
-ModCfr::ModCfr(HoldemPokerModAbstraction* gm, int iterations, const char* strategy_file)
+ModCfr::ModCfr(HoldemPokerModAbstraction* gm, int iterations, const char* strategy_file_template)
 {
     printf("Init Mod Cfr, iterations: %d\n", iterations);
     game = gm;
     double err_sum = 0.0;
     memset(is_final, false, sizeof(is_final));
-    char temp_strategy_file [100];
+    char strategy_file [100];
+    sprintf(strategy_file, "%s-%d.stg", strategy_file_template, iterations);
     if (!loadFromFile(strategy_file))
     {
         printf("Mod Cfr: Building Tree\n");
@@ -67,14 +68,14 @@ ModCfr::ModCfr(HoldemPokerModAbstraction* gm, int iterations, const char* strate
             if ((it + 1) % 100000 == 0 && (iterations - it) >= 100000)
             {
                 _recomputeStrategy(tab_S);
-                sprintf(temp_strategy_file, "%s-%d.stg", strategy_file, it);
+                sprintf(strategy_file, "%s-%d.stg", strategy_file_template, it);
                 _copyStrategy();
-                saveToFile(temp_strategy_file);
+                saveToFile(strategy_file);
                 _recomputeStrategy(tab_R);
             }
 
         }
-        sprintf(temp_strategy_file, "%s-%d.stg", strategy_file, iterations);
+        sprintf(strategy_file, "%s-%d.stg", strategy_file_template, iterations);
         _recomputeStrategy(tab_S);
         _copyStrategy();
         saveToFile(strategy_file);
