@@ -64,15 +64,17 @@ Cfr::Cfr(GameAbstraction* gm, int iterations, const char* strategy_file_template
             sampled = true;
             if (i > 0 && i % 1000000 == 0 && i < iterations)
             {
+                double err = total_regret_sum / t;
                 recomputeStrategy(S);
                 sprintf(strategy_file, "%s-%d.stg", strategy_file_template, i);
-                saveToFile(strategy_file, total_regret_sum / t);
+                saveToFile(strategy_file, err);
                 recomputeStrategy(R);
             }
         }
+        double err = total_regret_sum / t;
         recomputeStrategy(S);
         sprintf(strategy_file, "%s-%d.stg", strategy_file_template, iterations);
-        saveToFile(strategy_file, total_regret_sum / t);
+        saveToFile(strategy_file, err);
     }
 }
 
