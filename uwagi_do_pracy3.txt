@@ -1,0 +1,67 @@
+- Nie używaj skrótów a jeśli już to z kropką poprawnie
+- przecinki
+- \emph gdy wprowadzasz nowy termin
+- czasem zapominasz \ przed max
+
+Rozdział 1.
++ przybliżyć ideę CFRa
++ za nazwą Counterfactual ... daj (CFR)
+- w skrócie rozdziału 4, trochę bardziej przybliżyć szczegóły, np kubełkowanie itp
+- w rodziale 5 "warianty abstrakcji"
+
+Rozdział 2.
+- dać numerację graczy (że od 0, że c to losowy)
+- streszczenie rozdziału przez pierwszym punktem
+- wyklarować kwestię z grafem, drzewem itp
+- terminy pokerowe jak flop river, w jakiej formie je wprowadzać.
+- kopiuj bibliografie w formacie bibtex
+    (np. \cite[chapter2]{cfr2})
+- referencja do koszyków
+- referencja do wzoru na EHS
+- przykłady rąk z różnym EHS
+
+Rozdział 3.
+
+- Użyć środowiska definition gdy pojawiają się nowe terminy
+- w terminologii pi -i od (h) lepiej opisać
+- emphy znowu
+- notacja przecinka jeśli chodzi o zespół strategii
+- sprawdzić czy numery graczy są konsekwentne
+- w pseudokodzie używać krótszych oznaczeń nazw i opisywać je w komentarzach
+
+
+
+
+
+Rozdział I - Wstęp
+    Celem jest to że recenzent przeczyta i wszystko wie
+    - historyjka że ludzie lubią grać w gry, czemu to jest ważna, zastosowania w ekonomii 
+    - ważne rozwijanie technik do liczenia równowagi Nasha
+    - Czemu CFR był przełomem
+    - mniej więcej co zrobiłem, streszczenie, z naciskiem co było zrobione samemu
+    - zacytowanie prac o kubełkach
+    2, 2.5 strony
+
+Rozdział II - Poker, wprowadzenie do Pokera
+    - pomocnicze pojęcia
+    - opis pokera
+    - historia technik
+    - abstrakcje, zmniejszanie drzewa gry, pojęcie EHS (liczenie potem)
+
+Rozdział III - CFR
+    - tu wrzucić pseudokod Vanilla Cfr
+
+Rozdział IV - Modyfikacja CFR
+    - te pomysły, które zastosowałem do zmienienia
+    - intuicja
+    - opis
+    - pseudokody
+
+Rozdział V - Wyniki eksperymentalne
+
+Rozdział VI - Podsumowanie
+    - Wstęp, bez historyjek
+    - nacisk na to co samemu się zrobiło i co by można usprawnić
+
+
+Uwaga: Exploitability przez liczenie CFRa z ustaloną strategią, którą testujemy

@@ -1,7 +1,7 @@
 \documentclass[licencjacka]{pracamgr}
 
 \usepackage{polski}
-\usepackage{algpseudocode}
+\usepackage[noend]{algpseudocode}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 %\usepackage{float}
@@ -102,8 +102,10 @@ się poza zasięgiem współczesnych maszyn. Są natomiast bardzo udane próby z
 liczonych dla abstrakcji rzeczywistych gier, które spisują się coraz lepiej w pojedynkach z ludźmi.
 Abstrakcje zawężają zbiór akcji dostępnych graczom i utożsamiają niektóre stany gry w celu zmniejszenia jej rozmiaru.
 W trakcie badań nad strategiami rozwinęły się algorytmy takie jak "Monte Carlo Tree Search" czy opisywana
-w tej pracy metoda "Counterfactual Regret Minimization". Odkrycie tej ostatniej w 2007 roku\cite{cfr} było przełomem
-w znajdowaniu aproksymacji równowagi Nasha w grach w postaci ekstensywnej. Modyfikacje metody CFR są używane
+w tej pracy metoda "Counterfactual Regret Minimization" (CFR). Odkrycie tej ostatniej w 2007 roku\cite{cfr} było przełomem
+w znajdowaniu aproksymacji równowagi Nasha w grach w postaci ekstensywnej. Metoda opiera się na poprawianiu strategii w kolejnych
+iteracjach. Prawdopodobieństwo zagrania akcji w kolejnej iteracji jest proporcjonalne do oczekiwanego zysku z tej akcji
+przy założeniu że gracze grają strategią z obecnej iteracji. Modyfikacje metody CFR są używane
 do znajdowania najlepszych istniejących strategii m.in w grze Texas Holdem Poker. \\
 
 \noindent
@@ -128,8 +130,11 @@ zamieszczony jest pseudokod algorytmu $VanillaCfr$, który jest jedną ze znanyc
 
 \noindent
 Rozdział 4 jest poświęcony modyfikacji metody CFR. Na początku przedstawiona jest idea algorytmu.
-Dalej opisana jest abstrakcja gry Texas Holdem Poker zastosowana w eksperymentach. Godny uwagi
+Dalej opisana jest wersja gry Texas Holdem Poker zastosowana w eksperymentach. Godny uwagi
 jest opisany w tej części pomysł na bardziej efektywne obliczanie metryki $EHS$ dla układów kart.
+Wartość $EHS$ wyznacza siłę układu kart. Dzięki jej obliczeniu możliwe jest utożsamianie układów
+o podobnej sile. Jest to stosowane w celu zmniejszenia rozmiaru gry, dla której liczona jest strategia.
+Zbiór utożsamionych ze sobą układów o podobnej sile nazywamy koszykiem.
 Główna część rozdziału jest poświęcona efektywnej realizacji pomysłu na zmniejszenie złożoności
 metody CFR. Opisane są modyfikacje algorytmu $VanillaCfr$, które pozwalają zmniejszyć złożoność
 jego iteracji do liniowej względem liczby różnych stanów zamiast liniowej względem rozmiaru drzewa gry.
@@ -137,7 +142,8 @@ Na końcu zamieszczony został pseudokod zmodyfikowanej wersji algorytmu. \\
 
 \noindent
 Rozdział 5 przedstawia wyniki eksperymentalne. Porównane są w nim strategie wyliczone metodą
-CFR i jej modyfikacją, przy zastosowaniu kilku wariantów abstrakcji. Podstawowym kryterium
+CFR i jej modyfikacją, przy zastosowaniu kilku wariantów gry. Warianty różnią się pod względem
+liczby koszyków, do których przydzielane są układy kart. Podstawowym kryterium
 do porównywania jest wynik rzeczywistej rozgrywki Pokera między dwoma programami. \\
 
 \noindent
@@ -456,6 +462,31 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
     \EndFunction
 \end{algorithmic}
 
+
+$\,$ \\
+Metoda $RecomputeStrategy$ przelicza aktualną i końcową strategię. Prawdopodobieństwo wykonania akcji $a$
+w zbiorze informacyjnym $I$ jest proporcjonalne do wartości $max(0, map(I, a))$ gdzie $map=R$ dla strategii
+wyliczanej po każdej iteracji a $map=S$ dla strategii końcowej.
+
+\begin{algorithmic}
+    \Function{RecomputeStrategy}{$rmap$}
+        \State $\sigma \gets 0$
+        \ForAll{$I \in InformationSets$}
+        \Comment{Dla każdego zbioru informacyjnego $I$}
+            \State $sum \gets 0$
+            \ForAll {$a \in A(I)$}
+            \Comment{Dla każdej akcji $a$ w zbiorze informacyjnym $I$}
+                \State $sum \gets sum + max(0, rmap(I, a))$
+            \EndFor
+            \ForAll {$a \in A(I)$}
+            \Comment{Dla każdej akcji $a$ w zbiorze informacyjnym $I$}
+                \State $\sigma(I, a) \gets \frac{max(0, rmap(I, a))}{sum}$
+            \EndFor
+        \EndFor
+        \State \Return $\sigma$
+    \EndFunction
+\end{algorithmic}
+
 $\,$ \\
 \noindent
 Cały algorytm wygląda następująco: \\
@@ -624,7 +655,8 @@ S(I(h), a) &\leftarrow S(I(h), a) + \sigma(I(h), a) \cdot \pi_p^{\sigma}(h)
 ($p$ to gracz wykonujący akcję a $o$ to przeciwnik) \\
 
 \noindent
-Zauważmy, że dla $h_1, h_2 \in H(s)$ zachodzi $\mu^{\sigma}(h_1) = \mu^{\sigma}(h_2) = \mu^{\sigma}(s)$.
+Zauważmy, że dla $h_1, h_2 \in H(s)$ zachodzi $\mu^{\sigma}(h_1) = \mu^{\sigma}(h_2) = \mu^{\sigma}(s)$ oraz
+$\sigma(I(h_1), a) = \sigma(I(h_2), a) = \sigma(I(s), a). $
 Jeśli przez $s(a)$ oznaczymy stan gry po wykonaniu akcji $a$ w stanie $s$, zachodzi: 
 
 \begin{align*}
@@ -645,7 +677,7 @@ Oznaczmy
 
 \begin{align*}
 \pi_i^{\sigma}(s) &= \sum\limits_{h \in H(s)} \, \pi_i^{\sigma}(h) \\
-\pi_i^{\sigma}(s) \cdot \pi_c(s) &= \sum\limits_{h \in H(s)} \, \pi_i^{\sigma}(h) \cdot \pi_c(h)
+\pi_{i,c}^{\sigma}(s) &= \sum\limits_{h \in H(s)} \, \pi_i^{\sigma}(h) \cdot \pi_c(h)
 \end{align*}
 
 \noindent
@@ -653,7 +685,7 @@ Zgodnie z powyższymi, modyfikacje map $R$ i $S$ wykonywane w algorytmie $Vanill
 równoważne z następującymi:
 
 \begin{align*}
-R(I(s), a) &\leftarrow R(I(s), a) + (\mu_p^{\sigma}(s(a)) - \mu_p^{\sigma}(s)) \cdot \pi_{o}^{\sigma}(s) \cdot \pi_c(s) \\
+R(I(s), a) &\leftarrow R(I(s), a) + (\mu_p^{\sigma}(s(a)) - \mu_p^{\sigma}(s)) \cdot \pi_{o,c}^{\sigma}(s) \\
 S(I(s), a) &\leftarrow S(I(s), a) + \sigma(I(s), a) \cdot \pi_p^{\sigma}(s)
 \end{align*}
 
@@ -663,7 +695,7 @@ wykonywanymi w każdym, nie końcowym stanie $s$, w którym decyzji nie podejmuj
 \noindent
 Każda iteracja zmodyfikowanego algorytmu podzielona jest na trzy części:
 \begin{enumerate}
-\item Przeliczenie wartości $\pi_i^{\sigma}(s)$ oraz $\pi_i^{\sigma}(s) \cdot \pi_c(s)$ w każdym stanie $s$.
+\item Przeliczenie wartości $\pi_i^{\sigma}(s)$ oraz $\pi_{i, c}^{\sigma}(s)$ w każdym stanie $s$.
 \item Przeliczenie wartości $\mu^{\sigma}(s)$ i zaktualizowanie map $R$ i $S$.
 \item Zaktualizowanie strategii na podstawie mapy $R$.
 \end{enumerate}
@@ -694,19 +726,99 @@ Wtedy zachodzi:
 
 \begin{align*}
 \pi_i^{\sigma}(s) &= \sum\limits_{E_{(s', s)}} \pi_i^{\sigma}(s') \cdot prob_i(E_{(s', s)}) \\
-\pi_i^{\sigma}(s) \cdot \pi_c(s) &= \sum\limits_{E_{(s', s)}} \pi_i^{\sigma}(s') \cdot \pi_c(s') \cdot prob_i(E_{(s', s)}) \cdot prob_c(E_{(s', s)})
+\pi_{i, c}^{\sigma}(s) &= \sum\limits_{E_{(s', s)}} \pi_{i, c}^{\sigma}(s') \cdot prob_i(E_{(s', s)}) \cdot prob_c(E_{(s', s)})
 \end{align*}
 
 \noindent
-Czyli żeby obliczyć wartości $\pi_i^{\sigma}(s)$ oraz $\pi_i^{\sigma}(s) \cdot \pi_c(s)$ w stanie $s$, wystarczy
-mieć je policzone dla każdego stanu $s'$ z którego prowadzi krawędź do $s$. Graf stanów to tzw "DAG", czyli
+Czyli żeby obliczyć wartości $\pi_i^{\sigma}(s)$ oraz $\pi_{i, c}^{\sigma}(s)$ w stanie $s$, wystarczy
+mieć je policzone dla każdego stanu $s'$ z którego prowadzi krawędź do $s$. W stanie początkowym $s_0$ zachodzi
+$\pi_i^{\sigma}(s_0) = 1$ oraz $\pi_{i, c}^{\sigma}(s_0) = 1$. Graf stanów to tzw "DAG", czyli
 skierowany graf acykliczny. W takim grafie wierzchołki można ułożyć w ciąg w porządku topologicznym, tzn
 jeżeli z wierzchołka $v$ prowadzi krawędź do wierzchołka $w$ to $v$ znajduje się w ciągu przed wierzchołkiem $w$.
-Metoda $computeProbs$ przegląda stany w porządku topologicznym i oblicza powyższe wartości. \\
+
+\section{Pseudokod zmodyfikowanego algorytmu}
 
 \noindent
-Metoda licząca wartości $\mu^{\sigma}(s)$ i zaktualizowanie map $R$ i $S$ jest analogiczna do metody
-$WalkTree$ ze standardowej wersji algorytmu przy czym każdy stan jest odwiedzany tylko raz.
+Metoda $ComputeProbs$ przegląda stany w porządku topologicznym i oblicza wartości $\pi_i^{\sigma}(s)$ oraz $\pi_{i, c}^{\sigma}(s)$
+dla każdego stanu $s$ i gracza $i \in \left\{0, 1\right\}$. \\ 
+
+\begin{algorithmic}
+    \Function{ComputeProbs}{}
+        \State $\pi_i^{\sigma}(s) \gets 0$ $ \; \pi_{i,c}^{\sigma}(s) \gets 0$
+        \Comment{$\forall_{i \in \left\{0, 1\right\} ,\, s \, \in \, States}$}
+        \State $\pi_i^{\sigma}(s_0) \gets 1$ $ \; \pi_{i,c}^{\sigma}(s_0) \gets 1$
+        \Comment{$\forall_{i \in \left\{0, 1\right\}}$}
+        \ForAll {$s \, \in \, States$}
+        \Comment{stany przeglądane w porządku topologicznym}
+            \ForAll{$s' \, \in \, Neighbours(s)$}
+            \Comment{Przegląda stany sąsiadujące z $s$}
+                \State $\pi_i^{\sigma}(s') \gets \pi_i^{\sigma}(s') \, + \, \pi_i^{\sigma}(s) \cdot prob_i(E_{(s, s')})$ 
+                \Comment{$\forall_{i \in \left\{0, 1\right\}}$}
+                \State $\pi_{i,c}^{\sigma}(s') \gets \pi_{i,c}^{\sigma}(s') \, + \, \pi_{i,c}^{\sigma}(s) \cdot prob_i(E_{(s, s')}) \cdot prob_c(E_{(s, s')})$ 
+                \Comment{$\forall_{i \in \left\{0, 1\right\}}$}
+            \EndFor
+        \EndFor
+    \EndFunction
+\end{algorithmic}
+
+$\,$ \\
+
+\noindent
+Metoda $WalkTree$ przegląda rekurencyjnie graf stanów, obliczając oczekiwane wartości zysku graczy oraz
+aktualizując mapy $R$ oraz $S$. Każdy stan jest odwiedzany tylko raz. \\
+
+\begin{algorithmic}
+    \Function{WalkTree}{$s$}
+    \Comment{$s$ to aktualnie odwiedzany stan}
+        \If{final-state($s$)}
+        \Comment{Jeśli $s$ to stan końcowy}
+            \State \Return $\mu(s)$
+        \EndIf
+        \If{visited($s$)}
+        \Comment{Jeśli $s$ został już odwiedzony w tej iteracji}
+            \State \Return $\mu^{\sigma}(s)$
+        \EndIf
+        \State $\mu \gets 0$ 
+        \State $p \gets P(s)$
+        \State $I \gets I(s)$
+        \ForAll{$s' \, \in \, Neighbours(s)$}
+        \Comment{Przegląda stany sąsiadujące z $s$}
+            \State $a \gets action(E_{(s, s')})$
+            \Comment $action(E_{(s, s')})$ to akcja prowadząca ze stanu $s$ do $s'$
+            \State $\mu^{s'} \gets \Call{WalkTree}{s'}$
+            \State $\mu \gets \mu + \mu^{s'} \cdot prob_p(E_{(s, s')})$
+            \If{$p \neq c$}
+                \State $R(I, a) \gets R(I, a) + \mu^{s'}_p \cdot \pi_{p,c}^{\sigma}(s)$
+                \State $S(I, a) \gets S(I, a) + \sigma(I, a) \cdot \pi_p^{\sigma}(s)$
+            \EndIf
+        \EndFor
+        \If{$p \neq c$}
+            \State $R(I, a) \gets R(I, a) - \mu_p \cdot \pi_{p,c}^{\sigma}(s)$
+        \EndIf
+        \State $\mu^{\sigma}(s) \gets \mu$
+        \State \Return $\mu$
+    \EndFunction
+\end{algorithmic}
+
+$\,$ \\
+
+\noindent
+Cały algorytm wygląda następująco: \\
+
+\begin{algorithmic}
+    \Function{ModCfr}{$game$, $iterationsNumber$}
+        \State $initialState \gets \Call{BuildTree}{game}$
+        \State $R \gets 0$
+        \State $S \gets 0$
+        \State $\sigma \gets \Call{DefaultStrategy}{}$
+        \For {$iterationsNumber$} 
+            \State $\Call{ComputeProbs}{}()$
+            \State $\Call{WalkTree}{initialState}$
+            \State $\sigma \gets \Call{RecomputeStrategy}{R}$
+        \EndFor
+        \State \Return $\Call{RecomputeStrategy}{S}$
+    \EndFunction
+\end{algorithmic}
 
 
 \chapter{Wyniki eksperymentalne}
@@ -723,5 +835,8 @@ ACML 2009. LNCS (LNAI), vol. 5828
 \bibitem[3]{cfr} M.Zinkevich, M.Johanson, M.Bowling, C.Piccione $\;\;\;$ "Regret Minimization in Games with Incomplete
 Information" $\;\;\;$ NIPS 2007
 \end{thebibliography}
+
+% \bibliographystyle{plain} 
+% \bibliography{<nazwa_pliku_bib>} 
 
 \end{document}
