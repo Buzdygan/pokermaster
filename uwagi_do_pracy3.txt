@@ -1,7 +1,7 @@
 - Nie używaj skrótów a jeśli już to z kropką poprawnie
 - przecinki
 - \emph gdy wprowadzasz nowy termin
-- czasem zapominasz \ przed max
++ czasem zapominasz \ przed max
 
 Rozdział 1.
 + przybliżyć ideę CFRa
@@ -23,17 +23,16 @@ Rozdział 3.
 
 + dać numerację graczy (że od 0, że c to losowy)
 + Użyć środowiska definition gdy pojawiają się nowe terminy
-- w terminologii pi -i od (h) lepiej opisać
-- emphy znowu
++ w terminologii pi -i od (h) lepiej opisać
 + notacja przecinka jeśli chodzi o zespół strategii
-- sprawdzić czy numery graczy są konsekwentne
-- w pseudokodzie używać krótszych oznaczeń nazw i opisywać je w komentarzach
++ sprawdzić czy numery graczy są konsekwentne
++ w pseudokodzie używać krótszych oznaczeń nazw i opisywać je w komentarzach
 - opisać lepiej algorytm vanilla cfr
 
 Rozdział 4.
-- wyjaśnić elementy w stanie gry
-- wymyślić nową nazwę dla algorytmu (np DAG CFR)
-- aktualizowanie i ustawianie visited w pseudokodzie
++ wyjaśnić elementy w stanie gry
++ wymyślić nową nazwę dla algorytmu (np DAG CFR)
++ aktualizowanie i ustawianie visited w pseudokodzie
 -
 
 

@@ -109,7 +109,7 @@ przy założeniu że gracze grają strategią z obecnej iteracji. Modyfikacje me
 do znajdowania najlepszych istniejących strategii m.in w grze Texas Holdem Poker. \\
 
 \noindent
-Celem tej pracy jest zbadanie modyfikacji algorytmu CFR, która pozwala na wyliczanie strategii w bardziej wiernej
+Celem tej pracy jest zbadanie algorytmu DAG CFR - modyfikacji algorytmu CFR, która pozwala na wyliczanie strategii w bardziej wiernej
 abstrakcji gry Texas Holdem Poker. Odbywa się to kosztem założenia o pełnej pamięci gry (tzw "perfect recall").
 Zignorowanie historii dotychczasowej rozgrywki przy obliczaniu strategii pozwala na znaczące zmniejszenie liczby
 stanów gry przeglądanych w każdej iteracji algorytmu. Pozwala to zmniejszyć liczbę ograniczeń nakładanych
@@ -129,7 +129,7 @@ związane z grami ekstensywnymi oraz twierdzenia dowodzące skuteczności metody
 zamieszczony jest pseudokod algorytmu $VanillaCfr$, który jest jedną ze znanych realizacji tej metody. \\
 
 \noindent
-Rozdział 4 jest poświęcony modyfikacji metody CFR. Na początku przedstawiona jest idea algorytmu.
+Rozdział 4 jest poświęcony algorytmowi DAG CFR. Na początku przedstawiona jest idea algorytmu.
 Dalej opisana jest wersja gry Texas Holdem Poker zastosowana w eksperymentach. Godny uwagi
 jest opisany w tej części pomysł na bardziej efektywne obliczanie metryki $EHS$ dla układów kart.
 Wartość $EHS$ wyznacza siłę układu kart. Dzięki jej obliczeniu możliwe jest utożsamianie układów
@@ -138,11 +138,11 @@ Zbiór utożsamionych ze sobą układów o podobnej sile nazywamy koszykiem.
 Główna część rozdziału jest poświęcona efektywnej realizacji pomysłu na zmniejszenie złożoności
 metody CFR. Opisane są modyfikacje algorytmu $VanillaCfr$, które pozwalają zmniejszyć złożoność
 jego iteracji do liniowej względem liczby różnych stanów zamiast liniowej względem rozmiaru drzewa gry.
-Na końcu zamieszczony został pseudokod zmodyfikowanej wersji algorytmu. \\
+Na końcu zamieszczony został pseudokod algorytmu DAG CFR. \\
 
 \noindent
 Rozdział 5 przedstawia wyniki eksperymentalne. Porównane są w nim strategie wyliczone metodą
-CFR i jej modyfikacją, przy zastosowaniu kilku wariantów gry. Warianty różnią się pod względem
+CFR oraz DAG CFR, przy zastosowaniu kilku wariantów gry. Warianty różnią się pod względem
 liczby koszyków, do których przydzielane są układy kart. Podstawowym kryterium
 do porównywania jest wynik rzeczywistej rozgrywki Pokera między dwoma programami. \\
 
@@ -436,7 +436,7 @@ R_{i, imm}^T(I) = \max_{a \in A(I)} \, R_i^T(I, a)
 \end{align*}
 
 \noindent
-Dzięki twierdzeniu z (referencja) wiemy, że $R_i^T \leq \, \sum_{I} \, max(R_{i, imm}^T(I), 0)$. W takim razie
+Dzięki twierdzeniu z (referencja) wiemy, że $R_i^T \leq \, \sum_{I} \, \max(R_{i, imm}^T(I), 0)$. W takim razie
 minimalizowanie regretów w zbiorach informacyjnych minimalizuje regret całkowity i prowadzi do znalezienia
 dobrej aproksymacji równowagi Nasha. \\
 
@@ -445,7 +445,7 @@ Algorytm CFR w kolejnych iteracjach przechodzi drzewo gry i dla każdego zbioru 
 zgodnie z regułą:
 
 \begin{align*}
-\sigma_i^{T+1} (I, a) = \frac{max(R_i^T(I, a), 0)}{\sum\limits_{a' \in A(I)} \, max(R_i^T(I, a'), 0)}
+\sigma_i^{T+1} (I, a) = \frac{\max(R_i^T(I, a), 0)}{\sum\limits_{a' \in A(I)} \, \max(R_i^T(I, a'), 0)}
 \end{align*}
 
 \noindent
@@ -475,62 +475,69 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
 %\Call \Comment \If \ElsIf  \Else \EndIf
 
 \begin{algorithmic}
-    \Function{WalkTree}{$game$, $[\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c ]$}
-        \If {$game \rightarrow finalState()$}
-            \State \Return $game \rightarrow getUtility()$
+    \Function{WalkTree}{$h$, $[\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c ]$}
+    \Comment{$h$ to aktualna historia rozgrywki}
+        \If {$h \in Z$}
+        \Comment{Jeśli $h$ jest końcowa}
+            \State \Return $\mu(h)$
+            \Comment{Zwraca wektor zysków graczy ($\mu_0$, $\mu_1$)}
         \EndIf
-        \State $\mu \gets 0$ 
-        \If {$game \rightarrow randomPlayer()$}
-            \For {$(randomAction, randomProb) \, \in \, game \rightarrow distribution()$}
-                \State $modGame \gets game \rightarrow makeAction(randomAction)$
-                \State $modProb \gets [\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c \cdot randomProb ]$
-                \State $\mu(randomAction) \gets \Call{WalkTree}{modGame, modProb}$
-                \State $\mu \gets finalUtility + \mu(randomAction) \cdot randomProb$
+        \State $\vec{\mu}(h) \gets (0, 0)$ 
+        \State $p \gets P(h)$
+        \Comment{$P(h)$ to gracz wykonujący akcję}
+        \If {$p = c$}
+        \Comment{akcja gracza losowego}
+            \For {$a \, \in \, A(h)$}
+                \State $\vec{\pi}' \gets [\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c \cdot f_c(h, a)]$
+                \State $\vec{\mu}^a \gets \Call{WalkTree}{h \circ a, \, \vec{\pi}'}$
+                \Comment{obliczamy zysk po wykonaniu akcji $a$}
+                \State $\vec{\mu}(h) \gets \vec{\mu}(h) + f_c(h, a) \cdot \vec{\mu}^a$
+                \Comment{aktualizujemy zysk końcowy}
             \EndFor
         \Else
-            \State $p \gets game \rightarrow currentPlayer()$
-            \State $o \gets game \rightarrow currentOpponent()$
-            \State $I \gets game \rightarrow informationSet()$
-            \For {$action \, \in \, game \rightarrow playerActions()$}
-                \State $actionProb \gets \sigma(I, action)$
-                \State $modGame \gets game \rightarrow makeAction(action)$
+            \State $o \gets O(h)$
+            \Comment{$O(h)$ to przeciwnik gracza wykonującego akcję}
+            \State $I \gets I(h)$
+            \Comment{$I(h)$ to zbiór informacyjny odpowiadający historii $h$}
+            \For {$a \, \in \, A(h)$}
                 \If {$p = 0$}
-                    \State $modProb \gets [\pi_0^{\sigma} \cdot actionProb, \pi_1^{\sigma}, \pi_c]$
+                    \State $\vec{\pi}' \gets [\pi_0^{\sigma} \cdot \sigma_0(I, a), \pi_1^{\sigma}, \pi_c]$
                 \Else
-                    \State $modProb \gets [\pi_0^{\sigma}, \pi_1^{\sigma} \cdot actionProb, \pi_c]$
+                    \State $\vec{\pi}' \gets [\pi_0^{\sigma}, \pi_1^{\sigma} \cdot \sigma_1(I, a), \pi_c]$
                 \EndIf
-                \State $\mu(action) \gets \Call{WalkTree}{modGame, modProb}$
-                \State $\mu \gets \mu + \mu(action) \cdot randomProb$
-                \State $R(I, action) \gets R(I, action) + \mu_{p}(action) \cdot \pi_{o}^{\sigma} \cdot \pi_c $
-                \State $S(I, action) \gets S(I, action) + \pi_{p}^{\sigma} \cdot actionProb $
+                \State $\vec{\mu}^a \gets \Call{WalkTree}{h \circ a, \, \vec{\pi}'}$
+                \Comment{obliczamy zysk po wykonaniu akcji $a$}
+                \State $\vec{\mu}(h) \gets \vec{\mu}(h) + \sigma_p(I, a) \cdot \vec{\mu}^a$
+                \Comment{aktualizujemy zysk końcowy}
+                \State $R(I, a) \gets R(I, a) + \vec{\mu}_p^a \cdot \pi_{o}^{\sigma} \cdot \pi_c $
+                \Comment{aktualizujemy regret akcji $a$}
+                \State $S(I, a) \gets S(I, a) + \sigma_p(I, a) \cdot \pi_{p}^{\sigma}$
+                \Comment{aktualizujemy uśrednioną strategię}
             \EndFor
-            \For {$action \, \in \, game \rightarrow playerActions()$}
-                \State $R(I, action) \gets R(I, action) - \mu_{p} \cdot \pi_{o}^{\sigma} \cdot \pi_c $
+            \For {$a \, \in \, A(h)$}
+                \State $R(I, a) \gets R(I, a) - \vec{\mu}_p(h) \cdot \pi_{o}^{\sigma} \cdot \pi_c $
+                \Comment{aktualizujemy regret akcji $a$}
             \EndFor
         \EndIf
-    \State \Return $\mu$
+    \State \Return $\vec{\mu}(h)$
+    \Comment{Zwracamy zysk końcowy dla historii $h$}
     \EndFunction
 \end{algorithmic}
 
 
 $\,$ \\
 Metoda $RecomputeStrategy$ przelicza aktualną i końcową strategię. Prawdopodobieństwo wykonania akcji $a$
-w zbiorze informacyjnym $I$ jest proporcjonalne do wartości $max(0, map(I, a))$ gdzie $map=R$ dla strategii
+w zbiorze informacyjnym $I$ jest proporcjonalne do wartości $\max(0, map(I, a))$ gdzie $map=R$ dla strategii
 wyliczanej po każdej iteracji a $map=S$ dla strategii końcowej.
 
 \begin{algorithmic}
     \Function{RecomputeStrategy}{$rmap$}
-        \State $\sigma \gets 0$
         \ForAll{$I \in InformationSets$}
         \Comment{Dla każdego zbioru informacyjnego $I$}
-            \State $sum \gets 0$
+            \State $sum \gets \sum\limits_{a \in A(I)} \max(0, \, rmap(I, a))$
             \ForAll {$a \in A(I)$}
             \Comment{Dla każdej akcji $a$ w zbiorze informacyjnym $I$}
-                \State $sum \gets sum + max(0, rmap(I, a))$
-            \EndFor
-            \ForAll {$a \in A(I)$}
-            \Comment{Dla każdej akcji $a$ w zbiorze informacyjnym $I$}
-                \State $\sigma(I, a) \gets \frac{max(0, rmap(I, a))}{sum}$
+                \State $\sigma(I, a) \gets \frac{\max(0, \, rmap(I, a))}{sum}$
             \EndFor
         \EndFor
         \State \Return $\sigma$
@@ -561,12 +568,12 @@ $RecomputeStrategy(R)$ aktualizuje aktualną strategię tak że prawdopodobieńs
 $I$ jest proporcjonalne do wartości $R(I, a)$ o ile ta wartość jest nieujemna. Jeśli jest ujemna, prawdopodobieństwo
 wynosi $0$. Analogicznie wygląda obliczenie końcowej strategii przy czym patrzymy na wartości $S(I, a)$.
 
-\chapter{Modyfikacja CFR}
+\chapter{Algorytm DAG CFR}
 
 \section{Idea}
 
 Drzewo gry pokera jest duże. Nawet przy zastosowaniu bardzo okrojonych abstrakcji, liczba historii przeglądanych w każdej
-iteracji algorytmu przekracza milion. Idea modyfikacji algorytmu CFR opiera się na porzuceniu założenia o pełnej pamięci rozgrywki.
+iteracji algorytmu przekracza milion. Idea algorytmu DAG CFR opiera się na porzuceniu założenia o pełnej pamięci rozgrywki.
 W oryginalnej wersji, każdy stan i zbiór informacyjny zawiera całą historię wykonanych w partii zagrań. Algorytm testowany
 w tej pracy redukuje liczbę stanów gry przez ignorowanie historii akcji wykonywanych
 przez graczy. Stan gry jest opisany przez następujące parametry: \\
@@ -574,10 +581,10 @@ przez graczy. Stan gry jest opisany przez następujące parametry: \\
 \begin{itemize}
 \item Aktualny gracz (łącznie z graczem losowym)
 \item Aktualna runda (runda licytacji bądź rozdawania kart, jeśli aktualny gracz to gracz losowy)
-\item Obecne koszyki obu graczy
-\item Liczba odzywek w aktualnej licytacji
-\item Proponowana stawka
-\item Uzgodniona stawka
+\item Obecne koszyki obu graczy (czyli wyznaczniki siły kart graczy)
+\item Liczba odzywek w aktualnej licytacji (informacja potrzebna, by każda akcja powodowała zmianę stanu)
+\item Proponowana stawka (najwyższa do tej pory oferta)
+\item Uzgodniona stawka (wysokość stawki, na którą zgodzili się obaj gracze)
 \end{itemize}
 
 \noindent
@@ -589,7 +596,7 @@ Kluczowe dla zmniejszenia złożoności algorytmu było przeformułowanie algory
 stan odwiedzany był tylko raz w jednej iteracji. Dzięki temu złożoność pojedynczej iteracji jest
 liniowa względem liczby stanów. Na początku algorytmu tworzony jest graf przejść między
 stanami co pozwala uniezależnić iteracje algorytmu od mechaniki gry. Przyspiesza to znacząco
-czas obliczeń w pojedynczym stanie.
+czas obliczeń w pojedynczym stanie. Zauważmy, że w takim grafie nie ma cykli, jest więc DAGiem.
 
 \section{Tworzenie abstrakcji}
 
@@ -664,7 +671,7 @@ $(K\clubsuit, W\heartsuit, 9\clubsuit, 9\diamondsuit, 7\spadesuit)$ \\
 \noindent
 Powyższa metoda pozwala nawet stukrotnie zmniejszyć liczbę układów, dla których liczona jest wartość $EHS$.
 
-\section{Modyfikacja algorytmu}
+\section{Modyfikacja algorytmu CFR}
 
 \noindent
 Algorytm jest podzielony na dwie części. W pierwszej budowany jest graf stanów gry. W drugiej części
@@ -782,11 +789,11 @@ Wtedy zachodzi:
 \noindent
 Czyli żeby obliczyć wartości $\pi_i^{\sigma}(s)$ oraz $\pi_{i, c}^{\sigma}(s)$ w stanie $s$, wystarczy
 mieć je policzone dla każdego stanu $s'$ z którego prowadzi krawędź do $s$. W stanie początkowym $s_0$ zachodzi
-$\pi_i^{\sigma}(s_0) = 1$ oraz $\pi_{i, c}^{\sigma}(s_0) = 1$. Graf stanów to tzw "DAG", czyli
+$\pi_i^{\sigma}(s_0) = 1$ oraz $\pi_{i, c}^{\sigma}(s_0) = 1$. Graf stanów to DAG, czyli
 skierowany graf acykliczny. W takim grafie wierzchołki można ułożyć w ciąg w porządku topologicznym, tzn
 jeżeli z wierzchołka $v$ prowadzi krawędź do wierzchołka $w$ to $v$ znajduje się w ciągu przed wierzchołkiem $w$.
 
-\section{Pseudokod zmodyfikowanego algorytmu}
+\section{Pseudokod algorytmu DAG CFR}
 
 \noindent
 Metoda $ComputeProbs$ przegląda stany w porządku topologicznym i oblicza wartości $\pi_i^{\sigma}(s)$ oraz $\pi_{i, c}^{\sigma}(s)$
@@ -801,7 +808,7 @@ dla każdego stanu $s$ i gracza $i \in \left\{0, 1\right\}$. \\
         \ForAll {$s \, \in \, States$}
         \Comment{stany przeglądane w porządku topologicznym}
             \ForAll{$s' \, \in \, Neighbours(s)$}
-            \Comment{Przegląda stany sąsiadujące z $s$}
+            \Comment{Przegląda następników stanu $s$}
                 \State $\pi_i^{\sigma}(s') \gets \pi_i^{\sigma}(s') \, + \, \pi_i^{\sigma}(s) \cdot prob_i(E_{(s, s')})$ 
                 \Comment{$\forall_{i \in \left\{0, 1\right\}}$}
                 \State $\pi_{i,c}^{\sigma}(s') \gets \pi_{i,c}^{\sigma}(s') \, + \, \pi_{i,c}^{\sigma}(s) \cdot prob_i(E_{(s, s')}) \cdot prob_c(E_{(s, s')})$ 
@@ -820,7 +827,7 @@ aktualizując mapy $R$ oraz $S$. Każdy stan jest odwiedzany tylko raz. \\
 \begin{algorithmic}
     \Function{WalkTree}{$s$}
     \Comment{$s$ to aktualnie odwiedzany stan}
-        \If{final-state($s$)}
+        \If{final($s$)}
         \Comment{Jeśli $s$ to stan końcowy}
             \State \Return $\mu(s)$
         \EndIf
@@ -828,25 +835,28 @@ aktualizując mapy $R$ oraz $S$. Każdy stan jest odwiedzany tylko raz. \\
         \Comment{Jeśli $s$ został już odwiedzony w tej iteracji}
             \State \Return $\mu^{\sigma}(s)$
         \EndIf
-        \State $\mu \gets 0$ 
+        \State visited($s$) $\gets True$
+        \Comment{Ustawiamy stan $s$ jako odwiedzony}
+        \State $\vec{\mu}(s) \gets (0, 0)$ 
         \State $p \gets P(s)$
         \State $I \gets I(s)$
         \ForAll{$s' \, \in \, Neighbours(s)$}
         \Comment{Przegląda stany sąsiadujące z $s$}
             \State $a \gets action(E_{(s, s')})$
             \Comment $action(E_{(s, s')})$ to akcja prowadząca ze stanu $s$ do $s'$
-            \State $\mu^{s'} \gets \Call{WalkTree}{s'}$
-            \State $\mu \gets \mu + \mu^{s'} \cdot prob_p(E_{(s, s')})$
+            \State $\vec{\mu}^a \gets \Call{WalkTree}{s'}$
+            \Comment{Obliczamy oczekiwane zyski graczy w stanie $s'$}
+            \State $\vec{\mu}(s) \gets \vec{\mu}(s) + \vec{\mu}^a \cdot prob_p(E_{(s, s')})$
             \If{$p \neq c$}
-                \State $R(I, a) \gets R(I, a) + \mu^{s'}_p \cdot \pi_{p,c}^{\sigma}(s)$
+                \State $R(I, a) \gets R(I, a) + \vec{\mu}^a_p \cdot \pi_{p,c}^{\sigma}(s)$
                 \State $S(I, a) \gets S(I, a) + \sigma(I, a) \cdot \pi_p^{\sigma}(s)$
             \EndIf
         \EndFor
         \If{$p \neq c$}
-            \State $R(I, a) \gets R(I, a) - \mu_p \cdot \pi_{p,c}^{\sigma}(s)$
+            \State $R(I, a) \gets R(I, a) - \vec{\mu}_p(s) \cdot \pi_{p,c}^{\sigma}(s)$
         \EndIf
-        \State $\mu^{\sigma}(s) \gets \mu$
-        \State \Return $\mu$
+        \State $\vec{\mu}^{\sigma}(s) \gets \vec{\mu}(s)$
+        \State \Return $\vec{\mu}(s)$
     \EndFunction
 \end{algorithmic}
 
@@ -856,14 +866,18 @@ $\,$ \\
 Cały algorytm wygląda następująco: \\
 
 \begin{algorithmic}
-    \Function{ModCfr}{$game$, $iterationsNumber$}
-        \State $initialState \gets \Call{BuildTree}{game}$
+    \Function{DagCfr}{$game$, $iterationsNumber$}
+        \State $s_0\gets \Call{BuildTree}{game}$
+        \Comment{Tworzony jest graf gry i zwracany stan początkowy $s_0$}
         \State $R \gets 0$
         \State $S \gets 0$
         \State $\sigma \gets \Call{DefaultStrategy}{}$
         \For {$iterationsNumber$} 
             \State $\Call{ComputeProbs}{}()$
-            \State $\Call{WalkTree}{initialState}$
+            \ForAll{$s \, \in \, States$}
+                \State visited($s$) $\gets False$
+            \EndFor
+            \State $\Call{WalkTree}{s_0}$
             \State $\sigma \gets \Call{RecomputeStrategy}{R}$
         \EndFor
         \State \Return $\Call{RecomputeStrategy}{S}$
