@@ -80,7 +80,7 @@ D.0. General\\}
 
 \noindent
 Ludzie grają w gry już od kilku tysięcy lat. Od zawsze były formą rozrywki oraz integracji.
-Zarówno gry sportowe jak i umysłowe stwarzają okazje do rywalizacji, która ma charakter pozytywny ponieważ
+Zarówno gry sportowe jak i umysłowe stwarzają okazje do rywalizacji, która ma charakter pozytywny, ponieważ
 stymuluje do rozwoju nie tylko jednostki ale i całe społeczności. Rozwój gier komputerowych był równoległy
 z rozwojem sprzętu komputerowego. Gry znalazły zastosowanie również w naukach
 ekonomicznych. Rozwój teorii gier pomógł zrozumieć procesy rządzące rywalizacją w szeroko rozumianym
@@ -88,42 +88,42 @@ znaczeniu. Zdefiniowanie pojęcia równowagi przez amerykańskiego matematyka Jo
 osiągnięciem w dziedzinie badań nad strategiami, nie tylko w grach ale i w ekonomii. \\
 
 \noindent
-Wraz z rozwojem technologii komputerowych uzyskano dostęp do narzędzi pozwalających na zastosowanie
+Wraz z rozwojem technologii komputerowych, uzyskano dostęp do narzędzi pozwalających na zastosowanie
 teorii do obliczania optymalnych strategii w grach. Powszechnie znana jest rywalizacja
-arcymistrzów szachowych z komputerowymi programami. W 1997 roku maszyna "Deep Blue" opracowana przez IBM
+arcymistrzów szachowych z komputerowymi programami. W 1997 roku maszyna "Deep Blue", opracowana przez IBM
 specjalnie do celów rywalizacji szachowej, pokonała arcymistrza Garry'ego Kasparova. W przypadku gier
-o niewielkim zbiorze stanów, komputery są zdolne obliczyć strategię optymalną, czyli taką która
-gwarantuje najlepszy możliwy dla gracza wynik. Przykładem takiej gry są warcaby, w 2007
-roku magazyn $Science$ opublikował artykuł dowodzący że programu warcabowego "Chinook" nie da się pokonać. \\
+o niewielkim zbiorze stanów, komputery są zdolne obliczyć strategię optymalną, czyli taką, która
+gwarantuje najlepszy możliwy dla gracza wynik. Przykładem takiej gry są warcaby. W 2007
+roku magazyn $Science$ opublikował artykuł dowodzący, że programu warcabowego "Chinook" nie da się pokonać. \\
 
 \noindent
 Wciąż pozostało jednak wiele gier o rozmiarze tak dużym, że znalezienie dla nich optymalnej strategii wydaje
 się poza zasięgiem współczesnych maszyn. Są natomiast bardzo udane próby znajdowania strategii aproksymacyjnych,
 liczonych dla abstrakcji rzeczywistych gier, które spisują się coraz lepiej w pojedynkach z ludźmi.
 Abstrakcje zawężają zbiór akcji dostępnych graczom i utożsamiają niektóre stany gry w celu zmniejszenia jej rozmiaru.
-W trakcie badań nad strategiami rozwinęły się algorytmy takie jak "Monte Carlo Tree Search" czy opisywana
+W trakcie badań nad strategiami rozwinęły się algorytmy takie jak "Monte Carlo Tree Search", czy opisywana
 w tej pracy metoda "Counterfactual Regret Minimization" (CFR). Odkrycie tej ostatniej w 2007 roku\cite{cfr} było przełomem
 w znajdowaniu aproksymacji równowagi Nasha w grach w postaci ekstensywnej. Metoda opiera się na poprawianiu strategii w kolejnych
 iteracjach. Prawdopodobieństwo zagrania akcji w kolejnej iteracji jest proporcjonalne do oczekiwanego zysku z tej akcji
-przy założeniu że gracze grają strategią z obecnej iteracji. Modyfikacje metody CFR są używane
-do znajdowania najlepszych istniejących strategii m.in w grze Texas Holdem Poker. \\
+przy założeniu, że gracze grają strategią z obecnej iteracji. Modyfikacje metody CFR są używane
+do znajdowania najlepszych istniejących strategii między innymi w grze Texas Holdem Poker. \\
 
 \noindent
 Celem tej pracy jest zbadanie algorytmu DAG CFR - modyfikacji algorytmu CFR, która pozwala na wyliczanie strategii w bardziej wiernej
-abstrakcji gry Texas Holdem Poker. Odbywa się to kosztem założenia o pełnej pamięci gry (tzw "perfect recall").
-Zignorowanie historii dotychczasowej rozgrywki przy obliczaniu strategii pozwala na znaczące zmniejszenie liczby
+abstrakcji gry Texas Holdem Poker. Odbywa się to kosztem założenia o pełnej pamięci gry (\emph{perfect recall}).
+Zignorowanie historii dotychczasowej rozgrywki przy obliczaniu strategii, pozwala na znaczące zmniejszenie liczby
 stanów gry przeglądanych w każdej iteracji algorytmu. Pozwala to zmniejszyć liczbę ograniczeń nakładanych
-na oryginalną wersję Texas Holdem Poker. Praca bada czy tak zmodyfikowany algorytm pozwala na znalezienie
+na oryginalną wersję Texas Holdem Poker. Praca bada, czy tak zmodyfikowany algorytm pozwala na znalezienie
 lepszych strategii niż oryginalna wersja CFR. \\
 
 \noindent
-Rozdział 2 opisuje podstawowe pojęcia i zagadnienia sztucznej inteligencji w grach takie jak
+Rozdział 2 opisuje podstawowe pojęcia i zagadnienia sztucznej inteligencji w grach, takie jak
 stan gry, zbiór informacyjny, drzewo gry, strategia. W dalszej części opisane są zasady gry
-Texas Holdem Poker, którą wykorzystano do porównania skuteczności metody CFR i jej modyfikacji.
+Texas Holdem Poker, którą wykorzystano do porównania skuteczności metody CFR i jej modyfikacji - DAG CFR.
 Zostanie też przybliżona historia rozwoju programów grających w gry oraz metody budowania abstrakcji gier. \\
 
 \noindent
-Rozdział 3 przedstawia algorytm CFR w wersji pierwszy raz przedstawionej w 2007 roku w pracy
+Rozdział 3 opisuje algorytm CFR, w wersji pierwszy raz przedstawionej w 2007 roku w pracy
 "Regret Minimization in Games with Incomplete Information" \cite{cfr}. Zostały w nim przytoczone pojęcia
 związane z grami ekstensywnymi oraz twierdzenia dowodzące skuteczności metody CFR. Na końcu rozdziału
 zamieszczony jest pseudokod algorytmu $VanillaCfr$, który jest jedną ze znanych realizacji tej metody. \\
@@ -132,12 +132,12 @@ zamieszczony jest pseudokod algorytmu $VanillaCfr$, który jest jedną ze znanyc
 Rozdział 4 jest poświęcony algorytmowi DAG CFR. Na początku przedstawiona jest idea algorytmu.
 Dalej opisana jest wersja gry Texas Holdem Poker zastosowana w eksperymentach. Godny uwagi
 jest opisany w tej części pomysł na bardziej efektywne obliczanie metryki $EHS$ dla układów kart.
-Wartość $EHS$ wyznacza siłę układu kart. Dzięki jej obliczeniu możliwe jest utożsamianie układów
+Wartość $EHS$ wyznacza siłę układu kart. Dzięki jej obliczeniu, możliwe jest utożsamianie układów
 o podobnej sile. Jest to stosowane w celu zmniejszenia rozmiaru gry, dla której liczona jest strategia.
 Zbiór utożsamionych ze sobą układów o podobnej sile nazywamy koszykiem.
 Główna część rozdziału jest poświęcona efektywnej realizacji pomysłu na zmniejszenie złożoności
 metody CFR. Opisane są modyfikacje algorytmu $VanillaCfr$, które pozwalają zmniejszyć złożoność
-jego iteracji do liniowej względem liczby różnych stanów zamiast liniowej względem rozmiaru drzewa gry.
+jego iteracji do liniowej względem liczby różnych stanów, zamiast liniowej względem rozmiaru drzewa gry.
 Na końcu zamieszczony został pseudokod algorytmu DAG CFR. \\
 
 \noindent
@@ -365,7 +365,7 @@ przedstawić tu jego bazową wersję.
 
 \begin{definition}
       Dla końcowych historii $h \in Z$ określamy \textbf{funkcję użyteczności} $\mu_i(h)$ oznaczającą zysk gracza $i$ w rozgrywce
-      określonej przez $h$. Dla historii $h \notin H$ określamy $\mu_i^{\sigma}(h)$ oznaczającą oczekiwany zysk gracza $i$
+      określonej przez $h$. Dla historii $h \notin Z$ określamy $\mu_i^{\sigma}(h)$ oznaczającą oczekiwany zysk gracza $i$
       przy założeniu że gracze grają strategią $\sigma$ i historia $h$ została osiągnięta. Funkcja $\mu^{\sigma}$ wyznacza
       oczekiwane zyski graczy w grze przy ustalonej strategii $\sigma$.
 \end{definition}
