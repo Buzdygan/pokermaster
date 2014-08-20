@@ -160,35 +160,54 @@ zmniejszania rozmiaru gry na potrzeby efektywnego obliczania strategii.
 
 \section{Pomocnicze pojęcia}
 
-\begin{itemize}
-\item Stan gry jest opisany przez zespół informacji, które są rezultatem dotychczasowych akcji
-      podjętych przez graczy oraz zdarzeń losowych. Stan gry jednoznacznie definiuje zbiór dostępnych
+\begin{definition}
+      \textbf{Stan gry} jest rezultatem dotychczasowych akcji podjętych przez graczy, oraz zdarzeń losowych.
+      Składają się na niego informacje, które opisują aktualną rozgrywkę.
+      Stan gry jednoznacznie definiuje zbiór dostępnych
       akcji oraz graczy, którzy je wykonują (wliczając w to tzw gracza losowego, który odpowiada
       za generowanie zdarzeń losowych zgodnie z zasadami gry). Wykonywane przez graczy akcje
       zmieniają stan gry (inaczej ich wykonywanie nie ma sensu).
-\item Graf gry to graf skierowany, którego wierzchołkami są stany gry a krawędź prowadzi od stanu
+\end{definition}
+
+\begin{definition}
+      \textbf{Graf gry} to graf skierowany, którego wierzchołkami są stany gry a krawędź prowadzi od stanu
       $s_1$ do stanu $s_2$ jeśli w stanie $s_1$ można wykonać akcję prowadzącą do stanu
       $s_2$. Jeśli w takim grafie nie występuje cykl, nazywamy go DAGiem.
-\item Drzewo gry reprezentuje wszystkie możliwe rozgrywki. Każdemu wierzchołek reprezentuję jedną historię
+\end{definition}
+
+\begin{definition}
+      \textbf{Drzewo gry} reprezentuje wszystkie możliwe rozgrywki. Każdemu wierzchołek reprezentuję jedną historię
       czyli ciąg akcji wykonanych w grze. Wierzchołkowi przypisany jest stan gry, który jest efektem
       wykonania tego ciągu akcji. Z każdego wierzchołka wychodzi tyle krawędzi ile różnych
       akcji można wykonać w stanie gry przypisanym temu wierzchołkowi.
-\item Gry dzielimy na dwie kategorie: z pełną informacją oraz z niepełną informacją.
+\end{definition}
+
+\begin{definition}
+      Gry dzielimy na dwie kategorie: \textbf{z pełną informacją} oraz \textbf{z niepełną informacją}.
       W przypadku tych pierwszych, wszyscy gracze posiadają wszystkie informacje o zdarzeniach
       zachodzących w grze. Przykładem takiej gry są szachy. W grach z niepełną informacją, niektóre
       zdarzenia są ukryte dla pewnego zbioru graczy. Na przykład w więkości gier karcianych gracze
       nie znają kart swoich przeciwników.
-\item Zbiór informacyjny dla gracza $p$ zawiera te stany gry, które są identyczne jeśli chodzi
+\end{definition}
+
+\begin{definition}
+      \textbf{Zbiór informacyjny} dla gracza $p$ zawiera te stany gry, które są identyczne jeśli chodzi
       o informacje dostępne graczowi $p$. Przykładowo, w dwuosobowej grze karcianej, przykładem zbioru informacyjnego
       jest zbiór wszystkich stanów zaraz po rozdaniu kart, w których gracz $p$ ma na ręku jedynie asa i króla kier.
       Zbiory informacyjne są ważne z punktu widzenia podejmowania decyzji: w każdym stanie gry należącym do tego
       samego zbioru informacyjnego gracza $p$, gracz $p$ podejmuje decyzje wg tej samej strategii.
-\item Strategia gracza $p$ wyznacza zasady podejmowania przez gracza akcji w zbiorach informacyjnych.
+\end{definition}
+
+\begin{definition}
+      \textbf{Strategia} gracza $p$ wyznacza zasady podejmowania przez gracza akcji w zbiorach informacyjnych.
       Strategia może być deterministyczna, jeśli w każdym zbiorze informacyjnym jest wyznaczona dokładnie
       jedna podejmowana akcja, bądź mieszana jeśli na akcjach określony jest rozkład prawdopodobieństwa
       zagrania ich.
-\item Programy, które podejmują akcje w grze zgodnie z zaprogramowaną bądź wyliczoną strategią nazywamy botami
-\end{itemize}
+\end{definition}
+
+\begin{definition}
+      \textbf{Botem} nazywamy program, który podejmuje akcje w grze zgodnie z zaprogramowaną bądź wyliczoną strategią.
+\end{definition}
 
 \section{Sztuczna inteligencja w grach}
 
@@ -276,11 +295,11 @@ fold (rezygnacja z licytacji), call (pozostanie przy obecnej stawce), raise(dwuk
 all in(zalicytowanie maksymalnej stawki - 128). W ten sposób jedyne możliwe wysokości stawek w licytacji to: $1$, $2$,
 $4$, $8$, $16$, $32$, $64$ i $128$. \\\\
 \noindent
-Drugie ograniczenie przyporządkowuje układom kart graczy (karty na ręce wraz z kartami na stole) tzw "koszyki".
+Drugie ograniczenie przyporządkowuje układom kart graczy (karty na ręce wraz z kartami na stole) tzw "koszyki". \cite[sekcja 4.4]{buckets}
 W jednym "koszyku" są karty o podobnej sile. W każdej rundzie licytacji obowiązuje osobny podział, zmienna
 jest też liczba koszyków. Testowano różne liczby koszyków, w zależności od używanego algorytmu. \\\\
 \noindent
-Do oceny siły układów zastosowano miarę "Effective Hand Strength" (EHS). EHS układu wyliczany
+Do oceny siły układów zastosowano miarę "Effective Hand Strength" (EHS) \cite{ehs}. EHS układu wyliczany
 jest z trzech innych miar: "Hand Strength" ($HS$), "Positive Potential" ($Ppot$) oraz "Negative Potential" ($Npot$) według
 wzoru:
 
@@ -292,6 +311,21 @@ EHS = HS \cdot (1 - Npot) + (1 - HS) \cdot Ppot
 $HS$ to w przybliżeniu prawdopodobieństwo że nasza ręka jest lepsza od ręki przeciwnika. Miary $Ppot$ i $Npot$ oznaczają
 prawdopodobieństwo że nasza ręka stanie się lepsza (odpowiednio gorsza) od ręki przeciwnika po wyłożeniu kolejnych kart na stół. \\
 
+\noindent
+Przykłady: \\
+
+\noindent
+Ręka ($A\heartsuit$, $A\clubsuit$ ; $A\diamondsuit$, $5\spadesuit$, $2\clubsuit$) (dwie pierwsze karty to karty na ręce) ma wartość $HS$
+bliską $1$, gdyż żadna możliwa para kart nie tworzy lepszego układu gdy na stole są karty ($A\diamondsuit$, $5\spadesuit$, $2\clubsuit$). \\
+
+\noindent
+Ręka ($3\heartsuit$, $4\clubsuit$ ; $A\diamondsuit$, $5\spadesuit$, $2\clubsuit$) ma wysoką wartość $Ppot$ ponieważ ma niską wartość $HS$
+ale jednocześnie duży potencjał na stanie się ręką z układem \textbf{strit}, gdy dojdą kolejne karty. \\
+
+\noindent
+Ręka ($A\heartsuit$, $A\clubsuit$ ; $A\diamondsuit$, $5\diamondsuit$, $2\diamondsuit$) ma wysoką wartość $Npot$ ponieważ jest silna
+dzięki parze asów ale istnieje stosunkowo duże prawdopodobieństwo, że przeciwnik posiada karty w kolorze $\diamondsuit$ co zwiększa jego szansę
+na uzyskanie ręki z układem jednokolorowym.
 
 
 \chapter{Metoda CFR}
@@ -301,11 +335,11 @@ w grach w postaci ekstensywnej. Jest to obecnie najlepsze rozwiązanie w dziedzi
 sztuczną inteligencją w Pokerze. Choć używane są głównie różne modyfikacje algorytmu, chciałbym
 przedstawić tu jego bazową wersję.
 
-\section{Terminologia}
+\section{Oznaczenia}
 
 \begin{itemize}
 
-\item Zbiór graczy oznaczamy przez $N$.
+\item Zbiór graczy oznaczamy przez $N$. Graczy numerujemy od $0$, gracza losowego oznaczamy literą $c$.
 \item Zbiór wszystkich możliwych ciągów akcji (historii) legalnych w grze nazywamy $H$. Ciągi, po których kończy
       się rozgrywka, należą do podzbioru $Z$. Oczywiście każdej historii jest przyporządkowany stan gry, który
       jest jej efektem.
@@ -315,21 +349,27 @@ przedstawić tu jego bazową wersję.
       informacyjnego $I_i$ oraz dowolnych dwóch historii $h_1, h_2 \in I_i$ zachodzi $A(h_1) = A(h_2) = A(I_i)$. Do jednego
       zbioru informacyjnego $I_i$ należą historie, które są parami tożsame po usunięciu z nich akcji niewidocznych dla gracza $i$
       (np w Pokerze są to akcje przydzielenia kart prywatnych graczom innym niż $i$).
-\item Gracza losowego oznaczamy przez $c$. Funkcja $f_c(h, a)$ oznacza prawdopodobieństwo zaistnienia akcji $a$ dla historii $h$.
+\item Funkcja $f_c(h, a)$ oznacza prawdopodobieństwo zaistnienia akcji $a$ dla historii $h$.
 \item Strategię gracza $i$ oznaczamy przez $\sigma_i$. $\sigma_i(I_i, a)$ oznacza prawdopodobieństwo wykonania akcji $a$ przez
       gracza $i$ w zbiorze informacyjnym $I_i$ jeśli gra on strategią $\sigma_i$. Przyjmujemy $\sigma_c(h, a) = f_c(h, a)$.
-      Przez $\sigma$ oznaczamy zespół strategii wszystkich graczy biorących udział w rozgrywce. Przez $\sigma_{-i}$ oznaczamy
-      zespół strategii wszystkich graczy z wyjątkiem $i$.
+      Przez $\sigma$ oznaczamy zespół strategii wszystkich graczy biorących udział w rozgrywce. Stosujemy też oznaczenie
+      zespołu strategii jako $(\sigma_{i_1}, ... \, , \sigma_{i_n})$ czyli zbiór strategii poszczególnych graczy. Przez $\sigma_{-i}$ oznaczamy
+      zespół strategii wszystkich graczy z wyjątkiem $i$. $(\sigma'_i, \sigma_{-i})$ oznacza zespół strategii złożony ze strategii
+      gracza $i$ wziętej z $\sigma'$ oraz ze strategii pozostałych graczy wziętych z $\sigma$.
 \item Przez $\pi^{\sigma}(h)$ oznaczamy prawdopodobieństwo zajścia historii $h$ dla zespołu strategii $\sigma$.
       $\pi^{\sigma}(I)$ to suma tych prawdopodobieństw po $h \in I$. $\pi_i^{\sigma}(h)$ to prawdopodobieństwo że grając
       zgodnie ze strategią $\sigma$, gracz $i$ będzie podejmował akcje z odpowiadającej historii $h$. Analogicznie
-      $\pi_{-i}^{\sigma}(h)$ oznacza prawdopodobieństwo że pozostali gracze będą podejmowali akcje z historii $h$.
-\item Dla końcowych historii $h \in Z$ określamy funkcję użyteczności $\mu_i(h)$ oznaczającą zysk gracza $i$ w rozgrywce
+      $\pi_{-i}^{\sigma}(h)$ oznacza prawdopodobieństwo że pozostali gracze będą podejmowali akcje z historii $h$. W szczególności
+      zachodzi $\pi_{-i}^{\sigma}(h) \, = \, \prod\limits_{i \neq j \in N} \, \pi_j^{\sigma}(h)$.
+\end{itemize}
+
+\begin{definition}
+      Dla końcowych historii $h \in Z$ określamy \textbf{funkcję użyteczności} $\mu_i(h)$ oznaczającą zysk gracza $i$ w rozgrywce
       określonej przez $h$. Dla historii $h \notin H$ określamy $\mu_i^{\sigma}(h)$ oznaczającą oczekiwany zysk gracza $i$
       przy założeniu że gracze grają strategią $\sigma$ i historia $h$ została osiągnięta. Funkcja $\mu^{\sigma}$ wyznacza
       oczekiwane zyski graczy w grze przy ustalonej strategii $\sigma$.
+\end{definition}
 
-\end{itemize}
 
 \noindent
 W dalszej części będziemy zajmować się grami dwuosobowymi, przede wszystkim dwuosobową wersją Texas Holdem Poker.
@@ -339,11 +379,11 @@ W dalszej części będziemy zajmować się grami dwuosobowymi, przede wszystkim
 $\epsilon$-równowagą Nasha nazywamy zespół strategii $\sigma$, taki że:
 
 \begin{align*}
-\mu_1^{\sigma} + \epsilon \geq  \max_{\sigma_1'} \, \mu_1^{\sigma_1', \sigma_2} 
+\mu_1^{\sigma} + \epsilon \geq  \max_{\sigma_1'} \, \mu_1^{(\sigma_1', \sigma_2)} 
 \end{align*}
 
 \begin{align*}
-\mu_2^{\sigma} + \epsilon \geq  \max_{\sigma_2'} \, \mu_2^{\sigma_1, \sigma_2'} 
+\mu_2^{\sigma} + \epsilon \geq  \max_{\sigma_2'} \, \mu_2^{(\sigma_1, \sigma_2')} 
 \end{align*}
 
 \noindent
@@ -365,7 +405,7 @@ przy założeniu że inni gracze pozostali by przy obecnych strategiach. Formaln
 w rozgrywce o numerze $T$ przez:
 
 \begin{align*}
-R_i^T = \frac{1}{T} \, \max_{\sigma_i'} \sum\limits_{t=1}^T \, (\mu_i^{\sigma_i', \sigma_{-i}^t} - \mu_i^{\sigma^t})
+R_i^T = \frac{1}{T} \, \max_{\sigma_i'} \sum\limits_{t=1}^T \, (\mu_i^{(\sigma_i', \sigma_{-i}^t)} - \mu_i^{\sigma^t})
 \end{align*}
 
 %todo dodaj referencje

@@ -15,17 +15,17 @@ Rozdział 2.
 + terminy pokerowe jak flop river, w jakiej formie je wprowadzać.
 + kopiuj bibliografie w formacie bibtex
     (np. \cite[chapter2]{cfr2})
-- referencja do koszyków
-- referencja do wzoru na EHS
-- przykłady rąk z różnym EHS
++ referencja do koszyków
++ referencja do wzoru na EHS
++ przykłady rąk z różnym EHS
 
 Rozdział 3.
 
-- dać numerację graczy (że od 0, że c to losowy)
-- Użyć środowiska definition gdy pojawiają się nowe terminy
++ dać numerację graczy (że od 0, że c to losowy)
++ Użyć środowiska definition gdy pojawiają się nowe terminy
 - w terminologii pi -i od (h) lepiej opisać
 - emphy znowu
-- notacja przecinka jeśli chodzi o zespół strategii
++ notacja przecinka jeśli chodzi o zespół strategii
 - sprawdzić czy numery graczy są konsekwentne
 - w pseudokodzie używać krótszych oznaczeń nazw i opisywać je w komentarzach
 - opisać lepiej algorytm vanilla cfr
