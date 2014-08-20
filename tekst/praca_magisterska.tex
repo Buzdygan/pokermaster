@@ -152,6 +152,12 @@ i możliwości jego poprawy w celu uzyskania jeszcze lepszych strategii.
 
 \chapter{Wprowadzenie do Pokera}
 
+\noindent
+W tym rozdziale przybliżona została dziedzina sztucznej inteligencji w grach. Przedstawione
+są podstawowe pojęcia i metody. Opisana została gra Texas Holdem Poker, która jest
+wykorzystywana do badania algorytmów w tej pracy. Przybliżona została też idea
+zmniejszania rozmiaru gry na potrzeby efektywnego obliczania strategii.
+
 \section{Pomocnicze pojęcia}
 
 \begin{itemize}
@@ -160,15 +166,18 @@ i możliwości jego poprawy w celu uzyskania jeszcze lepszych strategii.
       akcji oraz graczy, którzy je wykonują (wliczając w to tzw gracza losowego, który odpowiada
       za generowanie zdarzeń losowych zgodnie z zasadami gry). Wykonywane przez graczy akcje
       zmieniają stan gry (inaczej ich wykonywanie nie ma sensu).
-\item Graf gry to graf, którego wierzchołkami są stany gry a krawędź prowadzi od stanu
+\item Graf gry to graf skierowany, którego wierzchołkami są stany gry a krawędź prowadzi od stanu
       $s_1$ do stanu $s_2$ jeśli w stanie $s_1$ można wykonać akcję prowadzącą do stanu
-      $s_2$. W większości gier graf ten nie zawiera cyklu dlatego zazwyczaj nazywa się go
-      drzewem gry.
-\item Gra z pełną/niepełną informacją. Nie wszystkie informacje składające się na stan gry
-      są dostępne wszystkim graczom. Np w grach karcianych karty które posiada przeciwnik
-      są zazwyczaj niewidoczne dla gracza. Takie gry nazywa się grami z niepełną informacją.
-      Jeśli wszystkie informacje są dostępne wszystkim graczom, jest to gra z pełną informacją.
-      Przykładem takiej gry są szachy.
+      $s_2$. Jeśli w takim grafie nie występuje cykl, nazywamy go DAGiem.
+\item Drzewo gry reprezentuje wszystkie możliwe rozgrywki. Każdemu wierzchołek reprezentuję jedną historię
+      czyli ciąg akcji wykonanych w grze. Wierzchołkowi przypisany jest stan gry, który jest efektem
+      wykonania tego ciągu akcji. Z każdego wierzchołka wychodzi tyle krawędzi ile różnych
+      akcji można wykonać w stanie gry przypisanym temu wierzchołkowi.
+\item Gry dzielimy na dwie kategorie: z pełną informacją oraz z niepełną informacją.
+      W przypadku tych pierwszych, wszyscy gracze posiadają wszystkie informacje o zdarzeniach
+      zachodzących w grze. Przykładem takiej gry są szachy. W grach z niepełną informacją, niektóre
+      zdarzenia są ukryte dla pewnego zbioru graczy. Na przykład w więkości gier karcianych gracze
+      nie znają kart swoich przeciwników.
 \item Zbiór informacyjny dla gracza $p$ zawiera te stany gry, które są identyczne jeśli chodzi
       o informacje dostępne graczowi $p$. Przykładowo, w dwuosobowej grze karcianej, przykładem zbioru informacyjnego
       jest zbiór wszystkich stanów zaraz po rozdaniu kart, w których gracz $p$ ma na ręku jedynie asa i króla kier.

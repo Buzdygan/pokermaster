@@ -6,13 +6,12 @@
 Rozdział 1.
 + przybliżyć ideę CFRa
 + za nazwą Counterfactual ... daj (CFR)
-- w skrócie rozdziału 4, trochę bardziej przybliżyć szczegóły, np kubełkowanie itp
-- w rodziale 5 "warianty abstrakcji"
++ w skrócie rozdziału 4, trochę bardziej przybliżyć szczegóły, np kubełkowanie itp
++ w rodziale 5 "warianty abstrakcji"
 
 Rozdział 2.
-- dać numerację graczy (że od 0, że c to losowy)
-- streszczenie rozdziału przez pierwszym punktem
-- wyklarować kwestię z grafem, drzewem itp
++ streszczenie rozdziału przez pierwszym punktem
++ wyklarować kwestię z grafem, drzewem itp
 - terminy pokerowe jak flop river, w jakiej formie je wprowadzać.
 - kopiuj bibliografie w formacie bibtex
     (np. \cite[chapter2]{cfr2})
@@ -22,6 +21,7 @@ Rozdział 2.
 
 Rozdział 3.
 
+- dać numerację graczy (że od 0, że c to losowy)
 - Użyć środowiska definition gdy pojawiają się nowe terminy
 - w terminologii pi -i od (h) lepiej opisać
 - emphy znowu
