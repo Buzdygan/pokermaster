@@ -28,6 +28,13 @@ Rozdział 3.
 - notacja przecinka jeśli chodzi o zespół strategii
 - sprawdzić czy numery graczy są konsekwentne
 - w pseudokodzie używać krótszych oznaczeń nazw i opisywać je w komentarzach
+- opisać lepiej algorytm vanilla cfr
+
+Rozdział 4.
+- wyjaśnić elementy w stanie gry
+- wymyślić nową nazwę dla algorytmu (np DAG CFR)
+- aktualizowanie i ustawianie visited w pseudokodzie
+-
 
 
 
