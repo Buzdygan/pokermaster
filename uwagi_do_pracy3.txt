@@ -12,8 +12,8 @@ Rozdział 1.
 Rozdział 2.
 + streszczenie rozdziału przez pierwszym punktem
 + wyklarować kwestię z grafem, drzewem itp
-- terminy pokerowe jak flop river, w jakiej formie je wprowadzać.
-- kopiuj bibliografie w formacie bibtex
++ terminy pokerowe jak flop river, w jakiej formie je wprowadzać.
++ kopiuj bibliografie w formacie bibtex
     (np. \cite[chapter2]{cfr2})
 - referencja do koszyków
 - referencja do wzoru na EHS
