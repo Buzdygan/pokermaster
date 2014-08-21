@@ -913,6 +913,31 @@ Cały algorytm wygląda następująco: \\
 
 \chapter{Wyniki eksperymentalne}
 
+\noindent
+Algorytm DAG CFR testowany był ze standardową wersją CFR. Z uwagi na długi czas obliczeń
+algorytmu CFR, do porównania użyto wersji samplowanej algorytmu. W wersji samplowanej,
+w każdej iteracji przeglądane są wszystkie historie z jednym, określonym przydziałem koszyków.
+Pozwala to na przyspieszenie pojedynczej iteracji ale zwiększa też liczbę iteracji potrzebnych do
+zmniejszenia całkowitego regretu. \\
+
+\noindent
+Algorytm CFR został policzony dla zestawu koszyków $(6,6,6,6)$. To znaczy, że w każdej rundzie
+siła kart była określona liczbą od $1$ do $6$. Poniższy wykres przedstawia jak zmieniał się
+błąd (czyli maksymalny regret) w kolejnych iteracjach algorytmu:
+
+\includegraphics[scale=0.7]{wykres-cfr-6.png}
+
+\noindent
+Algorytm DAG CFR został policzony dla kilku zestawów koszyków: $(6,6,6,6)$, $(12,10,10,10)$ oraz $(19,19,19,19)$.
+Jak widać, wymagał znacznie mniejszej liczby iteracji by zmniejszyć błąd do podobnego poziomu co w wywołaniu CFRa.
+
+\includegraphics[scale=0.7]{wykres-dag-6.png}
+
+\includegraphics[scale=0.7]{wykres-dag-12.png}
+
+
+$\,$ \\
+
 \chapter{Podsumowanie}
 
 \bibliographystyle{plain} 
