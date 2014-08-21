@@ -1,10 +1,10 @@
 + pododawaj komentarze
 - eksperymenty
 - podsumowanie
-- przejrzyj poprawki Pawlewicza
++ przejrzyj poprawki Pawlewicza
 + Nie używaj skrótów a jeśli już to z kropką poprawnie
 + przecinki
-- \emph gdy wprowadzasz nowy termin
++ \emph gdy wprowadzasz nowy termin
 + czasem zapominasz \ przed max
 
 Rozdział 1.
