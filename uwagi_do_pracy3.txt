@@ -1,4 +1,4 @@
-- pododawaj komentarze
++ pododawaj komentarze
 - eksperymenty
 - podsumowanie
 - przejrzyj poprawki Pawlewicza

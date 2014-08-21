@@ -483,6 +483,8 @@ dla par (zbiór informacyjny, akcja).
 \item $\sigma$ : przechowuje aktualny zespół strategii obu graczy. Po każdej iteracji jest modyfikowany na podstawie mapy $R$.
 \end{itemize}
 
+$\,$ \\
+
 \noindent
 Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwraca parę
 ($\mu_0$, $\mu_1$) oczekiwanych zysków obu graczy w danym stanie gry, przy aktualnej strategii. \\\\
@@ -491,9 +493,9 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
     \Function{WalkTree}{$h$, $[\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c ]$}
     \Comment{$h$ to aktualna historia rozgrywki}
         \If {$h \in Z$}
-        \Comment{Jeśli $h$ jest końcowa}
+        \Comment{jeśli $h$ jest końcowa}
             \State \Return $\mu(h)$
-            \Comment{Zwraca wektor zysków graczy ($\mu_0$, $\mu_1$)}
+            \Comment{zwraca wektor zysków graczy ($\mu_0$, $\mu_1$)}
         \EndIf
         \State $\vec{\mu}(h) \gets (0, 0)$ 
         \State $p \gets P(h)$
@@ -503,9 +505,9 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
             \For {$a \, \in \, A(h)$}
                 \State $\vec{\pi}' \gets [\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c \cdot f_c(h, a)]$
                 \State $\vec{\mu}^a \gets \Call{WalkTree}{h \circ a, \, \vec{\pi}'}$
-                \Comment{obliczamy zysk po wykonaniu akcji $a$}
+                \Comment{oblicza zysk po wykonaniu akcji $a$}
                 \State $\vec{\mu}(h) \gets \vec{\mu}(h) + f_c(h, a) \cdot \vec{\mu}^a$
-                \Comment{aktualizujemy zysk końcowy}
+                \Comment{aktualizuje zysk końcowy}
             \EndFor
         \Else
             \State $o \gets O(h)$
@@ -519,21 +521,21 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
                     \State $\vec{\pi}' \gets [\pi_0^{\sigma}, \pi_1^{\sigma} \cdot \sigma_1(I, a), \pi_c]$
                 \EndIf
                 \State $\vec{\mu}^a \gets \Call{WalkTree}{h \circ a, \, \vec{\pi}'}$
-                \Comment{obliczamy zysk po wykonaniu akcji $a$}
+                \Comment{oblicza zysk po wykonaniu akcji $a$}
                 \State $\vec{\mu}(h) \gets \vec{\mu}(h) + \sigma_p(I, a) \cdot \vec{\mu}^a$
-                \Comment{aktualizujemy zysk końcowy}
+                \Comment{aktualizuje zysk końcowy}
                 \State $R(I, a) \gets R(I, a) + \vec{\mu}_p^a \cdot \pi_{o}^{\sigma} \cdot \pi_c $
-                \Comment{aktualizujemy regret akcji $a$}
+                \Comment{aktualizuje regret akcji $a$}
                 \State $S(I, a) \gets S(I, a) + \sigma_p(I, a) \cdot \pi_{p}^{\sigma}$
-                \Comment{aktualizujemy uśrednioną strategię}
+                \Comment{aktualizuje uśrednioną strategię}
             \EndFor
             \For {$a \, \in \, A(h)$}
                 \State $R(I, a) \gets R(I, a) - \vec{\mu}_p(h) \cdot \pi_{o}^{\sigma} \cdot \pi_c $
-                \Comment{aktualizujemy regret akcji $a$}
+                \Comment{aktualizuje regret akcji $a$}
             \EndFor
         \EndIf
     \State \Return $\vec{\mu}(h)$
-    \Comment{Zwracamy zysk końcowy dla historii $h$}
+    \Comment{zwraca zysk końcowy dla historii $h$}
     \EndFunction
 \end{algorithmic}
 
@@ -546,10 +548,10 @@ wyliczanej po każdej iteracji a $map=S$ dla strategii końcowej. \\
 \begin{algorithmic}
     \Function{RecomputeStrategy}{$rmap$}
         \ForAll{$I \in InformationSets$}
-        \Comment{Dla każdego zbioru informacyjnego $I$}
+        \Comment{dla każdego zbioru informacyjnego $I$}
             \State $sum \gets \sum\limits_{a \in A(I)} \max(0, \, rmap(I, a))$
             \ForAll {$a \in A(I)$}
-            \Comment{Dla każdej akcji $a$ w zbiorze informacyjnym $I$}
+            \Comment{dla każdej akcji $a$ w zbiorze informacyjnym $I$}
                 \State $\sigma(I, a) \gets \frac{\max(0, \, rmap(I, a))}{sum}$
             \EndFor
         \EndFor
@@ -822,7 +824,7 @@ dla każdego stanu $s$ i gracza $i \in \left\{0, 1\right\}$. \\
         \ForAll {$s \, \in \, States$}
         \Comment{stany przeglądane w porządku topologicznym}
             \ForAll{$s' \, \in \, Neighbours(s)$}
-            \Comment{Przegląda następników stanu $s$}
+            \Comment{przegląda następników stanu $s$}
                 \State $\pi_i^{\sigma}(s') \gets \pi_i^{\sigma}(s') \, + \, \pi_i^{\sigma}(s) \cdot prob_i(E_{(s, s')})$ 
                 \Comment{$\forall_{i \in \left\{0, 1\right\}}$}
                 \State $\pi_{i,c}^{\sigma}(s') \gets \pi_{i,c}^{\sigma}(s') \, + \, \pi_{i,c}^{\sigma}(s) \cdot prob_i(E_{(s, s')}) \cdot prob_c(E_{(s, s')})$ 
@@ -842,32 +844,36 @@ aktualizując mapy $R$ oraz $S$. Każdy stan jest odwiedzany tylko raz. \\
     \Function{WalkTree}{$s$}
     \Comment{$s$ to aktualnie odwiedzany stan}
         \If{final($s$)}
-        \Comment{Jeśli $s$ to stan końcowy}
+        \Comment{jeśli $s$ to stan końcowy}
             \State \Return $\mu(s)$
         \EndIf
         \If{visited($s$)}
-        \Comment{Jeśli $s$ został już odwiedzony w tej iteracji}
+        \Comment{jeśli $s$ został już odwiedzony w tej iteracji}
             \State \Return $\mu^{\sigma}(s)$
         \EndIf
         \State visited($s$) $\gets True$
-        \Comment{Ustawiamy stan $s$ jako odwiedzony}
+        \Comment{stan $s$ ustawiany jako odwiedzony}
         \State $\vec{\mu}(s) \gets (0, 0)$ 
         \State $p \gets P(s)$
         \State $I \gets I(s)$
         \ForAll{$s' \, \in \, Neighbours(s)$}
-        \Comment{Przegląda stany sąsiadujące z $s$}
+        \Comment{przegląda następników stanu $s$}
             \State $a \gets action(E_{(s, s')})$
             \Comment $action(E_{(s, s')})$ to akcja prowadząca ze stanu $s$ do $s'$
             \State $\vec{\mu}^a \gets \Call{WalkTree}{s'}$
-            \Comment{Obliczamy oczekiwane zyski graczy w stanie $s'$}
+            \Comment{oblicza oczekiwane zyski graczy w stanie $s'$}
             \State $\vec{\mu}(s) \gets \vec{\mu}(s) + \vec{\mu}^a \cdot prob_p(E_{(s, s')})$
+            \Comment{aktualizuje wektor zysków graczy}
             \If{$p \neq c$}
                 \State $R(I, a) \gets R(I, a) + \vec{\mu}^a_p \cdot \pi_{p,c}^{\sigma}(s)$
+                \Comment{aktualizuje regret na podstawie $\vec{\mu}^a_p$}
                 \State $S(I, a) \gets S(I, a) + \sigma(I, a) \cdot \pi_p^{\sigma}(s)$
+                \Comment{aktualizuje uśrednioną strategię}
             \EndIf
         \EndFor
         \If{$p \neq c$}
             \State $R(I, a) \gets R(I, a) - \vec{\mu}_p(s) \cdot \pi_{p,c}^{\sigma}(s)$
+            \Comment{aktualizuje regret na podstawie $\vec{\mu}_p(s)$}
         \EndIf
         \State $\vec{\mu}^{\sigma}(s) \gets \vec{\mu}(s)$
         \State \Return $\vec{\mu}(s)$
@@ -882,19 +888,25 @@ Cały algorytm wygląda następująco: \\
 \begin{algorithmic}
     \Function{DagCfr}{$game$, $iterationsNumber$}
         \State $s_0\gets \Call{BuildTree}{game}$
-        \Comment{Tworzony jest graf gry i zwracany stan początkowy $s_0$}
+        \Comment{tworzony jest graf gry i zwracany stan początkowy $s_0$}
         \State $R \gets 0$
         \State $S \gets 0$
-        \State $\sigma \gets \Call{DefaultStrategy}{}$
+        \State $\sigma \gets \Call{DefaultStrategy}{}$ 
+        \Comment{strategia początkowa, każda akcja tak samo prawdopodobna}
         \For {$iterationsNumber$} 
             \State $\Call{ComputeProbs}{}()$
+            \Comment{oblicza wartości $\pi(s)$}
             \ForAll{$s \, \in \, States$}
+            \Comment{ustawia stany jako nieodwiedzone}
                 \State visited($s$) $\gets False$
             \EndFor
             \State $\Call{WalkTree}{s_0}$
+            \Comment{zaktualizowanie wartości regretów i uśrednionej strategii}
             \State $\sigma \gets \Call{RecomputeStrategy}{R}$
+            \Comment{zaktualizowanie obecnej strategii}
         \EndFor
         \State \Return $\Call{RecomputeStrategy}{S}$
+        \Comment{przeliczenie uśrednionej strategii}
     \EndFunction
 \end{algorithmic}
 
