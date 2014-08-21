@@ -256,15 +256,15 @@ figury występują w układzie, tym większa jest jego siła. Typy układów wym
 od najsilniejszego do najsłabszego.
 
 \begin{enumerate}
-\item \textbf{Poker}: 5 kolejnych kart w tym samym kolorze, np. $(D\clubsuit, W\clubsuit, 10\clubsuit, 9\clubsuit, 8\clubsuit)$ 
-\item \textbf{Kareta}: 4 takie same figury, np. $(7\heartsuit, 7\spadesuit, 7\diamondsuit, 7\clubsuit, D\diamondsuit)$
-\item \textbf{Full}: Trójka takich samych figur połączona z parą takich samych figur, np. $(K\heartsuit, K\diamondsuit, K\clubsuit, 3\heartsuit, 3\diamondsuit)$ 
-\item \textbf{Kolor}: 5 kart w tym samym kolorze, np. $(K\diamondsuit, W\diamondsuit, 6\diamondsuit, 5\diamondsuit, 2\diamondsuit)$
-\item \textbf{Strit}: 5 kolejnych kart, np. $(10\heartsuit, 9\diamondsuit, 8\heartsuit, 7\clubsuit, 6\spadesuit)$
-\item \textbf{Trójka}: 3 takie same figury, np. $(5\heartsuit, 5\diamondsuit, 5\clubsuit, 8\heartsuit, D\spadesuit)$
-\item \textbf{Dwie pary}: Dwie pary tych samych figur, np. $(A\heartsuit, A\diamondsuit, 8\clubsuit, 8\heartsuit, W\clubsuit)$
-\item \textbf{Para}: Para tych samych figur, np. $(10\clubsuit, 10\spadesuit, A\heartsuit, 9\clubsuit, 2\heartsuit)$
-\item \textbf{Najwyższa karta}: Najwyższa figura, np. $(K\heartsuit, W\diamondsuit, 10\heartsuit, 9\heartsuit, 5\spadesuit)$
+\item \textbf{Poker}: 5 kolejnych kart w tym samym kolorze, np. $(D\clubsuit, W\clubsuit, 10\clubsuit, 9\clubsuit, 8\clubsuit)$. 
+\item \textbf{Kareta}: 4 takie same figury, np. $(7\heartsuit, 7\spadesuit, 7\diamondsuit, 7\clubsuit, D\diamondsuit)$.
+\item \textbf{Full}: Trójka takich samych figur połączona z parą takich samych figur, np. $(K\heartsuit, K\diamondsuit, K\clubsuit, 3\heartsuit, 3\diamondsuit)$. 
+\item \textbf{Kolor}: 5 kart w tym samym kolorze, np. $(K\diamondsuit, W\diamondsuit, 6\diamondsuit, 5\diamondsuit, 2\diamondsuit)$.
+\item \textbf{Strit}: 5 kolejnych kart, np. $(10\heartsuit, 9\diamondsuit, 8\heartsuit, 7\clubsuit, 6\spadesuit)$.
+\item \textbf{Trójka}: 3 takie same figury, np. $(5\heartsuit, 5\diamondsuit, 5\clubsuit, 8\heartsuit, D\spadesuit)$.
+\item \textbf{Dwie pary}: Dwie pary tych samych figur, np. $(A\heartsuit, A\diamondsuit, 8\clubsuit, 8\heartsuit, W\clubsuit)$.
+\item \textbf{Para}: Para tych samych figur, np. $(10\clubsuit, 10\spadesuit, A\heartsuit, 9\clubsuit, 2\heartsuit)$.
+\item \textbf{Najwyższa karta}: Najwyższa figura, np. $(K\heartsuit, W\diamondsuit, 10\heartsuit, 9\heartsuit, 5\spadesuit)$.
 \end{enumerate}
 
 \noindent
@@ -343,17 +343,17 @@ przedstawiona zostanie tu jego bazowa wersja.
 \item Zbiór wszystkich możliwych ciągów akcji (historii) legalnych w grze nazywamy $H$. Ciągi, po których kończy
       się rozgrywka, należą do podzbioru $Z$. Oczywiście każdej historii jest przyporządkowany stan gry, który
       jest jej efektem.
-\item Dla każdej historii $h$ zbiór akcji dostępnych w stanie gry jej odpowiadającym oznaczamy przez $A(h)$. Oczywiście
-      każdy stan wyznacza jednoznacznie gracza wykonującego akcje.
-\item Dla każdego gracza $i$, zbiór historii, w których ma on ruch, są pogrupowane w tzw zbiory informacyjne $I_i$. Dla zbioru
-      informacyjnego $I_i$ oraz dowolnych dwóch historii $h_1, h_2 \in I_i$ zachodzi $A(h_1) = A(h_2) = A(I_i)$. Do jednego
+\item Dla każdej historii $h$, zbiór akcji dostępnych w odpowiadajacym jej stanie gry oznaczamy przez $A(h)$. Oczywiście
+      każdy stan wyznacza jednoznacznie gracza wykonującego akcję - $P(h)$.
+\item Dla każdego gracza $i$, historie, w których ma on ruch, są pogrupowane w zbiory informacyjne $I_i$. Dla zbioru
+      informacyjnego $I_i$ oraz dowolnych dwóch historii $h_1, h_2 \in I_i$, zachodzi $A(h_1) = A(h_2) = A(I_i)$. Do jednego
       zbioru informacyjnego $I_i$ należą historie, które są parami tożsame po usunięciu z nich akcji niewidocznych dla gracza $i$
       (np w Pokerze są to akcje przydzielenia kart prywatnych graczom innym niż $i$).
 \item Funkcja $f_c(h, a)$ oznacza prawdopodobieństwo zaistnienia akcji $a$ dla historii $h$.
 \item Strategię gracza $i$ oznaczamy przez $\sigma_i$. $\sigma_i(I_i, a)$ oznacza prawdopodobieństwo wykonania akcji $a$ przez
-      gracza $i$ w zbiorze informacyjnym $I_i$ jeśli gra on strategią $\sigma_i$. Przyjmujemy $\sigma_c(h, a) = f_c(h, a)$.
+      gracza $i$ w zbiorze informacyjnym $I_i$, jeśli gra on strategią $\sigma_i$. Przyjmujemy $\sigma_c(h, a) = f_c(h, a)$.
       Przez $\sigma$ oznaczamy zespół strategii wszystkich graczy biorących udział w rozgrywce. Stosujemy też oznaczenie
-      zespołu strategii jako $(\sigma_{i_1}, ... \, , \sigma_{i_n})$ czyli zbiór strategii poszczególnych graczy. Przez $\sigma_{-i}$ oznaczamy
+      zespołu strategii jako $(\sigma_{i_1}, ... \, , \sigma_{i_n})$, czyli zbiór strategii poszczególnych graczy. Przez $\sigma_{-i}$ oznaczamy
       zespół strategii wszystkich graczy z wyjątkiem $i$. $(\sigma'_i, \sigma_{-i})$ oznacza zespół strategii złożony ze strategii
       gracza $i$ wziętej z $\sigma'$ oraz ze strategii pozostałych graczy wziętych z $\sigma$.
 \item Przez $\pi^{\sigma}(h)$ oznaczamy prawdopodobieństwo zajścia historii $h$ dla zespołu strategii $\sigma$.
@@ -364,12 +364,11 @@ przedstawiona zostanie tu jego bazowa wersja.
 \end{itemize}
 
 \begin{definition}
-      Dla końcowych historii $h \in Z$ określamy \textbf{funkcję użyteczności} $\mu_i(h)$ oznaczającą zysk gracza $i$ w rozgrywce
-      określonej przez $h$. Dla historii $h \notin Z$ określamy $\mu_i^{\sigma}(h)$ oznaczającą oczekiwany zysk gracza $i$
+      Dla końcowych historii $h \in Z$ określamy \textbf{funkcję użyteczności} $\mu_i(h)$, oznaczającą zysk gracza $i$ w rozgrywce
+      określonej przez $h$. Dla historii $h \notin Z$ określamy $\mu_i^{\sigma}(h)$, oznaczającą oczekiwany zysk gracza $i$
       przy założeniu że gracze grają strategią $\sigma$ i historia $h$ została osiągnięta. Funkcja $\mu^{\sigma}$ wyznacza
       oczekiwane zyski graczy w grze przy ustalonej strategii $\sigma$.
 \end{definition}
-
 
 \noindent
 W dalszej części będziemy zajmować się grami dwuosobowymi, przede wszystkim dwuosobową wersją Texas Holdem Poker.
@@ -387,11 +386,11 @@ $\epsilon$-równowagą Nasha nazywamy zespół strategii $\sigma$, taki że:
 \end{align*}
 
 \noindent
-Metoda CFR znajduje $\epsilon$-równowagę Nasha dla $\epsilon$ malejącego proporcjonalnie do pierwiastka z liczby iteracji.
+Metoda CFR znajduje $\epsilon$-równowagę Nasha dla $\epsilon$ malejącego proporcjonalnie do odwrotności pierwiastka z liczby iteracji.
 
 \section{Minimalizacja funkcji regretu}
 
-W dalszej części przyjmujemy że rozgrywane są kolejne rundy indeksowane przez $t$. W każdej z rund
+W dalszej części przyjmujemy, że rozgrywane są kolejne rundy indeksowane przez $t$. W każdej z rund
 strategie graczy będą modyfikowane na podstawie dotychczasowej rozgrywki, w efekcie dając ciąg strategii
 $(\sigma^t)$. Jako uśrednioną strategię gracza $i$ po $T$ rundach definiujemy:
 
@@ -400,44 +399,43 @@ $(\sigma^t)$. Jako uśrednioną strategię gracza $i$ po $T$ rundach definiujemy
 \end{align*}
 
 \noindent
-Intuicyjnie funkcja regretu określa ile gracz mógłby zyskać zamieniając obecną strategię na najlepszą możliwą
-przy założeniu że inni gracze pozostali by przy obecnych strategiach. Formalnie definiujemy średni całkowity regret gracza $i$
+Intuicyjnie, funkcja regretu określa ile gracz mógłby zyskać, zamieniając obecną strategię na najlepszą możliwą,
+przy założeniu że inni gracze pozostali by przy obecnych strategiach. Formalnie, definiujemy średni całkowity regret gracza $i$
 w rozgrywce o numerze $T$ przez:
 
 \begin{align*}
 R_i^T = \frac{1}{T} \, \max_{\sigma_i'} \sum\limits_{t=1}^T \, (\mu_i^{(\sigma_i', \sigma_{-i}^t)} - \mu_i^{\sigma^t})
 \end{align*}
 
-%todo dodaj referencje
 \noindent
-Znany wynik (referencja) mówi o tym, że w grze o sumie zerowej, jeśli po $T$ iteracjach średni całkowity regret obu graczy
-jest mniejszy niż $\epsilon$ to uśredniony zespół strategii $\overline{\sigma}^T$ jest $2\epsilon$-równowagą Nasha.
+Znany wynik \cite{cfr} mówi o tym, że w grze o sumie zerowej, jeśli po $T$ iteracjach średni całkowity regret obu graczy
+jest mniejszy niż $\epsilon$, to uśredniony zespół strategii $\overline{\sigma}^T$ jest $2\epsilon$-równowagą Nasha.
 
 \section{Funkcja regretu lokalnego}
 
 By łatwiej minimalizować regret całkowity, wprowadzamy funkcję regretu lokalnego.
-Działa ona na podobnej zasadzie co regret całkowity, ale jest określana na zbiorach informacyjnych
+Działa ona na podobnej zasadzie co regret całkowity ale jest określana na zbiorach informacyjnych
 a nie na całej grze. Dzięki temu można ją minimalizować osobno dla każdego zbioru informacyjnego. \\\\
 
 \noindent
 Niech $\sigma_{|I \rightarrow a}$ oznacza strategię $\sigma$ zmodyfikowaną tak, że w zbiorze informacyjnym $I$ zawsze
-wykonywana jest akcja $a$. $\mu_i(\sigma, I)$ oznacza warunkową wartość oczekiwaną zysku gracza $i$ przy założeniu że
-osiągnięty został zbiór informacyjny $I$ a gracze grają strategią $\sigma$ zmodyfikowaną tak, że gracz $i$
+wykonywana jest akcja $a$. $\mu_i(\sigma, I)$ oznacza warunkową wartość oczekiwaną zysku gracza $i$, przy założeniu że
+osiągnięty został zbiór informacyjny $I$ a gracze grają strategią $\sigma$, zmodyfikowaną tak, że gracz $i$
 podejmuje akcje prowadzące do zbioru informacyjnego $I$ z prawdopodobieństwem $1$. \\\\
 
 \noindent
 Wtedy definiujemy:
 
 \begin{align*}
-R_i^T(I, a) = \frac{1}{T} \sum\limits_{t=1}^{T} \, \pi_{-i}^{\sigma^t}(I)(\mu_i(\sigma^t_{I \rightarrow a}, I) - \mu_i(\sigma^t, I))
+R_i^T(I, a) = \frac{1}{T} \sum\limits_{t=1}^{T} \, \pi_{-i}^{\sigma^t}(I)(\mu_i(\sigma^t_{|I \rightarrow a}, I) - \mu_i(\sigma^t, I))
 \end{align*}
 \begin{align*}
 R_{i, imm}^T(I) = \max_{a \in A(I)} \, R_i^T(I, a)
 \end{align*}
 
 \noindent
-Dzięki twierdzeniu z (referencja) wiemy, że $R_i^T \leq \, \sum_{I} \, \max(R_{i, imm}^T(I), 0)$. W takim razie
-minimalizowanie regretów w zbiorach informacyjnych minimalizuje regret całkowity i prowadzi do znalezienia
+Dzięki twierdzeniu z \cite{cfr} wiemy, że $R_i^T \leq \, \sum_{I} \, \max(R_{i, imm}^T(I), 0)$. W takim razie
+minimalizowanie regretów w zbiorach informacyjnych, minimalizuje regret całkowity i prowadzi do znalezienia
 dobrej aproksymacji równowagi Nasha. \\
 
 \noindent
@@ -450,29 +448,44 @@ zgodnie z regułą:
 
 \noindent
 pod warunkiem, że suma w mianowniku jest dodatnia. W przeciwnym wypadku wszystkie akcje w $I$ mają równe prawdopodobieństwo.
-Czyli akcja jest wybierana tym częściej im większa strata - regret, wiąże się z nie wybraniem jej.\\\\
+Czyli akcja jest wybierana tym częściej, im większa strata (regret) wiąże się z nie wybraniem jej.\\\\
 
 \noindent
-Całkowity uśredniony regret maleje proporcjonalnie do pierwiastka z liczby iteracji wykonanych przez algorytm CFR. Niestety
-liczba stanów gry i zbiorów informacyjnych nawet w dwuosobowej wersji Texas Holdem Poker jest zbyt duża by można było
+Całkowity uśredniony regret maleje proporcjonalnie do odwrotności pierwiastka z liczby iteracji wykonanych przez algorytm CFR. Niestety
+liczba stanów gry i zbiorów informacyjnych nawet w dwuosobowej wersji Texas Holdem Poker jest zbyt duża, by można było
 zastosować algorytm bezpośrednio. W tym celu wprowadza się abstrakcje pełnej wersji gry, przez ograniczenia w licytacji
 oraz dzielenie kart na niewielką liczbę grup (koszyków) ze względu na ich siłę. \\
 
 \section{Implementacja Vanilla CFR}
 
-Użyto rekurencyjnej implementacji algorytmu. W danej iteracji algorytmu, mapy $R$, $S$ oraz $\sigma$ przechowują informacje
+\noindent
+Algorytm Vanilla CFR oparty jest na rekurencyjnym przeglądaniu drzewa gry. Każde wywołanie metody $WalkTree$ odpowiada dokładnie jednej
+historii $h$. Dla każdej iteracji ustalony jest zespół strategii obu
+graczy: $\sigma$. W oparciu o $\sigma$ możliwe jest obliczenie wektora oczekiwanych zysków graczy: $\vec{\mu}^{\sigma}(h)$, dla każdej historii $h$.
+By policzyć $\vec{\mu}^{\sigma}(h)$ dla pojedynczego wywołania $WalkTree$, obliczane są wartości $\vec{\mu}^{\sigma}(h \circ a)$, dla każdej
+akcji $a \in A(h)$. \\ 
+
+\noindent
+Dodatkowo, w celu aktualizowania wartości $R_i^T(I, a)$, dla każdej historii $h$ i gracza $i$, liczone są wartości $\pi_i^{\sigma}(h)$.
+Jeśli $P(h) = i$, to dla każdej akcji $a \in A(h)$, $\pi_i^{\sigma}(h \circ a) = \pi_i^{\sigma}(h) \cdot \sigma(I(h), a)$.
+Analogicznie, jeśli $P(h) = c$, to dla każdego zdarzenia losowego $a$, $\pi_c(h \circ a) = \pi_c(h) \cdot f_c(h, a)$.
+Jeśli $P(h) \neq j$, $\pi_j(h) = \pi_j(h \circ a)$. \\
+
+\noindent
+W danej iteracji algorytmu mapy $R$, $S$ oraz $\sigma$ przechowują informacje
 dla par (zbiór informacyjny, akcja).
 \begin{itemize}
-\item $R$ : przechowuje sumę regretu po wszystkich dotychczasowych iteracjach algorytmu
-\item $\sigma$ : przechowuje prawdopodobieństwo wykonania akcji w zbiorze informacyjnym zgodnie z obecną strategią
-\item $S$ : przechowuje sumę strategii z wszystkich dotychczasowych iteracji, ważoną przez $\pi_i^{\sigma^t}$
+\item $R$ : przechowuje sumę regretu po wszystkich dotychczasowych iteracjach algorytmu. Po iteracji $T$, $R(I, a) = R_i^T(I, a)$
+        dla $i = P(I)$.
+\item $S$ : przechowuje sumę strategii z wszystkich dotychczasowych iteracji, ważoną przez $\pi_i^{\sigma^t}$. Wartość ta jest
+            potrzebna do obliczenia strategii uśrednionej: $\overline{\sigma}$. Po $T$ iteracjach zachodzi
+            $S(I, a) = \sum\limits_{t=1}^T \, \pi_i^{\sigma^t}(I) \cdot \sigma^t(I, a)$, gdzie $i = P(I)$.
+\item $\sigma$ : przechowuje aktualny zespół strategii obu graczy. Po każdej iteracji jest modyfikowany na podstawie mapy $R$.
 \end{itemize}
 
 \noindent
 Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwraca parę
-($\mu_0$, $\mu_1$) oczekiwanych zysków obu graczy w danym stanie gry przy aktualnej strategii. \\\\
-
-%\Call \Comment \If \ElsIf  \Else \EndIf
+($\mu_0$, $\mu_1$) oczekiwanych zysków obu graczy w danym stanie gry, przy aktualnej strategii. \\\\
 
 \begin{algorithmic}
     \Function{WalkTree}{$h$, $[\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c ]$}
@@ -527,8 +540,8 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
 
 $\,$ \\
 Metoda $RecomputeStrategy$ przelicza aktualną i końcową strategię. Prawdopodobieństwo wykonania akcji $a$
-w zbiorze informacyjnym $I$ jest proporcjonalne do wartości $\max(0, map(I, a))$ gdzie $map=R$ dla strategii
-wyliczanej po każdej iteracji a $map=S$ dla strategii końcowej.
+w zbiorze informacyjnym $I$ jest proporcjonalne do wartości $\max(0, map(I, a))$, gdzie $map=R$ dla strategii
+wyliczanej po każdej iteracji a $map=S$ dla strategii końcowej. \\
 
 \begin{algorithmic}
     \Function{RecomputeStrategy}{$rmap$}
@@ -563,10 +576,10 @@ Cały algorytm wygląda następująco: \\
 
 $\,$ \\
 \noindent
-$DefaultStrategy$ to strategia w której każda akcja jest wykonywana z takim samym prawdopodobieństwem. Metoda
-$RecomputeStrategy(R)$ aktualizuje aktualną strategię tak że prawdopodobieństwo zagrania akcji $a$ w zbiorze informacyjnym
-$I$ jest proporcjonalne do wartości $R(I, a)$ o ile ta wartość jest nieujemna. Jeśli jest ujemna, prawdopodobieństwo
-wynosi $0$. Analogicznie wygląda obliczenie końcowej strategii przy czym patrzymy na wartości $S(I, a)$.
+$DefaultStrategy$ to strategia, w której każda akcja jest wykonywana z takim samym prawdopodobieństwem. Metoda
+$RecomputeStrategy(R)$ aktualizuje aktualną strategię, tak że prawdopodobieństwo zagrania akcji $a$ w zbiorze informacyjnym
+$I$ jest proporcjonalne do wartości $R(I, a)$, o ile ta wartość jest nieujemna. Jeśli jest ujemna, prawdopodobieństwo
+wynosi $0$. Analogicznie wygląda obliczenie końcowej strategii, przy czym patrzymy na wartości $S(I, a)$.
 
 \chapter{Algorytm DAG CFR}
 
@@ -579,12 +592,12 @@ w tej pracy redukuje liczbę stanów gry przez ignorowanie historii akcji wykony
 przez graczy. Stan gry jest opisany przez następujące parametry: \\
 
 \begin{itemize}
-\item Aktualny gracz (łącznie z graczem losowym)
-\item Aktualna runda (runda licytacji bądź rozdawania kart, jeśli aktualny gracz to gracz losowy)
-\item Obecne koszyki obu graczy (czyli wyznaczniki siły kart graczy)
-\item Liczba odzywek w aktualnej licytacji (informacja potrzebna, by każda akcja powodowała zmianę stanu)
-\item Proponowana stawka (najwyższa do tej pory oferta)
-\item Uzgodniona stawka (wysokość stawki, na którą zgodzili się obaj gracze)
+\item Aktualny gracz (łącznie z graczem losowym).
+\item Aktualna runda (runda licytacji, bądź rozdawania kart jeśli aktualny gracz to gracz losowy).
+\item Obecne koszyki obu graczy (czyli wyznaczniki siły kart graczy).
+\item Liczba odzywek w aktualnej licytacji (informacja potrzebna, by każda akcja powodowała zmianę stanu).
+\item Proponowana stawka (najwyższa do tej pory oferta).
+\item Uzgodniona stawka (wysokość stawki, na którą zgodzili się obaj gracze).
 \end{itemize}
 
 \noindent
@@ -592,10 +605,11 @@ W jednym zbiorze informacyjnym są wszystkie stany, które są tożsame w powyż
 wiedzy o koszyku przeciwnika. \\
 
 \noindent
-Kluczowe dla zmniejszenia złożoności algorytmu było przeformułowanie algorytmu CFR tak, by każdy
+Kluczowe dla zmniejszenia złożoności algorytmu było przeformułowanie algorytmu CFR, tak by każdy
 stan odwiedzany był tylko raz w jednej iteracji. Dzięki temu złożoność pojedynczej iteracji jest
 liniowa względem liczby stanów. Na początku algorytmu tworzony jest graf przejść między
-stanami co pozwala uniezależnić iteracje algorytmu od mechaniki gry. Przyspiesza to znacząco
+stanami, co pozwala uniezależnić iteracje algorytmu od mechaniki gry. Pozwala to pozbyć się narzutu czasowego,
+związanego z wykonywaniem operacji zgodnie z mechaniką gry. Przyspiesza to znacząco
 czas obliczeń w pojedynczym stanie. Zauważmy, że w takim grafie nie ma cykli, jest więc DAGiem.
 
 \section{Tworzenie abstrakcji}
@@ -606,12 +620,12 @@ W każdej rundzie licytacji gracze mają prawo do jednokrotnego podbicia stawki.
 \begin{itemize}
 \item \textbf{fold} - zrezygnowanie z udziału w rozgrywce.
 \item \textbf{call} - zgodzenie się na obecną stawkę.
-\item \textbf{raise} - zaproponowanie stawki dwukrotnie większej niż obecna
-\item \textbf{all in} - zaproponowanie maksymalnej stawki
+\item \textbf{raise} - zaproponowanie stawki dwukrotnie większej niż obecna.
+\item \textbf{all in} - zaproponowanie maksymalnej stawki.
 \end{itemize}
 
 \noindent
-Niektóre akcje są niedostępne jeżeli nie mają strategicznego sensu, np \textbf{fold} w przypadku gdy
+Niektóre akcje są niedostępne, jeżeli nie mają strategicznego sensu, na przykład \textbf{fold} w przypadku, gdy
 proponowana stawka nie jest wyższa niż stawka, na którą gracz już się zgodził. \\
 
 \noindent
@@ -619,9 +633,9 @@ W celu podzielenia układów na koszyki, układy z jednej rundy są sortowane po
 $n$ koszyków, to są dzielone tak, by w każdym koszyku znalazła się podobna liczba układów (czyli $\frac{1}{n}$ wszystkich układów). \\
 
 \noindent
-Na potrzebę wyliczania strategii liczone są prawdopodobieństwa przejść między parami koszyków. Czyli np dla każdej kombinacji
+Na potrzebę wyliczania strategii liczone są prawdopodobieństwa przejść między parami koszyków. Na przykład dla każdej kombinacji
 trójek kart pojawiąjących się na stole na flopie, liczone jest prawdopodobieństwo zmiany koszyka o numerze $A$ z pierwszej
-rundy na koszyk $B$ w drugiej rundzie dla każdej takiej pary $(A, B)$. Dodatkowo liczone są rozkłady koszyków
+rundy, na koszyk $B$ w drugiej rundzie, dla każdej takiej pary $(A, B)$. Dodatkowo liczone są rozkłady koszyków
 w każdej rundzie, zależne od koszyków z poprzedniej rundy. \\
 
 \noindent
@@ -633,15 +647,15 @@ EHS = HS \cdot (1 - Npot) + (1 - HS) \cdot Ppot
 
 \noindent
 W celu wyliczenia wartości $HS$ dla układu, przeglądane są wszystkie możliwe pary kart u przeciwnika i liczony jest procent
-przypadków gdy siła układu jest większa niż siła kart przeciwnika poszerzonych o karty ze stołu występujące w układzie.
+przypadków, gdy siła układu jest większa niż siła kart przeciwnika, poszerzonych o karty ze stołu występujące w układzie.
 By wyliczyć potencjał układu z rund $1$, $2$, $3$ (dla rundy $4$ liczenie potencjału nie ma sensu) przeglądane są wszystkie
-możliwe kombinacje następnych kart na stole. Jeżeli po dodaniu następnych kart, układ zmienił się z przegrywającego w
+możliwe kombinacje następnych kart na stole. Jeżeli po dodaniu następnych kart układ zmienił się z przegrywającego w
 wygrywający, rośnie wartość $Ppot$. W odwrotnej sytuacj rośnie $Npot$.
 
 \noindent
-Wyliczenie wartości $EHS$ dla wszystkich możliwych układów wymaga przejrzenia wszystkich możliwych kombinacji 9 kart (2 kart gracza, 2 przeciwnika
+Wyliczenie wartości $EHS$ dla wszystkich możliwych układów, wymaga przejrzenia wszystkich możliwych kombinacji 9 kart (2 kart gracza, 2 przeciwnika
 oraz 5 kart na stole). Jest to bardzo wymagające obliczeniowo. By skrócić obliczenia, EHS jest wyliczane jedynie dla niektórych układów
-kart gracza. Jest to oparte na obserwacji że niektóre układy powinny mieć taki sam $EHS$. Np $EHS$ pary As Kier i As Karo powinien być taki
+kart gracza. Jest to oparte na obserwacji, że niektóre układy powinny mieć taki sam $EHS$. Na przykład $EHS$ pary As Kier i As Karo powinien być taki
 sam jak $EHS$ pary As Kier, As Trefl albo As Pik, As Karo. 
 
 \begin{align*}
@@ -649,13 +663,13 @@ EHS(A\heartsuit, A\spadesuit) = EHS(A\heartsuit, A\diamondsuit) = EHS(A\heartsui
 \end{align*}
 
 \noindent
-Dany układ figur (np $(A,A,D,9,4)$) może występować w wielu wariantach kolorystycznych. Nie wszystkie są równoważne ze względu
-na wartość $EHS$ gdyż różnią się potencjałem na bycie układem jednokolorowym. Uwzględniając te różnice obliczam $EHS$ jedynie
+Dany układ figur (np. $(A,A,D,9,4)$) może występować w wielu wariantach kolorystycznych. Nie wszystkie są równoważne ze względu
+na wartość $EHS$, gdyż różnią się potencjałem na bycie układem jednokolorowym. Uwzględniając te różnice, $EHS$ jest obliczane jedynie
 dla niektórych wariantów kolorystycznych danego układu figur. \\
 
 \noindent
 Każdemu układowi kart ($U$) przyporządkowany jest reprezentant ($R$) - układ figur, który ma taką samą wartość $EHS$.
-$R$ oraz $U$ są tożsame ze względu na zbiory figur. Dodatkowo, jeśli $x$ to kolor występujący najczęściej w $U$
+$R$ oraz $U$ są tożsame ze względu na zbiory figur. Dodatkowo, jeśli $x$ to kolor występujący najczęściej w $U$,
 to zbiór figur o kolorze $x$ w układzie $U$ jest tożsamy ze zbiorem figur o kolorze $\clubsuit$ w układzie $R$.
 Kolory pozostałych kart w układzie $R$ są dowolne ale $\clubsuit$ jest najczęściej występującym kolorem. Wartość
 $EHS$ jest obliczana tylko dla jednego takiego układu $R$. Można to rozumieć jako klasę abstrakcji układów kart, gdzie
@@ -679,28 +693,28 @@ wykonywane są kolejne iteracje obliczające wartość regretów we wszystkich z
 modyfikowana jest strategia. \\
 
 \noindent
-W grafie stanów zbiór wierzchołków odpowiada zbiorowi stanów gry. Stany końcowe odpowiadają
+W grafie stanów, zbiór wierzchołków odpowiada zbiorowi stanów gry. Stany końcowe odpowiadają
 sytuacjom, w których rozgrywka się zakończyła i znany jest zysk obu graczy. Krawędź ze stanu $s_1$ do stanu $s_2$
-istnieje jeżeli będąc w stanie $s_1$ można wykonać akcję, której rezultatem jest przejście do stanu
+istnieje, jeżeli będąc w stanie $s_1$ można wykonać akcję, której rezultatem jest przejście do stanu
 $s_2$. W krawędzi zapisujemy informację o akcji z nią powiązanej oraz o prawdopodobieństwie zajścia
-tej akcji jeżeli w stanie $s_1$ akcję podejmuje gracz losowy. W innych przypadkach prawdopodobieństwo
+tej akcji, jeżeli w stanie $s_1$ akcję podejmuje gracz losowy. W innych przypadkach prawdopodobieństwo
 zajścia akcji jest wyznaczone przez aktualną strategię gracza wykonującego akcję w $s_1$. \\
 
 \noindent
 Graf stanów jest budowany przy użyciu algorytmu DFS. W każdym nowo odwiedzanym stanie
-wyliczany jest jego identyfikator na podstawie aktualnych wartości parametrów. Dodatkowo dodawane
-są krawędzie prowadzące do sąsiednich stanów, a w stanach końcowych zapisywana jest informacja o
+wyliczany jest jego identyfikator, na podstawie aktualnych wartości parametrów. Dodatkowo dodawane
+są krawędzie prowadzące do sąsiednich stanów a w stanach końcowych zapisywana jest informacja o
 zyskach graczy. \\
 
 \noindent
 Dla każdego stanu $s$ może istnieć wiele ciągów akcji (historii), po których wykonaniu gra
 znajdzie się w stanie $s$. Niech $H(s)$ oznacza zbiór historii $h$, których rezultatem jest stan $s$.
-W algorytmie $VanillaCfr$ każda historia była przetwarzana osobno, tzn aktualizowane były wartości
+W algorytmie $VanillaCfr$ każda historia była przetwarzana osobno, to znaczy aktualizowane były wartości
 regretów w zbiorze informacyjnym jej odpowiadającym. Modyfikacja algorytmu grupuje obliczenia z
 wszystkich historii w $H(s)$ i wykonuje jedną zbiorczą aktualizację w stanie $s$. \\
 
 \noindent
-W algorytmie $VanillaCfr$ wartości map $R$ i $S$ dla historii $h$, zbioru informacyjnego $I(h)$ oraz akcji $a$ są modyfikowane
+W algorytmie $VanillaCfr$ wartości map $R$ i $S$ dla historii $h$, zbioru informacyjnego $I(h)$ oraz akcji $a$, są modyfikowane
 wg następujących wzorów:
 
 \begin{align*}
@@ -762,13 +776,13 @@ Wprowadźmy następujące oznaczenia:
 
 \begin{itemize}
 \item $P(s)$ - gracz wykonujący akcję w stanie $s$.
-\item $\sigma(s_1, s_2)$ - prawdopodobieństwo wykonania akcji prowadzącej ze stanu $s_1$ do $s_2$ zgodnie ze strategią $\sigma$.
+\item $\sigma(s_1, s_2)$ - prawdopodobieństwo wykonania akcji prowadzącej ze stanu $s_1$ do $s_2$, zgodnie ze strategią $\sigma$.
 \item $\pi(s_1, s_2)$ - prawdopodobieństwo wykonania akcji gracza losowego prowadzącej ze stanu $s_1$ do $s_2$.
 \item $E_{(s_1, s_2)}$ - krawędź ze stanu $s_1$ do $s_2$.
 \end{itemize}
 
 \noindent
-Zdefiniujmy funkcję $prob_i(E_{(s_1, s_2)})$ następująco 
+Zdefiniujmy funkcję $prob_i(E_{(s_1, s_2)})$ następująco:
 
 \begin{equation*}
 prob_i(E_{(s_1, s_2)}) = \begin{cases}
@@ -788,10 +802,10 @@ Wtedy zachodzi:
 
 \noindent
 Czyli żeby obliczyć wartości $\pi_i^{\sigma}(s)$ oraz $\pi_{i, c}^{\sigma}(s)$ w stanie $s$, wystarczy
-mieć je policzone dla każdego stanu $s'$ z którego prowadzi krawędź do $s$. W stanie początkowym $s_0$ zachodzi
+mieć je policzone dla każdego stanu $s'$, z którego prowadzi krawędź do $s$. W stanie początkowym $s_0$ zachodzi
 $\pi_i^{\sigma}(s_0) = 1$ oraz $\pi_{i, c}^{\sigma}(s_0) = 1$. Graf stanów to DAG, czyli
-skierowany graf acykliczny. W takim grafie wierzchołki można ułożyć w ciąg w porządku topologicznym, tzn
-jeżeli z wierzchołka $v$ prowadzi krawędź do wierzchołka $w$ to $v$ znajduje się w ciągu przed wierzchołkiem $w$.
+skierowany graf acykliczny. W takim grafie wierzchołki można ułożyć w ciąg w porządku topologicznym, to znaczy
+jeżeli z wierzchołka $v$ prowadzi krawędź do wierzchołka $w$, to $v$ znajduje się w ciągu przed wierzchołkiem $w$.
 
 \section{Pseudokod algorytmu DAG CFR}
 

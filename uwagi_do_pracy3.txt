@@ -1,5 +1,9 @@
-- Nie używaj skrótów a jeśli już to z kropką poprawnie
-- przecinki
+- pododawaj komentarze
+- eksperymenty
+- podsumowanie
+- przejrzyj poprawki Pawlewicza
++ Nie używaj skrótów a jeśli już to z kropką poprawnie
++ przecinki
 - \emph gdy wprowadzasz nowy termin
 + czasem zapominasz \ przed max
 
@@ -27,7 +31,7 @@ Rozdział 3.
 + notacja przecinka jeśli chodzi o zespół strategii
 + sprawdzić czy numery graczy są konsekwentne
 + w pseudokodzie używać krótszych oznaczeń nazw i opisywać je w komentarzach
-- opisać lepiej algorytm vanilla cfr
++ opisać lepiej algorytm vanilla cfr
 
 Rozdział 4.
 + wyjaśnić elementy w stanie gry
