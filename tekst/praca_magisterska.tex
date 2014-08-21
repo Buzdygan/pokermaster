@@ -161,38 +161,38 @@ zmniejszania rozmiaru gry na potrzeby efektywnego obliczania strategii.
 \section{Pomocnicze pojęcia}
 
 \begin{definition}
-      \textbf{Stan gry} jest rezultatem dotychczasowych akcji podjętych przez graczy, oraz zdarzeń losowych.
+      \textbf{Stan gry} jest rezultatem dotychczasowych akcji podjętych przez graczy oraz zdarzeń losowych.
       Składają się na niego informacje, które opisują aktualną rozgrywkę.
       Stan gry jednoznacznie definiuje zbiór dostępnych
-      akcji oraz graczy, którzy je wykonują (wliczając w to tzw gracza losowego, który odpowiada
+      akcji oraz graczy, którzy je wykonują (wliczając w to gracza losowego, który odpowiada
       za generowanie zdarzeń losowych zgodnie z zasadami gry). Wykonywane przez graczy akcje
       zmieniają stan gry (inaczej ich wykonywanie nie ma sensu).
 \end{definition}
 
 \begin{definition}
-      \textbf{Graf gry} to graf skierowany, którego wierzchołkami są stany gry a krawędź prowadzi od stanu
-      $s_1$ do stanu $s_2$ jeśli w stanie $s_1$ można wykonać akcję prowadzącą do stanu
+      \textbf{Graf gry} to graf skierowany, którego wierzchołkami są stany gry. Krawędź prowadzi od stanu
+      $s_1$ do stanu $s_2$, jeśli w stanie $s_1$ można wykonać akcję prowadzącą do stanu
       $s_2$. Jeśli w takim grafie nie występuje cykl, nazywamy go DAGiem.
 \end{definition}
 
 \begin{definition}
-      \textbf{Drzewo gry} reprezentuje wszystkie możliwe rozgrywki. Każdemu wierzchołek reprezentuję jedną historię
+      \textbf{Drzewo gry} reprezentuje wszystkie możliwe rozgrywki. Każdy wierzchołek reprezentuje jedną historię,
       czyli ciąg akcji wykonanych w grze. Wierzchołkowi przypisany jest stan gry, który jest efektem
-      wykonania tego ciągu akcji. Z każdego wierzchołka wychodzi tyle krawędzi ile różnych
+      wykonania tego ciągu akcji. Z każdego wierzchołka wychodzi tyle krawędzi, ile różnych
       akcji można wykonać w stanie gry przypisanym temu wierzchołkowi.
 \end{definition}
 
 \begin{definition}
       Gry dzielimy na dwie kategorie: \textbf{z pełną informacją} oraz \textbf{z niepełną informacją}.
       W przypadku tych pierwszych, wszyscy gracze posiadają wszystkie informacje o zdarzeniach
-      zachodzących w grze. Przykładem takiej gry są szachy. W grach z niepełną informacją, niektóre
+      zachodzących w grze. Przykładem takiej gry są szachy. W grach z niepełną informacją niektóre
       zdarzenia są ukryte dla pewnego zbioru graczy. Na przykład w więkości gier karcianych gracze
       nie znają kart swoich przeciwników.
 \end{definition}
 
 \begin{definition}
       \textbf{Zbiór informacyjny} dla gracza $p$ zawiera te stany gry, które są identyczne jeśli chodzi
-      o informacje dostępne graczowi $p$. Przykładowo, w dwuosobowej grze karcianej, przykładem zbioru informacyjnego
+      o informacje dostępne graczowi $p$. Przykładowo, w dwuosobowej grze karcianej przykładem zbioru informacyjnego
       jest zbiór wszystkich stanów zaraz po rozdaniu kart, w których gracz $p$ ma na ręku jedynie asa i króla kier.
       Zbiory informacyjne są ważne z punktu widzenia podejmowania decyzji: w każdym stanie gry należącym do tego
       samego zbioru informacyjnego gracza $p$, gracz $p$ podejmuje decyzje wg tej samej strategii.
@@ -212,14 +212,14 @@ zmniejszania rozmiaru gry na potrzeby efektywnego obliczania strategii.
 \section{Sztuczna inteligencja w grach}
 
 Sztuczna inteligencja w grach to dział algorytmiki zajmujący się badaniem programów grających
-z dużą skutecznością w gry. Jest dużo rodzajów gier. Gry jednoosobowe to tzw łamigłówki, w których
+z dużą skutecznością w gry. Jest dużo rodzajów gier. Gry jednoosobowe to tak zwane łamigłówki, w których
 należy znaleźć odpowiednią sekwencję ruchów, prowadzącą do jak najlepszego wyniku. Algorytmy znajdujące
 takie sekwencje opierają się na efektywnym przeglądaniu drzewa gry. Programy grające w gry wieloosobowe
 muszą wyliczyć odpowiednią strategię. Gry różnią się złożonością informacji składających się na stan gry.
 Nawet prosta gra, w której graczom przydzielana jest losowo wybrana liczba rzeczywista, mają nieskończenie
-wiele stanów gry. Zazwyczaj jednak informacje można reprezentować przez ograniczone liczby całkowite przez co
+wiele stanów gry. Zazwyczaj jednak informacje można reprezentować przez ograniczone liczby całkowite, przez co
 liczba stanów gry też jest ograniczona. Przedmiotem badań tej pracy jest gra Texas Holdem Poker, która
-należy do gatunku gier z niepełną informacją z ograniczoną liczbą stanów gry.
+należy do gatunku gier z niepełną informacją, z ograniczoną liczbą stanów gry.
 
 \section{Texas Holdem Poker}
 
@@ -233,9 +233,9 @@ za stawkę ustaloną wielkością "small blind" a następny gracz w kolejności 
 W licytacji gracze odzywają się w ustalonej kolejności. Mogą wejść za całą dostępną im kwotę (\textbf{all-in}),
 podbić stawkę (\textbf{raise}), pozostać przy
 obecnej stawce (\textbf{call}) lub zrezygnować z udziału w licytacji (\textbf{fold}). W pierwszych dwóch przypadkach są
-zobowiązani oddać do puli stawkę na jaką się zgodzili. Różne wersje gry określają ograniczenia podnoszenia
-stawki. W tej pracy przyjęta jest wersja, w której można podnieść stawkę o dowolną kwotę całkowitą o ile stawka
-po podniesieniu nie przekracza 128 jednostek. Popularną ale jednocześnie trudną obliczeniowo wersją
+zobowiązani oddać do puli stawkę, na jaką się zgodzili. Różne wersje gry określają ograniczenia podnoszenia
+stawki. W tej pracy przyjęta jest wersja, w której można podnieść stawkę o dowolną kwotę całkowitą, o ile stawka
+po podniesieniu nie przekracza 128 jednostek. Popularną ale jednocześnie trudną obliczeniowo wersją,
 jest wersja no-limit, w której nie nakłada się limitu na kwotę przebicia.
 Stawka na zakończenie licytacji zostaje ustalona, gdy
 wszyscy gracze biorący jeszcze udział w licytacji zaakceptują aktualną wysokość stawki. Jeśli będzie to
@@ -244,63 +244,63 @@ nakłada się ograniczenie na liczbę zagrywek jednego gracza w licytacji.\\
 
 \noindent
 Po pierwszej rundzie licytacji następuje wyłożenie trzech kart na stół, tak by widzieli je wszyscy gracze.
-Jest to tzw "flop". Następuje kolejna runda licytacji po czym wykładana jest jedna karta, tzw "turn".
-Po trzeciej rundzie licytacji na stół wykładana jest ostatnia karta "river" i następuje ostatnia runda
+Na taką trójkę mówi się \emph{flop}. Następuje kolejna runda licytacji, po czym wykładana jest jedna karta, nazywana \emph{turn}.
+Po trzeciej rundzie licytacji na stół wykładana jest ostatnia karta - \emph{river} i następuje ostatnia runda
 licytacji. Jeżeli w ostatniej rundzie co najmniej dwóch graczy uzgodni ostateczną stawkę gry, następuje
 wyłożenie kart graczy na stół i rozstrzygnięcie kto został zwycięzcą. \\
 
 \noindent
 Zwycięzcą zostaje gracz, który jest w stanie wybrać ze swoich kart oraz kart na stole, najsilniejszy
-5-kartowy układ. Siłę układu 5 kart wyznacza poniższy ranking, dla każdego typu układu, im wyższe
-figury występują w układzie tym większa jest jego siła. Typy układów wymienione są w kolejności
+5-kartowy układ. Siłę układu 5 kart wyznacza poniższy ranking. Dla każdego typu układu, im wyższe
+figury występują w układzie, tym większa jest jego siła. Typy układów wymienione są w kolejności
 od najsilniejszego do najsłabszego.
 
 \begin{enumerate}
-\item \textbf{Poker}: 5 kolejnych kart w tym samym kolorze, np $(D\clubsuit, W\clubsuit, 10\clubsuit, 9\clubsuit, 8\clubsuit)$ 
-\item \textbf{Kareta}: 4 takie same figury, np $(7\heartsuit, 7\spadesuit, 7\diamondsuit, 7\clubsuit, D\diamondsuit)$
-\item \textbf{Full}: Trójka takich samych figur połączona z parą takich samych figur, np $(K\heartsuit, K\diamondsuit, K\clubsuit, 3\heartsuit, 3\diamondsuit)$ 
-\item \textbf{Kolor}: 5 kart w tym samym kolorze, np $(K\diamondsuit, W\diamondsuit, 6\diamondsuit, 5\diamondsuit, 2\diamondsuit)$
-\item \textbf{Strit}: 5 kolejnych kart, np $(10\heartsuit, 9\diamondsuit, 8\heartsuit, 7\clubsuit, 6\spadesuit)$
-\item \textbf{Trójka}: 3 takie same figury, np $(5\heartsuit, 5\diamondsuit, 5\clubsuit, 8\heartsuit, D\spadesuit)$
-\item \textbf{Dwie pary}: Dwie pary tych samych figur, np $(A\heartsuit, A\diamondsuit, 8\clubsuit, 8\heartsuit, W\clubsuit)$
-\item \textbf{Para}: Para tych samych figur, np $(10\clubsuit, 10\spadesuit, A\heartsuit, 9\clubsuit, 2\heartsuit)$
-\item \textbf{Najwyższa karta}: Najwyższa figura, np $(K\heartsuit, W\diamondsuit, 10\heartsuit, 9\heartsuit, 5\spadesuit)$
+\item \textbf{Poker}: 5 kolejnych kart w tym samym kolorze, np. $(D\clubsuit, W\clubsuit, 10\clubsuit, 9\clubsuit, 8\clubsuit)$ 
+\item \textbf{Kareta}: 4 takie same figury, np. $(7\heartsuit, 7\spadesuit, 7\diamondsuit, 7\clubsuit, D\diamondsuit)$
+\item \textbf{Full}: Trójka takich samych figur połączona z parą takich samych figur, np. $(K\heartsuit, K\diamondsuit, K\clubsuit, 3\heartsuit, 3\diamondsuit)$ 
+\item \textbf{Kolor}: 5 kart w tym samym kolorze, np. $(K\diamondsuit, W\diamondsuit, 6\diamondsuit, 5\diamondsuit, 2\diamondsuit)$
+\item \textbf{Strit}: 5 kolejnych kart, np. $(10\heartsuit, 9\diamondsuit, 8\heartsuit, 7\clubsuit, 6\spadesuit)$
+\item \textbf{Trójka}: 3 takie same figury, np. $(5\heartsuit, 5\diamondsuit, 5\clubsuit, 8\heartsuit, D\spadesuit)$
+\item \textbf{Dwie pary}: Dwie pary tych samych figur, np. $(A\heartsuit, A\diamondsuit, 8\clubsuit, 8\heartsuit, W\clubsuit)$
+\item \textbf{Para}: Para tych samych figur, np. $(10\clubsuit, 10\spadesuit, A\heartsuit, 9\clubsuit, 2\heartsuit)$
+\item \textbf{Najwyższa karta}: Najwyższa figura, np. $(K\heartsuit, W\diamondsuit, 10\heartsuit, 9\heartsuit, 5\spadesuit)$
 \end{enumerate}
 
 \noindent
-W sytuacji gdy gracze mają ten sam typ układu, z tymi samymi figurami, pod uwagę brane są pozostałe karty z układu. Np
+W sytuacji gdy gracze mają ten sam typ układu, z tymi samymi figurami, pod uwagę brane są pozostałe karty z układu. Na przykład
 układ $(7\heartsuit, 7\diamondsuit, 7\clubsuit, K\heartsuit, W\clubsuit)$ jest silniejszy od układu
 $(7\spadesuit, 7\diamondsuit, 7\clubsuit, K\spadesuit, 5\diamondsuit)$. \\
 
 \noindent
-Jeśli po uwzględnieniu wszystkich 5 kart układu nadal występuje remis (np gdy najsilniejszy układ stanowią karty na stole),
+Jeśli po uwzględnieniu wszystkich 5 kart układu nadal występuje remis (na przykład gdy najsilniejszy układ stanowią karty na stole),
 pula jest dzielona między graczy z najwyższym układem.
 
 \section{Rozwój botów grających w Pokera}
 
 Pierwsze boty opierały swoją strategię na zbiorze zasad wpisanych ręcznie przez pokerowych graczy. Zasady określały
-sposób podejmowania decyzji w konkretnych sytuacjach, np "mając na ręku Asa i Damę" podbijaj stawkę trzykrotnie".
-W 2004 roku powstał program WinHoldem, który umożliwiał proste tworzyenie botów grających według pewnego zbioru zasad.
-Jednocześnie, w środowiskach akademickich rozwijały się podejścia oparte na znajdowaniu równowagi Nasha. Owocem tych
+sposób podejmowania decyzji w konkretnych sytuacjach, na przykład "Mając na ręku Asa i Damę, podbijaj stawkę trzykrotnie".
+W 2004 roku powstał program WinHoldem, który umożliwiał proste tworzenie botów, grających według pewnego zbioru zasad.
+Jednocześnie, w środowiskach akademickich, rozwijały się podejścia oparte na znajdowaniu równowagi Nasha. Owocem tych
 badań jest między innymi opisywany w tej pracy algorytm CFR. Takie podejścia przeważają w długiej serii rozgrywek ale
 brakuje im umiejętności wykorzystania słabości w strategiach przeciwnika. Powstały również algorytmy, które w serii
 rozgrywek próbują estymować strategię przeciwnika i znajdują najlepszą dla niej kontrstrategię. \cite{exploit}
 
 \section{Zmniejszanie drzewa gry}
 
-Drzewo gry w pokerze jest bardzo duże. W dwuosobowym no-limit Texas Holdem Poker jest wielkości
-ok. $10^{70}$ stanów. \cite{monte-carlo}. Dlatego niezbędne jest wprowadzenie abstrakcji gry.
-Pierwsze ograniczenie, które zastosowano dotyczy licytacji. Dostępne są maksymalnie 4 akcje:
-fold (rezygnacja z licytacji), call (pozostanie przy obecnej stawce), raise(dwukrotne podbicie stawki) oraz
-all in(zalicytowanie maksymalnej stawki - 128). W ten sposób jedyne możliwe wysokości stawek w licytacji to: $1$, $2$,
+Drzewo gry w pokerze jest bardzo duże. W dwuosobowym no-limit Texas Holdem Poker ma wielkość
+około $10^{70}$ stanów. \cite{monte-carlo}. Dlatego niezbędne jest wprowadzenie abstrakcji gry.
+Pierwsze ograniczenie, które zastosowano, dotyczy licytacji. Dostępne są maksymalnie 4 akcje:
+\textbf{fold} (rezygnacja z licytacji), \textbf{call} (pozostanie przy obecnej stawce), \textbf{raise} (dwukrotne podbicie stawki) oraz
+\textbf{all in} (zalicytowanie maksymalnej stawki - 128). W ten sposób jedyne możliwe wysokości stawek w licytacji to: $1$, $2$,
 $4$, $8$, $16$, $32$, $64$ i $128$. \\\\
 \noindent
-Drugie ograniczenie przyporządkowuje układom kart graczy (karty na ręce wraz z kartami na stole) tzw "koszyki". \cite[sekcja 4.4]{buckets}
-W jednym "koszyku" są karty o podobnej sile. W każdej rundzie licytacji obowiązuje osobny podział, zmienna
+Drugie ograniczenie przyporządkowuje układom kart graczy (karty na ręce wraz z kartami na stole) tak zwane \emph{"koszyki"}. \cite[sekcja 4.4]{buckets}
+W jednym koszyku są karty o podobnej sile. W każdej rundzie licytacji obowiązuje osobny podział, zmienna
 jest też liczba koszyków. Testowano różne liczby koszyków, w zależności od używanego algorytmu. \\\\
 \noindent
 Do oceny siły układów zastosowano miarę "Effective Hand Strength" (EHS) \cite{ehs}. EHS układu wyliczany
-jest z trzech innych miar: "Hand Strength" ($HS$), "Positive Potential" ($Ppot$) oraz "Negative Potential" ($Npot$) według
+jest z trzech innych miar: "Hand Strength" ($HS$), "Positive Potential" ($Ppot$) oraz "Negative Potential" ($Npot$), według
 wzoru:
 
 \begin{align*}
@@ -308,15 +308,15 @@ EHS = HS \cdot (1 - Npot) + (1 - HS) \cdot Ppot
 \end{align*}
 
 \noindent
-$HS$ to w przybliżeniu prawdopodobieństwo że nasza ręka jest lepsza od ręki przeciwnika. Miary $Ppot$ i $Npot$ oznaczają
-prawdopodobieństwo że nasza ręka stanie się lepsza (odpowiednio gorsza) od ręki przeciwnika po wyłożeniu kolejnych kart na stół. \\
+$HS$ to w przybliżeniu prawdopodobieństwo, że nasza ręka jest lepsza od ręki przeciwnika. Miary $Ppot$ i $Npot$ oznaczają
+prawdopodobieństwo, że nasza ręka stanie się lepsza (odpowiednio gorsza) od ręki przeciwnika, po wyłożeniu kolejnych kart na stół. \\
 
 \noindent
 Przykłady: \\
 
 \noindent
 Ręka ($A\heartsuit$, $A\clubsuit$ ; $A\diamondsuit$, $5\spadesuit$, $2\clubsuit$) (dwie pierwsze karty to karty na ręce) ma wartość $HS$
-bliską $1$, gdyż żadna możliwa para kart nie tworzy lepszego układu gdy na stole są karty ($A\diamondsuit$, $5\spadesuit$, $2\clubsuit$). \\
+bliską $1$, gdyż żadna możliwa para kart nie tworzy lepszego układu, gdy na stole są karty ($A\diamondsuit$, $5\spadesuit$, $2\clubsuit$). \\
 
 \noindent
 Ręka ($3\heartsuit$, $4\clubsuit$ ; $A\diamondsuit$, $5\spadesuit$, $2\clubsuit$) ma wysoką wartość $Ppot$ ponieważ ma niską wartość $HS$
@@ -324,7 +324,7 @@ ale jednocześnie duży potencjał na stanie się ręką z układem \textbf{stri
 
 \noindent
 Ręka ($A\heartsuit$, $A\clubsuit$ ; $A\diamondsuit$, $5\diamondsuit$, $2\diamondsuit$) ma wysoką wartość $Npot$ ponieważ jest silna
-dzięki parze asów ale istnieje stosunkowo duże prawdopodobieństwo, że przeciwnik posiada karty w kolorze $\diamondsuit$ co zwiększa jego szansę
+dzięki parze asów ale istnieje stosunkowo duże prawdopodobieństwo, że przeciwnik posiada karty w kolorze $\diamondsuit$, co zwiększa jego szansę
 na uzyskanie ręki z układem jednokolorowym.
 
 
@@ -332,8 +332,8 @@ na uzyskanie ręki z układem jednokolorowym.
 
 Metoda CFR (Counterfactual Regret Minimization) to algorytm, który pozwala znajdować równowagę Nasha
 w grach w postaci ekstensywnej. Jest to obecnie najlepsze rozwiązanie w dziedzinie badań nad
-sztuczną inteligencją w Pokerze. Choć używane są głównie różne modyfikacje algorytmu, chciałbym
-przedstawić tu jego bazową wersję.
+sztuczną inteligencją w Pokerze. Choć używane są głównie różne modyfikacje algorytmu,
+przedstawiona zostanie tu jego bazowa wersja.
 
 \section{Oznaczenia}
 
