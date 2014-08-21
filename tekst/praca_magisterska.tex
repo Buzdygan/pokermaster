@@ -102,7 +102,7 @@ się poza zasięgiem współczesnych maszyn. Są natomiast bardzo udane próby z
 liczonych dla abstrakcji rzeczywistych gier, które spisują się coraz lepiej w pojedynkach z ludźmi.
 Abstrakcje zawężają zbiór akcji dostępnych graczom i utożsamiają niektóre stany gry w celu zmniejszenia jej rozmiaru.
 W trakcie badań nad strategiami rozwinęły się algorytmy takie jak "Monte Carlo Tree Search", czy opisywana
-w tej pracy metoda "Counterfactual Regret Minimization" (CFR). Odkrycie tej ostatniej w 2007 roku\cite{cfr} było przełomem
+w tej pracy metoda "Counterfactual Regret Minimization" (CFR). Odkrycie tej ostatniej w 2007 roku \cite{cfr} było przełomem
 w znajdowaniu aproksymacji równowagi Nasha w grach w postaci ekstensywnej. Metoda opiera się na poprawianiu strategii w kolejnych
 iteracjach. Prawdopodobieństwo zagrania akcji w kolejnej iteracji jest proporcjonalne do oczekiwanego zysku z tej akcji
 przy założeniu, że gracze grają strategią z obecnej iteracji. Modyfikacje metody CFR są używane
@@ -123,10 +123,10 @@ Texas Holdem Poker, którą wykorzystano do porównania skuteczności metody CFR
 Zostanie też przybliżona historia rozwoju programów grających w gry oraz metody budowania abstrakcji gier. \\
 
 \noindent
-Rozdział 3 opisuje algorytm CFR, w wersji pierwszy raz przedstawionej w 2007 roku w pracy
-"Regret Minimization in Games with Incomplete Information" \cite{cfr}. Zostały w nim przytoczone pojęcia
+Rozdział 3 opisuje algorytm CFR, w wersji pierwszy raz przedstawionej w 2007 roku w pracy \cite{cfr}.
+Zostały w nim przytoczone pojęcia
 związane z grami ekstensywnymi oraz twierdzenia dowodzące skuteczności metody CFR. Na końcu rozdziału
-zamieszczony jest pseudokod algorytmu $VanillaCfr$, który jest jedną ze znanych realizacji tej metody. \\
+zamieszczony jest pseudokod algorytmu $VanillaCfr$, który jest jednym ze znanych algorytmów realizujących metodę CFR. \\
 
 \noindent
 Rozdział 4 jest poświęcony algorytmowi DAG CFR. Na początku przedstawiona jest idea algorytmu.
@@ -195,13 +195,13 @@ zmniejszania rozmiaru gry na potrzeby efektywnego obliczania strategii.
       o informacje dostępne graczowi $p$. Przykładowo, w dwuosobowej grze karcianej przykładem zbioru informacyjnego
       jest zbiór wszystkich stanów zaraz po rozdaniu kart, w których gracz $p$ ma na ręku jedynie asa i króla kier.
       Zbiory informacyjne są ważne z punktu widzenia podejmowania decyzji: w każdym stanie gry należącym do tego
-      samego zbioru informacyjnego gracza $p$, gracz $p$ podejmuje decyzje wg tej samej strategii.
+      samego zbioru informacyjnego gracza $p$, gracz $p$ podejmuje decyzje według tej samej strategii.
 \end{definition}
 
 \begin{definition}
       \textbf{Strategia} gracza $p$ wyznacza zasady podejmowania przez gracza akcji w zbiorach informacyjnych.
       Strategia może być deterministyczna, jeśli w każdym zbiorze informacyjnym jest wyznaczona dokładnie
-      jedna podejmowana akcja, bądź mieszana jeśli na akcjach określony jest rozkład prawdopodobieństwa
+      jedna podejmowana akcja, bądź mieszana, jeśli na akcjach określony jest rozkład prawdopodobieństwa
       zagrania ich.
 \end{definition}
 
@@ -289,7 +289,7 @@ rozgrywek próbują estymować strategię przeciwnika i znajdują najlepszą dla
 \section{Zmniejszanie drzewa gry}
 
 Drzewo gry w pokerze jest bardzo duże. W dwuosobowym no-limit Texas Holdem Poker ma wielkość
-około $10^{70}$ stanów. \cite{monte-carlo}. Dlatego niezbędne jest wprowadzenie abstrakcji gry.
+około $10^{70}$ stanów \cite{monte-carlo}. Dlatego niezbędne jest wprowadzenie abstrakcji gry.
 Pierwsze ograniczenie, które zastosowano, dotyczy licytacji. Dostępne są maksymalnie 4 akcje:
 \textbf{fold} (rezygnacja z licytacji), \textbf{call} (pozostanie przy obecnej stawce), \textbf{raise} (dwukrotne podbicie stawki) oraz
 \textbf{all in} (zalicytowanie maksymalnej stawki - 128). W ten sposób jedyne możliwe wysokości stawek w licytacji to: $1$, $2$,
@@ -333,7 +333,9 @@ na uzyskanie ręki z układem jednokolorowym.
 Metoda CFR (Counterfactual Regret Minimization) to algorytm, który pozwala znajdować równowagę Nasha
 w grach w postaci ekstensywnej. Jest to obecnie najlepsze rozwiązanie w dziedzinie badań nad
 sztuczną inteligencją w Pokerze. Choć używane są głównie różne modyfikacje algorytmu,
-przedstawiona zostanie tu jego bazowa wersja.
+przedstawiona zostanie tu jego bazowa wersja. Na początku rozdziału przedstawię podstawowe oznaczenia i terminologię
+używaną w opisie algorytmu. Następnie zostaną przytoczone definicje i twierdzenia dowodzące skuteczności metody
+CFR. Na końcu rozdziału został zamieszczony opis algorytmu VanillaCfr, który liczy strategię zgodnie z metodą CFR.
 
 \section{Oznaczenia}
 
@@ -342,7 +344,7 @@ przedstawiona zostanie tu jego bazowa wersja.
 \item Zbiór graczy oznaczamy przez $N$. Graczy numerujemy od $0$, gracza losowego oznaczamy literą $c$.
 \item Zbiór wszystkich możliwych ciągów akcji (historii) legalnych w grze nazywamy $H$. Ciągi, po których kończy
       się rozgrywka, należą do podzbioru $Z$. Oczywiście każdej historii jest przyporządkowany stan gry, który
-      jest jej efektem.
+      jest jej efektem. Historię uzyskaną po wykonaniu akcji $a$ w historii $h$ oznaczamy przez $h \circ a$.
 \item Dla każdej historii $h$, zbiór akcji dostępnych w odpowiadajacym jej stanie gry oznaczamy przez $A(h)$. Oczywiście
       każdy stan wyznacza jednoznacznie gracza wykonującego akcję - $P(h)$.
 \item Dla każdego gracza $i$, historie, w których ma on ruch, są pogrupowane w zbiory informacyjne $I_i$. Dla zbioru
@@ -367,7 +369,7 @@ przedstawiona zostanie tu jego bazowa wersja.
       Dla końcowych historii $h \in Z$ określamy \textbf{funkcję użyteczności} $\mu_i(h)$, oznaczającą zysk gracza $i$ w rozgrywce
       określonej przez $h$. Dla historii $h \notin Z$ określamy $\mu_i^{\sigma}(h)$, oznaczającą oczekiwany zysk gracza $i$
       przy założeniu że gracze grają strategią $\sigma$ i historia $h$ została osiągnięta. Funkcja $\mu^{\sigma}$ wyznacza
-      oczekiwane zyski graczy w grze przy ustalonej strategii $\sigma$.
+      oczekiwane zyski graczy w pełnej rozgrywce, przy ustalonym zespole strategii $\sigma$.
 \end{definition}
 
 \noindent
@@ -375,7 +377,7 @@ W dalszej części będziemy zajmować się grami dwuosobowymi, przede wszystkim
 
 \section{$\epsilon$-równowaga Nasha}
 
-$\epsilon$-równowagą Nasha nazywamy zespół strategii $\sigma$, taki że:
+\emph{$\epsilon$-równowagą Nasha} nazywamy zespół strategii $\sigma$, taki że:
 
 \begin{align*}
 \mu_1^{\sigma} + \epsilon \geq  \max_{\sigma_1'} \, \mu_1^{(\sigma_1', \sigma_2)} 
@@ -392,7 +394,7 @@ Metoda CFR znajduje $\epsilon$-równowagę Nasha dla $\epsilon$ malejącego prop
 
 W dalszej części przyjmujemy, że rozgrywane są kolejne rundy indeksowane przez $t$. W każdej z rund
 strategie graczy będą modyfikowane na podstawie dotychczasowej rozgrywki, w efekcie dając ciąg strategii
-$(\sigma^t)$. Jako uśrednioną strategię gracza $i$ po $T$ rundach definiujemy:
+$(\sigma^t)$. Jako \emph{uśrednioną strategię} gracza $i$ po $T$ rundach definiujemy:
 
 \begin{align*}
 \overline{\sigma}_i^T(I, a) = \frac{\sum\limits_{t=1}^T \pi_i^{\sigma^t}(I) \, \sigma^t(I, a)}{\sum\limits_{t=1}^T \, \pi_i^{\sigma^t}(I)}
@@ -400,7 +402,7 @@ $(\sigma^t)$. Jako uśrednioną strategię gracza $i$ po $T$ rundach definiujemy
 
 \noindent
 Intuicyjnie, funkcja regretu określa ile gracz mógłby zyskać, zamieniając obecną strategię na najlepszą możliwą,
-przy założeniu że inni gracze pozostali by przy obecnych strategiach. Formalnie, definiujemy średni całkowity regret gracza $i$
+przy założeniu że inni gracze pozostali by przy obecnych strategiach. Formalnie, definiujemy \emph{średni całkowity regret} gracza $i$
 w rozgrywce o numerze $T$ przez:
 
 \begin{align*}
@@ -424,11 +426,15 @@ osiągnięty został zbiór informacyjny $I$ a gracze grają strategią $\sigma$
 podejmuje akcje prowadzące do zbioru informacyjnego $I$ z prawdopodobieństwem $1$. \\\\
 
 \noindent
-Wtedy definiujemy:
+Wtedy definiujemy \emph{lokalny regret akcji} jako:
 
 \begin{align*}
 R_i^T(I, a) = \frac{1}{T} \sum\limits_{t=1}^{T} \, \pi_{-i}^{\sigma^t}(I)(\mu_i(\sigma^t_{|I \rightarrow a}, I) - \mu_i(\sigma^t, I))
 \end{align*}
+
+\noindent
+oraz \emph{funkcję regretu lokalnego} jako:
+
 \begin{align*}
 R_{i, imm}^T(I) = \max_{a \in A(I)} \, R_i^T(I, a)
 \end{align*}
@@ -472,8 +478,8 @@ Analogicznie, jeśli $P(h) = c$, to dla każdego zdarzenia losowego $a$, $\pi_c(
 Jeśli $P(h) \neq j$, $\pi_j(h) = \pi_j(h \circ a)$. \\
 
 \noindent
-W danej iteracji algorytmu mapy $R$, $S$ oraz $\sigma$ przechowują informacje
-dla par (zbiór informacyjny, akcja).
+W danej iteracji algorytmu mapy $R$, $S$ oraz $\sigma$ przechowują następujące informacje
+dla par (zbiór informacyjny, akcja):
 \begin{itemize}
 \item $R$ : przechowuje sumę regretu po wszystkich dotychczasowych iteracjach algorytmu. Po iteracji $T$, $R(I, a) = R_i^T(I, a)$
         dla $i = P(I)$.
@@ -585,6 +591,13 @@ wynosi $0$. Analogicznie wygląda obliczenie końcowej strategii, przy czym patr
 
 \chapter{Algorytm DAG CFR}
 
+\noindent
+W tym rozdziale przedstawiony zostanie algorytm DAG CFR, który jest modyfikacją metody CFR. Na początku
+opisana jest idea algorytmu - rezygnacja z założenia o pełnej pamięci, która pozwala na zmniejszenie liczby
+przeglądanych stanów. Następnie opisane są zastosowane abstrakcje gry Texas Holdem Poker. W dalszej części
+przedstawiony jest dokładny opis modyfikacji algorytmu CFR. Na końcu zamieszczony jest pseudokod algorytmu
+DAG CFR. \\ 
+
 \section{Idea}
 
 Drzewo gry pokera jest duże. Nawet przy zastosowaniu bardzo okrojonych abstrakcji, liczba historii przeglądanych w każdej
@@ -652,7 +665,7 @@ W celu wyliczenia wartości $HS$ dla układu, przeglądane są wszystkie możliw
 przypadków, gdy siła układu jest większa niż siła kart przeciwnika, poszerzonych o karty ze stołu występujące w układzie.
 By wyliczyć potencjał układu z rund $1$, $2$, $3$ (dla rundy $4$ liczenie potencjału nie ma sensu) przeglądane są wszystkie
 możliwe kombinacje następnych kart na stole. Jeżeli po dodaniu następnych kart układ zmienił się z przegrywającego w
-wygrywający, rośnie wartość $Ppot$. W odwrotnej sytuacj rośnie $Npot$.
+wygrywający, rośnie wartość $Ppot$. W odwrotnej sytuacj rośnie $Npot$. \\
 
 \noindent
 Wyliczenie wartości $EHS$ dla wszystkich możliwych układów, wymaga przejrzenia wszystkich możliwych kombinacji 9 kart (2 kart gracza, 2 przeciwnika
