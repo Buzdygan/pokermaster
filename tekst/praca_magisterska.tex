@@ -1,4 +1,4 @@
-\documentclass[licencjacka]{pracamgr}
+\documentclass[magisterska]{pracamgr}
 
 \usepackage{polski}
 \usepackage[noend]{algpseudocode}
@@ -54,17 +54,17 @@
   
 \date{Sierpień 2014}
 
-%TODO poprawić numerek
 \dziedzina{
-11.3 Informatyka\\
+11.4 Sztuczna Inteligencja\\
 }
 
-%TODO zmienić klasyfikacjż
-\klasyfikacja{D. Maths\\
-D.0. General\\}
+\klasyfikacja{
+I. Computing Methodologies \\
+I.2 ARTIFICIAL INTELLIGENCE \\
+I.2.8 Problem Solving, Control Methods, and Search \\
+}
 
-%TODO uzupełnić sżowa kluczowe
-\keywords{}
+\keywords{poker, Texas Holdem, bot, równowaga Nasha, CFR}
  
 \newtheorem{defi}{Definicja}[section]
 
@@ -72,6 +72,11 @@ D.0. General\\}
 \maketitle
 
 \begin{abstract}
+Tematem pracy jest zbadanie modyfikacji metody CFR. Metoda CFR znajduje
+duże zastosowanie w dziedzinie sztucznej inteligencji. Jest wykorzystywana między innymi
+w tworzeniu inteligentnych programów do gry Texas Holdem Poker. Modyfikacja
+tej metody, opisana w pracy, może pozwolić na tworzenie lepszych strategii niż przy wykorzystaniu
+zwykłej wersji CFR.
 \end{abstract}
 
 \tableofcontents
@@ -84,29 +89,29 @@ Zarówno gry sportowe jak i umysłowe stwarzają okazje do rywalizacji, która m
 stymuluje do rozwoju nie tylko jednostki ale i całe społeczności. Rozwój gier komputerowych był równoległy
 z rozwojem sprzętu komputerowego. Gry znalazły zastosowanie również w naukach
 ekonomicznych. Rozwój teorii gier pomógł zrozumieć procesy rządzące rywalizacją w szeroko rozumianym
-znaczeniu. Zdefiniowanie pojęcia równowagi przez amerykańskiego matematyka Johna Nasha było przełomowym
+znaczeniu. Zdefiniowanie pojęcia równowagi przez amerykańskiego matematyka Johna Nasha \cite{nash} było przełomowym
 osiągnięciem w dziedzinie badań nad strategiami, nie tylko w grach ale i w ekonomii. \\
 
 \noindent
 Wraz z rozwojem technologii komputerowych, uzyskano dostęp do narzędzi pozwalających na zastosowanie
 teorii do obliczania optymalnych strategii w grach. Powszechnie znana jest rywalizacja
 arcymistrzów szachowych z komputerowymi programami. W 1997 roku maszyna "Deep Blue", opracowana przez IBM
-specjalnie do celów rywalizacji szachowej, pokonała arcymistrza Garry'ego Kasparova. W przypadku gier
+specjalnie do celów rywalizacji szachowej, pokonała arcymistrza Garry'ego Kasparova \cite{kasparov}. W przypadku gier
 o niewielkim zbiorze stanów, komputery są zdolne obliczyć strategię optymalną, czyli taką, która
-gwarantuje najlepszy możliwy dla gracza wynik. Przykładem takiej gry są warcaby. W 2007
-roku magazyn $Science$ opublikował artykuł dowodzący, że programu warcabowego "Chinook" nie da się pokonać. \\
+gwarantuje najlepszy możliwy dla gracza wynik. Przykładem takiej gry są warcaby. W 2007 roku udowodniono, że programu warcabowego
+"Chinook" nie da się pokonać. \cite{chinook} \\
 
 \noindent
 Wciąż pozostało jednak wiele gier o rozmiarze tak dużym, że znalezienie dla nich optymalnej strategii wydaje
 się poza zasięgiem współczesnych maszyn. Są natomiast bardzo udane próby znajdowania strategii aproksymacyjnych,
 liczonych dla abstrakcji rzeczywistych gier, które spisują się coraz lepiej w pojedynkach z ludźmi.
 Abstrakcje zawężają zbiór akcji dostępnych graczom i utożsamiają niektóre stany gry w celu zmniejszenia jej rozmiaru.
-W trakcie badań nad strategiami rozwinęły się algorytmy takie jak "Monte Carlo Tree Search", czy opisywana
+W trakcie badań nad strategiami rozwinęły się algorytmy takie jak "Monte Carlo Tree Search" \cite{monte-carlo-survey}, czy opisywana
 w tej pracy metoda "Counterfactual Regret Minimization" (CFR). Odkrycie tej ostatniej w 2007 roku \cite{cfr} było przełomem
-w znajdowaniu aproksymacji równowagi Nasha w grach w postaci ekstensywnej. Metoda opiera się na poprawianiu strategii w kolejnych
-iteracjach. Prawdopodobieństwo zagrania akcji w kolejnej iteracji jest proporcjonalne do oczekiwanego zysku z tej akcji
-przy założeniu, że gracze grają strategią z obecnej iteracji. Modyfikacje metody CFR są używane
-do znajdowania najlepszych istniejących strategii między innymi w grze Texas Holdem Poker. \\
+w znajdowaniu aproksymacji równowagi Nasha w grach w postaci ekstensywnej. Metoda modyfikuje strategię w kolejnych iteracjach.
+Prawdopodobieństwo zagrania akcji w następnej iteracji jest proporcjonalne do oczekiwanego zysku z tej akcji
+przy założeniu, że gracze grają strategią z obecnej iteracji. Końcowa strategia jest strategią uśrednioną ze wszystkich iteracji.
+Modyfikacje metody CFR są używane do znajdowania najlepszych istniejących strategii między innymi w grze Texas Holdem Poker. \\
 
 \noindent
 Celem tej pracy jest zbadanie algorytmu DAG CFR - modyfikacji algorytmu CFR, która pozwala na wyliczanie strategii w bardziej wiernej
@@ -126,7 +131,7 @@ Zostanie też przybliżona historia rozwoju programów grających w gry oraz met
 Rozdział 3 opisuje algorytm CFR, w wersji pierwszy raz przedstawionej w 2007 roku w pracy \cite{cfr}.
 Zostały w nim przytoczone pojęcia
 związane z grami ekstensywnymi oraz twierdzenia dowodzące skuteczności metody CFR. Na końcu rozdziału
-zamieszczony jest pseudokod algorytmu $VanillaCfr$, który jest jednym ze znanych algorytmów realizujących metodę CFR. \\
+zamieszczony jest pseudokod algorytmu $\Call{VanillaCfr}{}$, który jest jednym ze znanych sposobów realizacji metody CFR. \\
 
 \noindent
 Rozdział 4 jest poświęcony algorytmowi DAG CFR. Na początku przedstawiona jest idea algorytmu.
@@ -136,7 +141,7 @@ Wartość $EHS$ wyznacza siłę układu kart. Dzięki jej obliczeniu, możliwe j
 o podobnej sile. Jest to stosowane w celu zmniejszenia rozmiaru gry, dla której liczona jest strategia.
 Zbiór utożsamionych ze sobą układów o podobnej sile nazywamy koszykiem.
 Główna część rozdziału jest poświęcona efektywnej realizacji pomysłu na zmniejszenie złożoności
-metody CFR. Opisane są modyfikacje algorytmu $VanillaCfr$, które pozwalają zmniejszyć złożoność
+metody CFR. Opisane są modyfikacje algorytmu $\Call{VanillaCfr}{}$, które pozwalają zmniejszyć złożoność
 jego iteracji do liniowej względem liczby różnych stanów, zamiast liniowej względem rozmiaru drzewa gry.
 Na końcu zamieszczony został pseudokod algorytmu DAG CFR. \\
 
@@ -144,7 +149,8 @@ Na końcu zamieszczony został pseudokod algorytmu DAG CFR. \\
 Rozdział 5 przedstawia wyniki eksperymentalne. Porównane są w nim strategie wyliczone metodą
 CFR oraz DAG CFR, przy zastosowaniu kilku wariantów gry. Warianty różnią się pod względem
 liczby koszyków, do których przydzielane są układy kart. Podstawowym kryterium
-do porównywania jest wynik rzeczywistej rozgrywki Pokera między dwoma programami. \\
+do porównywania jest wynik rzeczywistej rozgrywki Pokera między dwoma programami. Okazuje się,
+że metoda DAG CFR pozwala uzyskiwać lepsze strategie nawet przy krótszym czasie obliczeń. \\
 
 \noindent
 Rozdział 6 przedstawia podsumowanie wyników pracy. Opisane są zalety badanego podejścia
@@ -164,8 +170,8 @@ zmniejszania rozmiaru gry na potrzeby efektywnego obliczania strategii.
       \textbf{Stan gry} jest rezultatem dotychczasowych akcji podjętych przez graczy oraz zdarzeń losowych.
       Składają się na niego informacje, które opisują aktualną rozgrywkę.
       Stan gry jednoznacznie definiuje zbiór dostępnych
-      akcji oraz graczy, którzy je wykonują (wliczając w to gracza losowego, który odpowiada
-      za generowanie zdarzeń losowych zgodnie z zasadami gry). Wykonywane przez graczy akcje
+      akcji oraz gracza, który je wykonuje (wliczając w to gracza losowego, który odpowiada
+      za generowanie zdarzeń losowych zgodnie z zasadami gry). Wykonywane przez gracza akcje
       zmieniają stan gry (inaczej ich wykonywanie nie ma sensu).
 \end{definition}
 
@@ -232,8 +238,8 @@ za stawkę ustaloną wielkością "small blind" a następny gracz w kolejności 
 \noindent
 W licytacji gracze odzywają się w ustalonej kolejności. Mogą wejść za całą dostępną im kwotę (\textbf{all-in}),
 podbić stawkę (\textbf{raise}), pozostać przy
-obecnej stawce (\textbf{call}) lub zrezygnować z udziału w licytacji (\textbf{fold}). W pierwszych dwóch przypadkach są
-zobowiązani oddać do puli stawkę, na jaką się zgodzili. Różne wersje gry określają ograniczenia podnoszenia
+obecnej stawce (\textbf{call}) lub zrezygnować z udziału w licytacji (\textbf{fold}). Jeśli nie zrezygnują z licytacji,
+są zobowiązani włożyć do puli stawkę, na którą się zgodzili. Różne wersje gry określają ograniczenia podnoszenia
 stawki. W tej pracy przyjęta jest wersja, w której można podnieść stawkę o dowolną kwotę całkowitą, o ile stawka
 po podniesieniu nie przekracza 128 jednostek. Popularną ale jednocześnie trudną obliczeniowo wersją,
 jest wersja no-limit, w której nie nakłada się limitu na kwotę przebicia.
@@ -243,9 +249,10 @@ tylko jedna osoba, zostaje ona zwycięzcą i zgarnia całą pulę a gra się ko�
 nakłada się ograniczenie na liczbę zagrywek jednego gracza w licytacji.\\
 
 \noindent
-Po pierwszej rundzie licytacji następuje wyłożenie trzech kart na stół, tak by widzieli je wszyscy gracze.
+Wyróżniamy cztery rundy licytacji.
+Po rundzie numer $1$ następuje wyłożenie trzech kart na stół, tak by widzieli je wszyscy gracze.
 Na taką trójkę mówi się \emph{flop}. Następuje kolejna runda licytacji, po czym wykładana jest jedna karta, nazywana \emph{turn}.
-Po trzeciej rundzie licytacji na stół wykładana jest ostatnia karta - \emph{river} i następuje ostatnia runda
+Po rundzie numer $3$ na stół wykładana jest ostatnia karta - \emph{river} i następuje ostatnia runda
 licytacji. Jeżeli w ostatniej rundzie co najmniej dwóch graczy uzgodni ostateczną stawkę gry, następuje
 wyłożenie kart graczy na stół i rozstrzygnięcie kto został zwycięzcą. \\
 
@@ -258,7 +265,7 @@ od najsilniejszego do najsłabszego.
 \begin{enumerate}
 \item \textbf{Poker}: 5 kolejnych kart w tym samym kolorze, np. $(D\clubsuit, W\clubsuit, 10\clubsuit, 9\clubsuit, 8\clubsuit)$. 
 \item \textbf{Kareta}: 4 takie same figury, np. $(7\heartsuit, 7\spadesuit, 7\diamondsuit, 7\clubsuit, D\diamondsuit)$.
-\item \textbf{Full}: Trójka takich samych figur połączona z parą takich samych figur, np. $(K\heartsuit, K\diamondsuit, K\clubsuit, 3\heartsuit, 3\diamondsuit)$. 
+\item \textbf{Full}: Trójka takich samych figur oraz para w innej figurze, np. $(K\heartsuit, K\diamondsuit, K\clubsuit, 3\heartsuit, 3\diamondsuit)$. 
 \item \textbf{Kolor}: 5 kart w tym samym kolorze, np. $(K\diamondsuit, W\diamondsuit, 6\diamondsuit, 5\diamondsuit, 2\diamondsuit)$.
 \item \textbf{Strit}: 5 kolejnych kart, np. $(10\heartsuit, 9\diamondsuit, 8\heartsuit, 7\clubsuit, 6\spadesuit)$.
 \item \textbf{Trójka}: 3 takie same figury, np. $(5\heartsuit, 5\diamondsuit, 5\clubsuit, 8\heartsuit, D\spadesuit)$.
@@ -282,9 +289,9 @@ Pierwsze boty opierały swoją strategię na zbiorze zasad wpisanych ręcznie pr
 sposób podejmowania decyzji w konkretnych sytuacjach, na przykład "Mając na ręku Asa i Damę, podbijaj stawkę trzykrotnie".
 W 2004 roku powstał program WinHoldem, który umożliwiał proste tworzenie botów, grających według pewnego zbioru zasad.
 Jednocześnie, w środowiskach akademickich, rozwijały się podejścia oparte na znajdowaniu równowagi Nasha. Owocem tych
-badań jest między innymi opisywany w tej pracy algorytm CFR \cite{cfr} \cite{cfr2} \cite{cfr3}. Takie podejścia przeważają w długiej serii rozgrywek ale
+badań jest między innymi opisywany w tej pracy algorytm CFR \cite{cfr, cfr2, cfr3}. Takie podejścia przeważają w długiej serii rozgrywek ale
 brakuje im umiejętności wykorzystania słabości w strategiach przeciwnika. Powstały również algorytmy, które w serii
-rozgrywek próbują estymować strategię przeciwnika i znajdują najlepszą dla niej kontrstrategię. \cite{exploit}
+rozgrywek próbują estymować strategię przeciwnika i znajdują najlepszą dla niej kontrstrategię \cite{exploit}.
 
 \section{Zmniejszanie drzewa gry}
 
@@ -295,7 +302,7 @@ Pierwsze ograniczenie, które zastosowano, dotyczy licytacji. Dostępne są maks
 \textbf{all in} (zalicytowanie maksymalnej stawki - 128). W ten sposób jedyne możliwe wysokości stawek w licytacji to: $1$, $2$,
 $4$, $8$, $16$, $32$, $64$ i $128$. \\\\
 \noindent
-Drugie ograniczenie przyporządkowuje układom kart graczy (karty na ręce wraz z kartami na stole) tak zwane \emph{"koszyki"}. \cite[sekcja 4.4]{buckets}
+Drugie ograniczenie przyporządkowuje układom kart graczy (karty na ręce wraz z kartami na stole) tak zwane \emph{"koszyki"} \cite[punkt 4.4]{buckets}.
 W jednym koszyku są karty o podobnej sile. W każdej rundzie licytacji obowiązuje osobny podział, zmienna
 jest też liczba koszyków. Testowano różne liczby koszyków, w zależności od używanego algorytmu. \\\\
 \noindent
@@ -332,26 +339,27 @@ na uzyskanie ręki z układem jednokolorowym.
 
 Metoda CFR (Counterfactual Regret Minimization) to algorytm, który pozwala znajdować równowagę Nasha
 w grach w postaci ekstensywnej. Jest to obecnie najlepsze rozwiązanie w dziedzinie badań nad
-sztuczną inteligencją w Pokerze. Choć używane są głównie różne modyfikacje algorytmu,
-przedstawiona zostanie tu jego bazowa wersja. Na początku rozdziału przedstawię podstawowe oznaczenia i terminologię
-używaną w opisie algorytmu. Następnie zostaną przytoczone definicje i twierdzenia dowodzące skuteczności metody
-CFR. Na końcu rozdziału został zamieszczony opis algorytmu VanillaCfr, który liczy strategię zgodnie z metodą CFR.
+sztuczną inteligencją w Pokerze \cite{cfr}. Choć używane są głównie różne modyfikacje algorytmu,
+przedstawiona zostanie tu jego bazowa wersja. W punkcie \ref{oznaczenia} przedstawię podstawowe oznaczenia i terminologię
+używaną w opisie algorytmu. W punkcie \ref{cfr-opis} zostaną przytoczone definicje i twierdzenia dowodzące skuteczności metody
+CFR. Na końcu rozdziału, w punkcie \ref{impl-cfr}, został zamieszczony opis algorytmu $\Call{VanillaCfr}{}$, który liczy strategię zgodnie z metodą CFR.
 
 \section{Oznaczenia}
+\label{oznaczenia}
 
 \begin{itemize}
 
 \item Zbiór graczy oznaczamy przez $N$. Graczy numerujemy od $0$, gracza losowego oznaczamy literą $c$.
 \item Zbiór wszystkich możliwych ciągów akcji (historii) legalnych w grze nazywamy $H$. Ciągi, po których kończy
-      się rozgrywka, należą do podzbioru $Z$. Oczywiście każdej historii jest przyporządkowany stan gry, który
+      się rozgrywka, należą do podzbioru $Z$. Każdej historii jest przyporządkowany stan gry, który
       jest jej efektem. Historię uzyskaną po wykonaniu akcji $a$ w historii $h$ oznaczamy przez $h \circ a$.
-\item Dla każdej historii $h$, zbiór akcji dostępnych w odpowiadajacym jej stanie gry oznaczamy przez $A(h)$. Oczywiście
-      każdy stan wyznacza jednoznacznie gracza wykonującego akcję - $P(h)$.
+\item Dla każdej historii $h$, zbiór akcji dostępnych w odpowiadajacym jej stanie gry oznaczamy przez $A(h)$.
+      Każdy stan wyznacza jednoznacznie gracza wykonującego akcję - $P(h)$.
 \item Dla każdego gracza $i$, historie, w których ma on ruch, są pogrupowane w zbiory informacyjne $I_i$. Dla zbioru
       informacyjnego $I_i$ oraz dowolnych dwóch historii $h_1, h_2 \in I_i$, zachodzi $A(h_1) = A(h_2) = A(I_i)$. Do jednego
       zbioru informacyjnego $I_i$ należą historie, które są parami tożsame po usunięciu z nich akcji niewidocznych dla gracza $i$
-      (np w Pokerze są to akcje przydzielenia kart prywatnych graczom innym niż $i$).
-\item Funkcja $f_c(h, a)$ oznacza prawdopodobieństwo zaistnienia akcji $a$ dla historii $h$.
+      (np. w Pokerze są to akcje przydzielenia kart prywatnych graczom innym niż $i$).
+\item Funkcja $f_c(h, a)$ oznacza prawdopodobieństwo wykonania przez gracza losowego akcji $a$ przy historii $h$.
 \item Strategię gracza $i$ oznaczamy przez $\sigma_i$. $\sigma_i(I_i, a)$ oznacza prawdopodobieństwo wykonania akcji $a$ przez
       gracza $i$ w zbiorze informacyjnym $I_i$, jeśli gra on strategią $\sigma_i$. Przyjmujemy $\sigma_c(h, a) = f_c(h, a)$.
       Przez $\sigma$ oznaczamy zespół strategii wszystkich graczy biorących udział w rozgrywce. Stosujemy też oznaczenie
@@ -388,9 +396,13 @@ W dalszej części będziemy zajmować się grami dwuosobowymi, przede wszystkim
 \end{align*}
 
 \noindent
+Intuicyjnie, strategie graczy są w $\epsilon$-równowadze Nasha, gdy żaden z graczy nie może zmodyfikować swojej strategii
+by uzyskać wynik lepszy o więcej niż $\epsilon$ od wyniku jaki uzyskałby grając obecną strategią, przy założeniu, że przeciwnik nie zmienia
+swojej strategii.
 Metoda CFR znajduje $\epsilon$-równowagę Nasha dla $\epsilon$ malejącego proporcjonalnie do odwrotności pierwiastka z liczby iteracji.
 
 \section{Minimalizacja funkcji regretu}
+\label{cfr-opis}
 
 W dalszej części przyjmujemy, że rozgrywane są kolejne rundy indeksowane przez $t$. W każdej z rund
 strategie graczy będą modyfikowane na podstawie dotychczasowej rozgrywki, w efekcie dając ciąg strategii
@@ -460,12 +472,14 @@ Czyli akcja jest wybierana tym częściej, im większa strata (regret) wiąże s
 Całkowity uśredniony regret maleje proporcjonalnie do odwrotności pierwiastka z liczby iteracji wykonanych przez algorytm CFR. Niestety
 liczba stanów gry i zbiorów informacyjnych nawet w dwuosobowej wersji Texas Holdem Poker jest zbyt duża, by można było
 zastosować algorytm bezpośrednio. W tym celu wprowadza się abstrakcje pełnej wersji gry, przez ograniczenia w licytacji
-oraz dzielenie kart na niewielką liczbę grup (koszyków) ze względu na ich siłę. \\
+oraz dzielenie kart na niewielką liczbę grup (koszyków) ze względu na ich siłę. Metoda ta zostanie opisana dokładniej
+w punkcie \ref{koszyki-opis}. \\
 
 \section{Implementacja Vanilla CFR}
+\label{impl-cfr}
 
 \noindent
-Algorytm Vanilla CFR oparty jest na rekurencyjnym przeglądaniu drzewa gry. Każde wywołanie metody $WalkTree$ odpowiada dokładnie jednej
+Algorytm Vanilla CFR oparty jest na rekurencyjnym przeglądaniu drzewa gry. Każde wywołanie metody $\Call{WalkTree}{}$ odpowiada dokładnie jednej
 historii $h$. Dla każdej iteracji ustalony jest zespół strategii obu
 graczy: $\sigma$. W oparciu o $\sigma$ możliwe jest obliczenie wektora oczekiwanych zysków graczy: $\vec{\mu}^{\sigma}(h)$, dla każdej historii $h$.
 By policzyć $\vec{\mu}^{\sigma}(h)$ dla pojedynczego wywołania $WalkTree$, obliczane są wartości $\vec{\mu}^{\sigma}(h \circ a)$, dla każdej
@@ -481,7 +495,7 @@ Jeśli $P(h) \neq j$, $\pi_j(h) = \pi_j(h \circ a)$. \\
 W danej iteracji algorytmu mapy $R$, $S$ oraz $\sigma$ przechowują następujące informacje
 dla par (zbiór informacyjny, akcja):
 \begin{itemize}
-\item $R$ : przechowuje sumę regretu po wszystkich dotychczasowych iteracjach algorytmu. Po iteracji $T$, $R(I, a) = R_i^T(I, a)$
+\item $R$ : przechowuje sumę regretu lokalnego po wszystkich dotychczasowych iteracjach algorytmu. Po iteracji $T$, $R(I, a) = T \cdot R_i^T(I, a)$
         dla $i = P(I)$.
 \item $S$ : przechowuje sumę strategii z wszystkich dotychczasowych iteracji, ważoną przez $\pi_i^{\sigma^t}$. Wartość ta jest
             potrzebna do obliczenia strategii uśrednionej: $\overline{\sigma}$. Po $T$ iteracjach zachodzi
@@ -628,6 +642,7 @@ związanego z wykonywaniem operacji zgodnie z mechaniką gry. Przyspiesza to zna
 czas obliczeń w pojedynczym stanie. Zauważmy, że w takim grafie nie ma cykli, jest więc DAGiem.
 
 \section{Tworzenie abstrakcji}
+\label{koszyki-opis}
 
 Drzewo gry zmniejszono przez wprowadzenie ograniczeń w licytacji oraz podział układów kart na koszyki.
 W każdej rundzie licytacji gracze mają prawo do jednokrotnego podbicia stawki. Łącznie dostępne są cztery akcje:
