@@ -21,17 +21,13 @@
 \newtheorem{corollary}[theorem]{Wniosek}
 \newtheorem{definition}[theorem]{Definicja}
 
+
 \newenvironment{proof}[1][Dowód]{\begin{trivlist}
 \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 \newenvironment{example}[1][Przykład]{\begin{trivlist}
 \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 \newenvironment{remark}[1][Uwaga]{\begin{trivlist}
 \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
-
-\newcommand{\qed}{\nobreak \ifvmode \relax \else
-        \ifdim\lastskip<1.5em \hskip-\lastskip
-            \hskip1.5em plus0em minus0.5em \fi \nobreak
-                  \vrule height0.75em width0.5em depth0.25em\fi}
 
 \allowdisplaybreaks
 
@@ -86,11 +82,11 @@ zwykłej wersji CFR.
 \noindent
 Ludzie grają w gry już od kilku tysięcy lat. Od zawsze były formą rozrywki oraz integracji.
 Zarówno gry sportowe jak i umysłowe stwarzają okazje do rywalizacji, która ma charakter pozytywny, ponieważ
-stymuluje do rozwoju nie tylko jednostki ale i całe społeczności. Rozwój gier komputerowych był równoległy
+stymuluje do rozwoju nie tylko jednostki, ale i całe społeczności. Rozwój gier komputerowych był równoległy
 z rozwojem sprzętu komputerowego. Gry znalazły zastosowanie również w naukach
 ekonomicznych. Rozwój teorii gier pomógł zrozumieć procesy rządzące rywalizacją w szeroko rozumianym
 znaczeniu. Zdefiniowanie pojęcia równowagi przez amerykańskiego matematyka Johna Nasha \cite{nash} było przełomowym
-osiągnięciem w dziedzinie badań nad strategiami, nie tylko w grach ale i w ekonomii. \\
+osiągnięciem w dziedzinie badań nad strategiami, nie tylko w grach, ale i w ekonomii. \\
 
 \noindent
 Wraz z rozwojem technologii komputerowych, uzyskano dostęp do narzędzi pozwalających na zastosowanie
@@ -241,7 +237,7 @@ podbić stawkę (\textbf{raise}), pozostać przy
 obecnej stawce (\textbf{call}) lub zrezygnować z udziału w licytacji (\textbf{fold}). Jeśli nie zrezygnują z licytacji,
 są zobowiązani włożyć do puli stawkę, na którą się zgodzili. Różne wersje gry określają ograniczenia podnoszenia
 stawki. W tej pracy przyjęta jest wersja, w której można podnieść stawkę o dowolną kwotę całkowitą, o ile stawka
-po podniesieniu nie przekracza 128 jednostek. Popularną ale jednocześnie trudną obliczeniowo wersją,
+po podniesieniu nie przekracza 128 jednostek. Popularną, ale jednocześnie trudną obliczeniowo wersją,
 jest wersja no-limit, w której nie nakłada się limitu na kwotę przebicia.
 Stawka na zakończenie licytacji zostaje ustalona, gdy
 wszyscy gracze biorący jeszcze udział w licytacji zaakceptują aktualną wysokość stawki. Jeśli będzie to
@@ -289,7 +285,7 @@ Pierwsze boty opierały swoją strategię na zbiorze zasad wpisanych ręcznie pr
 sposób podejmowania decyzji w konkretnych sytuacjach, na przykład "Mając na ręku Asa i Damę, podbijaj stawkę trzykrotnie".
 W 2004 roku powstał program WinHoldem, który umożliwiał proste tworzenie botów, grających według pewnego zbioru zasad.
 Jednocześnie, w środowiskach akademickich, rozwijały się podejścia oparte na znajdowaniu równowagi Nasha. Owocem tych
-badań jest między innymi opisywany w tej pracy algorytm CFR \cite{cfr, cfr2, cfr3}. Takie podejścia przeważają w długiej serii rozgrywek ale
+badań jest między innymi opisywany w tej pracy algorytm CFR \cite{cfr, cfr2, cfr3}. Takie podejścia przeważają w długiej serii rozgrywek, ale
 brakuje im umiejętności wykorzystania słabości w strategiach przeciwnika. Powstały również algorytmy, które w serii
 rozgrywek próbują estymować strategię przeciwnika i znajdują najlepszą dla niej kontrstrategię \cite{exploit}.
 
@@ -318,21 +314,24 @@ EHS = HS \cdot (1 - Npot) + (1 - HS) \cdot Ppot
 $HS$ to w przybliżeniu prawdopodobieństwo, że nasza ręka jest lepsza od ręki przeciwnika. Miary $Ppot$ i $Npot$ oznaczają
 prawdopodobieństwo, że nasza ręka stanie się lepsza (odpowiednio gorsza) od ręki przeciwnika, po wyłożeniu kolejnych kart na stół. \\
 
+\begin{example}
+$\,$ \\\\
 \noindent
-Przykłady: \\
 
 \noindent
 Ręka ($A\heartsuit$, $A\clubsuit$ ; $A\diamondsuit$, $5\spadesuit$, $2\clubsuit$) (dwie pierwsze karty to karty na ręce) ma wartość $HS$
 bliską $1$, gdyż żadna możliwa para kart nie tworzy lepszego układu, gdy na stole są karty ($A\diamondsuit$, $5\spadesuit$, $2\clubsuit$). \\
 
 \noindent
-Ręka ($3\heartsuit$, $4\clubsuit$ ; $A\diamondsuit$, $5\spadesuit$, $2\clubsuit$) ma wysoką wartość $Ppot$ ponieważ ma niską wartość $HS$
+Ręka ($3\heartsuit$, $4\clubsuit$ ; $A\diamondsuit$, $5\spadesuit$, $2\clubsuit$) ma wysoką wartość $Ppot$ ponieważ ma niską wartość $HS$,
 ale jednocześnie duży potencjał na stanie się ręką z układem \textbf{strit}, gdy dojdą kolejne karty. \\
 
 \noindent
 Ręka ($A\heartsuit$, $A\clubsuit$ ; $A\diamondsuit$, $5\diamondsuit$, $2\diamondsuit$) ma wysoką wartość $Npot$ ponieważ jest silna
-dzięki parze asów ale istnieje stosunkowo duże prawdopodobieństwo, że przeciwnik posiada karty w kolorze $\diamondsuit$, co zwiększa jego szansę
+dzięki parze asów, ale istnieje stosunkowo duże prawdopodobieństwo, że przeciwnik posiada karty w kolorze $\diamondsuit$, co zwiększa jego szansę
 na uzyskanie ręki z układem jednokolorowym.
+
+\end{example}
 
 
 \chapter{Metoda CFR}
@@ -428,7 +427,7 @@ jest mniejszy niż $\epsilon$, to uśredniony zespół strategii $\overline{\sig
 \section{Funkcja regretu lokalnego}
 
 By łatwiej minimalizować regret całkowity, wprowadzamy funkcję regretu lokalnego.
-Działa ona na podobnej zasadzie co regret całkowity ale jest określana na zbiorach informacyjnych
+Działa ona na podobnej zasadzie co regret całkowity, ale jest określana na zbiorach informacyjnych
 a nie na całej grze. Dzięki temu można ją minimalizować osobno dla każdego zbioru informacyjnego. \\\\
 
 \noindent
@@ -506,8 +505,11 @@ dla par (zbiór informacyjny, akcja):
 $\,$ \\
 
 \noindent
-Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwraca parę
-($\mu_0$, $\mu_1$) oczekiwanych zysków obu graczy w danym stanie gry, przy aktualnej strategii. \\\\
+Metoda $\Call{WalkTree}{}$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwraca parę
+($\mu_0$, $\mu_1$) oczekiwanych zysków obu graczy dla danej historii, przy aktualnej strategii. Metoda
+dostaje jako argument aktualną historię $h$ oraz wektor prawdopodobieństw $[\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c ]$.
+Elementy wektora to iloczyny prawdopodobieństw wykonywania akcji odpowiadających historii $h$,
+podzielone na poszczególnych graczy.\\\\
 
 \begin{algorithmic}
     \Function{WalkTree}{$h$, $[\pi_0^{\sigma}, \pi_1^{\sigma}, \pi_c ]$}
@@ -515,7 +517,7 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
         \If {$h \in Z$}
         \Comment{jeśli $h$ jest końcowa}
             \State \Return $\mu(h)$
-            \Comment{zwraca wektor zysków graczy ($\mu_0$, $\mu_1$)}
+            \Comment{zwraca wektor zysków graczy ($\mu_0(h)$, $\mu_1(h)$)}
         \EndIf
         \State $\vec{\mu}(h) \gets (0, 0)$ 
         \State $p \gets P(h)$
@@ -544,13 +546,13 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
                 \Comment{oblicza zysk po wykonaniu akcji $a$}
                 \State $\vec{\mu}(h) \gets \vec{\mu}(h) + \sigma_p(I, a) \cdot \vec{\mu}^a$
                 \Comment{aktualizuje zysk końcowy}
-                \State $R(I, a) \gets R(I, a) + \vec{\mu}_p^a \cdot \pi_{o}^{\sigma} \cdot \pi_c $
+                \State $R(I, a) \gets R(I, a) + \mu_p^a \cdot \pi_{o}^{\sigma} \cdot \pi_c $
                 \Comment{aktualizuje regret akcji $a$}
                 \State $S(I, a) \gets S(I, a) + \sigma_p(I, a) \cdot \pi_{p}^{\sigma}$
                 \Comment{aktualizuje uśrednioną strategię}
             \EndFor
             \For {$a \, \in \, A(h)$}
-                \State $R(I, a) \gets R(I, a) - \vec{\mu}_p(h) \cdot \pi_{o}^{\sigma} \cdot \pi_c $
+                \State $R(I, a) \gets R(I, a) - \mu_p(h) \cdot \pi_{o}^{\sigma} \cdot \pi_c $
                 \Comment{aktualizuje regret akcji $a$}
             \EndFor
         \EndIf
@@ -561,19 +563,27 @@ Metoda $WalkTree$ przechodzi drzewo gry i przelicza wartości dla $R$ i $S$. Zwr
 
 
 $\,$ \\
-Metoda $RecomputeStrategy$ przelicza aktualną i końcową strategię. Prawdopodobieństwo wykonania akcji $a$
+Metoda $\Call{RecomputeStrategy}{}$ przelicza aktualną i końcową strategię. Prawdopodobieństwo wykonania akcji $a$
 w zbiorze informacyjnym $I$ jest proporcjonalne do wartości $\max(0, map(I, a))$, gdzie $map=R$ dla strategii
-wyliczanej po każdej iteracji a $map=S$ dla strategii końcowej. \\
+wyliczanej po każdej iteracji a $map=S$ dla strategii końcowej. Jeśli w danym zbiorze informacyjnym $I$ dla każdej
+akcji $a$ zachodzi $map(I, a) \leq 0$, każda akcja będzie wykonywana z równym prawdopodobieństwem. \\
 
 \begin{algorithmic}
     \Function{RecomputeStrategy}{$rmap$}
         \ForAll{$I \in InformationSets$}
         \Comment{dla każdego zbioru informacyjnego $I$}
             \State $sum \gets \sum\limits_{a \in A(I)} \max(0, \, rmap(I, a))$
-            \ForAll {$a \in A(I)$}
-            \Comment{dla każdej akcji $a$ w zbiorze informacyjnym $I$}
-                \State $\sigma(I, a) \gets \frac{\max(0, \, rmap(I, a))}{sum}$
-            \EndFor
+            \If {$sum > 0$}
+            \Comment{jeśli dla pewnego $a$, $rmap(I,a) > 0$}
+                \ForAll {$a \in A(I)$}
+                    \State $\sigma(I, a) \gets \frac{\max(0, \, rmap(I, a))}{sum}$
+                \EndFor
+            \Else
+                \ForAll {$a \in A(I)$}
+                \Comment{każdej akcji przypisujemy równe prawdopodobieństwo}
+                    \State $\sigma(I, a) \gets \frac{1}{|A(I)|}$
+                \EndFor
+            \EndIf
         \EndFor
         \State \Return $\sigma$
     \EndFunction
@@ -585,8 +595,12 @@ Cały algorytm wygląda następująco: \\
 
 \begin{algorithmic}
     \Function{VanillaCfr}{iterationsNumber}
-        \State $R \gets 0$
-        \State $S \gets 0$
+        \ForAll{$I \in InformationSets$}
+            \ForAll{$a \in A(I)$}
+                \State $R(I, a) \gets 0$
+                \State $S(I, a) \gets 0$
+            \EndFor
+        \EndFor
         \State $\sigma \gets \Call{DefaultStrategy}{}$
         \For {$iterationsNumber$} 
             \State \Call{WalkTree}{newGame(), $[1.0, 1.0, 1.0]$}
@@ -598,10 +612,7 @@ Cały algorytm wygląda następująco: \\
 
 $\,$ \\
 \noindent
-$DefaultStrategy$ to strategia, w której każda akcja jest wykonywana z takim samym prawdopodobieństwem. Metoda
-$RecomputeStrategy(R)$ aktualizuje aktualną strategię, tak że prawdopodobieństwo zagrania akcji $a$ w zbiorze informacyjnym
-$I$ jest proporcjonalne do wartości $R(I, a)$, o ile ta wartość jest nieujemna. Jeśli jest ujemna, prawdopodobieństwo
-wynosi $0$. Analogicznie wygląda obliczenie końcowej strategii, przy czym patrzymy na wartości $S(I, a)$.
+$\Call{DefaultStrategy}{}$ to strategia, w której każda akcja jest wykonywana z takim samym prawdopodobieństwem.
 
 \chapter{Algorytm DAG CFR}
 
@@ -632,6 +643,8 @@ przez graczy. Stan gry jest opisany przez następujące parametry: \\
 \noindent
 W jednym zbiorze informacyjnym są wszystkie stany, które są tożsame w powyższych parametrach, z wyłączeniem
 wiedzy o koszyku przeciwnika. \\
+
+%todo informacja o liczbie stanów
 
 \noindent
 Kluczowe dla zmniejszenia złożoności algorytmu było przeformułowanie algorytmu CFR, tak by każdy
@@ -705,12 +718,13 @@ Kolory pozostałych kart w układzie $R$ są dowolne ale $\clubsuit$ jest najcz�
 $EHS$ jest obliczana tylko dla jednego takiego układu $R$. Można to rozumieć jako klasę abstrakcji układów kart, gdzie
 relacja równoważności jest określona przez powyższe warunki. \\
 
-\noindent
-Przykład: \\
+\begin{example}
 
+$\,$ \\\\
 \noindent
 Reprezentantem układu $(K\heartsuit, W\clubsuit, 9\heartsuit, 9\spadesuit, 7\diamondsuit)$ może być układ
 $(K\clubsuit, W\heartsuit, 9\clubsuit, 9\diamondsuit, 7\spadesuit)$ \\
+\end{example}
 
 \noindent
 Powyższa metoda pozwala nawet stukrotnie zmniejszyć liczbę układów, dla których liczona jest wartość $EHS$.
@@ -739,12 +753,12 @@ zyskach graczy. \\
 \noindent
 Dla każdego stanu $s$ może istnieć wiele ciągów akcji (historii), po których wykonaniu gra
 znajdzie się w stanie $s$. Niech $H(s)$ oznacza zbiór historii $h$, których rezultatem jest stan $s$.
-W algorytmie $VanillaCfr$ każda historia była przetwarzana osobno, to znaczy aktualizowane były wartości
+W algorytmie $\Call{VanillaCfr}{}$ każda historia była przetwarzana osobno, to znaczy aktualizowane były wartości
 regretów w zbiorze informacyjnym jej odpowiadającym. Modyfikacja algorytmu grupuje obliczenia z
 wszystkich historii w $H(s)$ i wykonuje jedną zbiorczą aktualizację w stanie $s$. \\
 
 \noindent
-W algorytmie $VanillaCfr$ wartości map $R$ i $S$ dla historii $h$, zbioru informacyjnego $I(h)$ oraz akcji $a$, są modyfikowane
+W algorytmie $\Call{VanillaCfr}{}$ wartości map $R$ i $S$ dla historii $h$, zbioru informacyjnego $I(h)$ oraz akcji $a$, są modyfikowane
 wg następujących wzorów:
 
 \begin{align*}
@@ -945,7 +959,7 @@ Cały algorytm wygląda następująco: \\
 Algorytm DAG CFR testowany był ze standardową wersją CFR. Z uwagi na długi czas obliczeń
 algorytmu CFR, do porównania użyto wersji samplowanej algorytmu. W wersji samplowanej,
 w każdej iteracji przeglądane są wszystkie historie z jednym, określonym przydziałem koszyków.
-Pozwala to na przyspieszenie pojedynczej iteracji ale zwiększa też liczbę iteracji potrzebnych do
+Pozwala to na przyspieszenie pojedynczej iteracji, ale zwiększa też liczbę iteracji potrzebnych do
 zmniejszenia całkowitego regretu. \\
 
 \noindent
