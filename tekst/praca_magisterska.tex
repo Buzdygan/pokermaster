@@ -840,13 +840,18 @@ prob_i(E_{(s_1, s_2)}) = \begin{cases}
 Wtedy zachodzi:
 
 \begin{align*}
-\pi_i^{\sigma}(s) &= \sum\limits_{E_{(s', s)}} \pi_i^{\sigma}(s') \cdot prob_i(E_{(s', s)}) \\
-\pi_{i, c}^{\sigma}(s) &= \sum\limits_{E_{(s', s)}} \pi_{i, c}^{\sigma}(s') \cdot prob_i(E_{(s', s)}) \cdot prob_c(E_{(s', s)})
+\pi_i^{\sigma}(s) &= \sum\limits_{h \in H(s)} \, \pi_i^{\sigma}(h) \\
+                  &= \sum\limits_{E_{(s', s)}} \sum\limits_{h' \in H(s')} \pi_i^{\sigma}(h') \cdot prob_i(E_{(s', s)}) \\
+                  &= \sum\limits_{E_{(s', s)}} \, prob_i(E_{(s', s)}) \, \sum\limits_{h' \in H(s')} \pi_i^{\sigma}(h')  \\
+                  &= \sum\limits_{E_{(s', s)}} prob_i(E_{(s', s)}) \cdot \pi_i^{\sigma}(s')\\
+\pi_{i, c}^{\sigma}(s) &= \sum\limits_{h \in H(s)} \, \pi_{i, c}^{\sigma}(h) \\
+                       &= \sum\limits_{E_{(s', s)}} \, prob_i(E_{(s', s)}) \cdot prob_c(E_{(s', s)}) \, \sum\limits_{h' \in H(s')} \pi_{i, c}^{\sigma}(h') \\
+                       &= \sum\limits_{E_{(s', s)}} prob_i(E_{(s', s)}) \cdot prob_c(E_{(s', s)}) \cdot \pi_{i, c}^{\sigma}(s') 
 \end{align*}
 
 \noindent
 Czyli żeby obliczyć wartości $\pi_i^{\sigma}(s)$ oraz $\pi_{i, c}^{\sigma}(s)$ w stanie $s$, wystarczy
-mieć je policzone dla każdego stanu $s'$, z którego prowadzi krawędź do $s$. W stanie początkowym $s_0$ zachodzi
+mieć je policzone dla każdego stanu $s'$, z którego prowadzi krawędź do $s$. W \emph{stanie początkowym} $s_0$ zachodzi
 $\pi_i^{\sigma}(s_0) = 1$ oraz $\pi_{i, c}^{\sigma}(s_0) = 1$. Graf stanów to DAG, czyli
 skierowany graf acykliczny. W takim grafie wierzchołki można ułożyć w ciąg w porządku topologicznym, to znaczy
 jeżeli z wierzchołka $v$ prowadzi krawędź do wierzchołka $w$, to $v$ znajduje się w ciągu przed wierzchołkiem $w$.
@@ -907,15 +912,15 @@ aktualizując mapy $R$ oraz $S$. Każdy stan jest odwiedzany tylko raz. \\
             \State $\vec{\mu}(s) \gets \vec{\mu}(s) + \vec{\mu}^a \cdot prob_p(E_{(s, s')})$
             \Comment{aktualizuje wektor zysków graczy}
             \If{$p \neq c$}
-                \State $R(I, a) \gets R(I, a) + \vec{\mu}^a_p \cdot \pi_{p,c}^{\sigma}(s)$
-                \Comment{aktualizuje regret na podstawie $\vec{\mu}^a_p$}
+                \State $R(I, a) \gets R(I, a) + \mu^a_p \cdot \pi_{p,c}^{\sigma}(s)$
+                \Comment{aktualizuje regret na podstawie $\mu^a_p$}
                 \State $S(I, a) \gets S(I, a) + \sigma(I, a) \cdot \pi_p^{\sigma}(s)$
                 \Comment{aktualizuje uśrednioną strategię}
             \EndIf
         \EndFor
         \If{$p \neq c$}
-            \State $R(I, a) \gets R(I, a) - \vec{\mu}_p(s) \cdot \pi_{p,c}^{\sigma}(s)$
-            \Comment{aktualizuje regret na podstawie $\vec{\mu}_p(s)$}
+            \State $R(I, a) \gets R(I, a) - \mu_p(s) \cdot \pi_{p,c}^{\sigma}(s)$
+            \Comment{aktualizuje regret na podstawie $\mu_p(s)$}
         \EndIf
         \State $\vec{\mu}^{\sigma}(s) \gets \vec{\mu}(s)$
         \State \Return $\vec{\mu}(s)$
@@ -931,10 +936,14 @@ Cały algorytm wygląda następująco: \\
     \Function{DagCfr}{$game$, $iterationsNumber$}
         \State $s_0\gets \Call{BuildTree}{game}$
         \Comment{tworzony jest graf gry i zwracany stan początkowy $s_0$}
-        \State $R \gets 0$
-        \State $S \gets 0$
+        \ForAll{$I \in InformationSets$}
+            \ForAll{$a \in A(I)$}
+                \State $R(I, a) \gets 0$
+                \State $S(I, a) \gets 0$
+            \EndFor
+        \EndFor
         \State $\sigma \gets \Call{DefaultStrategy}{}$ 
-        \Comment{strategia początkowa, każda akcja tak samo prawdopodobna}
+        \Comment{strategia początkowa}
         \For {$iterationsNumber$} 
             \State $\Call{ComputeProbs}{}()$
             \Comment{oblicza wartości $\pi(s)$}
