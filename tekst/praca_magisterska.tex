@@ -642,9 +642,11 @@ przez graczy. Stan gry jest opisany przez następujące parametry: \\
 
 \noindent
 W jednym zbiorze informacyjnym są wszystkie stany, które są tożsame w powyższych parametrach, z wyłączeniem
-wiedzy o koszyku przeciwnika. \\
+wiedzy o koszyku przeciwnika. Liczba stanów gry dla abstrakcji, w której w każdej rundzie jest $6$ koszyków,
+wynosi $3421$, przy $906$ zbiorach informacyjnych. Należy zauważyć, że jest to znacznie mniejsza wartość niż
+liczba historii przeglądanych dla takiej samej abstrakcji, w metodzie CFR. Liczba wszystkich historii dla
+powyższej abstrakcji wynosi ok. $10^9$, a liczba zbiorów informacyjnych to $3.2 \cdot 10^5$.
 
-%todo informacja o liczbie stanów
 
 \noindent
 Kluczowe dla zmniejszenia złożoności algorytmu było przeformułowanie algorytmu CFR, tak by każdy
@@ -968,28 +970,83 @@ Cały algorytm wygląda następująco: \\
 Algorytm DAG CFR testowany był ze standardową wersją CFR. Z uwagi na długi czas obliczeń
 algorytmu CFR, do porównania użyto wersji samplowanej algorytmu. W wersji samplowanej,
 w każdej iteracji przeglądane są wszystkie historie z jednym, określonym przydziałem koszyków.
+Chodzi o to, że akcje gracza losowego są wybrane przed wykonaniem $\Call{WalkTree}{}$ dzięki czemu
+liczba historii przeglądanych w jednej iteracji jest znacznie mniejsza.
 Pozwala to na przyspieszenie pojedynczej iteracji, ale zwiększa też liczbę iteracji potrzebnych do
 zmniejszenia całkowitego regretu. \\
 
 \noindent
-Algorytm CFR został policzony dla zestawu koszyków $(6,6,6,6)$. To znaczy, że w każdej rundzie
+Algorytm CFR został policzony dla zestawu koszyków $\langle6,6,6,6\rangle$ (\emph{cfr-6}). To znaczy, że w każdej rundzie
 siła kart była określona liczbą od $1$ do $6$. Poniższy wykres przedstawia jak zmieniał się
-błąd (czyli maksymalny regret) w kolejnych iteracjach algorytmu:
+błąd (czyli maksymalny regret) w czasie. Oś X pokazuję godzinę obliczeń. 
 
-\includegraphics[scale=0.7]{wykres-cfr-6.png}
+\includegraphics[scale=0.7]{wykres1.png}
 
 \noindent
-Algorytm DAG CFR został policzony dla kilku zestawów koszyków: $(6,6,6,6)$, $(12,10,10,10)$ oraz $(19,19,19,19)$.
-Jak widać, wymagał znacznie mniejszej liczby iteracji by zmniejszyć błąd do podobnego poziomu co w wywołaniu CFRa.
+Algorytm DAG CFR został policzony dla kilku zestawów koszyków: $\langle 6,6,6,6 \rangle$ (\emph{dag-cfr-6}),
+$\langle10,10,10,10\rangle$ (\emph{dag-cfr-10}) oraz $\langle12,12,12,12\rangle$ (\emph{dag-cfr-12}).
+Poniższy wykres przedstawia jak zmieniał się maksymalny regret w czasie, dla poszczególnych wariantów.
 
-\includegraphics[scale=0.7]{wykres-dag-6.png}
+\includegraphics[scale=0.7]{wykres2.png}
 
-\includegraphics[scale=0.7]{wykres-dag-12.png}
+\noindent
+Tabela przedstawia prędkość wykonywania iteracji w poszczególnych wersjach algorytmu:
 
-\includegraphics[scale=0.7]{wykres-dag-19.png}
+\begin{table}[h]
+\begin{tabular}{|c|c|}
+\hline
+wersja     & liczba iteracji na sekundę \\ \hline
+cfr-6      & 139                        \\ \hline
+dag-cfr-6  & 500                        \\ \hline
+dag-cfr-10 & 91                         \\ \hline
+dag-cfr-12 & 48                         \\ \hline
+\end{tabular}
+\end{table}
 
+\noindent
+Kolejna tabela przedstawia czas (w godzinach) obliczania strategii w poszczególnych wersjach algorytmu:
 
-$\,$ \\
+\begin{table}[h]
+\begin{tabular}{|c|c|}
+\hline
+wersja     & czas w godzinach           \\ \hline
+cfr-6      & 140                        \\ \hline
+dag-cfr-6  & 5                          \\ \hline
+dag-cfr-10 & 30                         \\ \hline
+dag-cfr-12 & 58                         \\ \hline
+\end{tabular}
+\end{table}
+
+\noindent
+Kryterium testowania był wynik rozgrywki Texas Holdem Poker między wersjami algorytmów.
+Każda rozgrywka składała się z miliona rund. Każda runda miała swojego odpowiednika, tzn
+rundę, w której rozdawane są te same karty ale zamienione są karty graczy. Jako metrykę
+zastosowano wartość $mb/h$, czyli średnio o ile milibetów (jedna tysięczna najmniejszej możliwej stawki czyli $1$)
+na rundę lepszy jest jeden program od drugiego. Dla przykładu program silniejszy o $1mb/h$, po milionie
+rozegranych rund będzie wygrywał o $1000$. \\
+
+\noindent
+Tabela przedstawia wyniki w $mb/h$ rozgrywek programów między sobą. Wartość w komórce
+określa o ile $mb/h$ jest lepszy program wpisany w odpowiadającym wierszu od programu wpisanego w odpowiadającej
+kolumnie.
+
+$\,\,\\\\$
+
+\begin{table}[h]
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+x          & cfr-6 & dag-cfr-6 & dag-cfr-10 & dag-cfr-12 \\ \hline
+cfr-6      & x     &           &            &            \\ \hline
+dag-cfr-6  & 36    & x         &            &            \\ \hline
+dag-cfr-10 & 51    & 16        & x          &            \\ \hline
+dag-cfr-12 & 57    & 34        & 10         & x          \\ \hline
+\end{tabular}
+\end{table}
+
+\noindent
+Jak pokazują wyniki, algorytm DAG CFR wygrywa z algorytmem CFR, nawet przy zastosowaniu tej samej liczby koszyków.
+Należy zwrócić uwagę, że obliczenie wersji dag-cfr-6 trwało znacznie krócej niż wersji cfr-6. Zwiększanie liczby
+koszyków powodowało wzrost siły algorytmu.
 
 \chapter{Podsumowanie}
 
