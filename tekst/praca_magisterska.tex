@@ -114,14 +114,16 @@ Celem tej pracy jest zbadanie algorytmu DAG CFR - modyfikacji algorytmu CFR, kt�
 abstrakcji gry Texas Holdem Poker. Odbywa się to kosztem założenia o pełnej pamięci gry (\emph{perfect recall}).
 Zignorowanie historii dotychczasowej rozgrywki przy obliczaniu strategii, pozwala na znaczące zmniejszenie liczby
 stanów gry przeglądanych w każdej iteracji algorytmu. Pozwala to zmniejszyć liczbę ograniczeń nakładanych
-na oryginalną wersję Texas Holdem Poker. Praca bada, czy tak zmodyfikowany algorytm pozwala na znalezienie
+na oryginalną wersję Texas Holdem Poker. W szczególności, umożliwia to obliczenie strategii dla dokładniejszej abstrakcji
+wersji No Limit Texas Holdem Poker. Dotychczasowe abstrakcje tej wersji gry były zbyt uproszczone by pozwolić na
+wyliczenie przyzwoicie działających strategii. Praca bada, czy tak zmodyfikowany algorytm pozwala na znalezienie
 lepszych strategii niż oryginalna wersja CFR. \\
 
 \noindent
 Rozdział 2 opisuje podstawowe pojęcia i zagadnienia sztucznej inteligencji w grach, takie jak
 stan gry, zbiór informacyjny, drzewo gry, strategia. W dalszej części opisane są zasady gry
 Texas Holdem Poker, którą wykorzystano do porównania skuteczności metody CFR i jej modyfikacji - DAG CFR.
-Zostanie też przybliżona historia rozwoju programów grających w gry oraz metody budowania abstrakcji gier. \\
+Zostanie też przybliżona historia rozwoju programów grających~w~gry oraz metody budowania abstrakcji gier. \\
 
 \noindent
 Rozdział 3 opisuje algorytm CFR, w wersji pierwszy raz przedstawionej w 2007 roku w pracy \cite{cfr}.
@@ -186,7 +188,7 @@ zmniejszania rozmiaru gry na potrzeby efektywnego obliczania strategii.
 
 \begin{definition}
       Gry dzielimy na dwie kategorie: \textbf{z pełną informacją} oraz \textbf{z niepełną informacją}.
-      W przypadku tych pierwszych, wszyscy gracze posiadają wszystkie informacje o zdarzeniach
+      W przypadku tych pierwszych, wszyscy gracze posiadają wszystkie informacje~o~zdarzeniach
       zachodzących w grze. Przykładem takiej gry są szachy. W grach z niepełną informacją niektóre
       zdarzenia są ukryte dla pewnego zbioru graczy. Na przykład w więkości gier karcianych gracze
       nie znają kart swoich przeciwników.
@@ -195,7 +197,7 @@ zmniejszania rozmiaru gry na potrzeby efektywnego obliczania strategii.
 \begin{definition}
       \textbf{Zbiór informacyjny} dla gracza $p$ zawiera te stany gry, które są identyczne jeśli chodzi
       o informacje dostępne graczowi $p$. Przykładowo, w dwuosobowej grze karcianej przykładem zbioru informacyjnego
-      jest zbiór wszystkich stanów zaraz po rozdaniu kart, w których gracz $p$ ma na ręku jedynie asa i króla kier.
+      jest zbiór wszystkich stanów zaraz po rozdaniu kart,~w~których gracz $p$ ma na ręku jedynie asa i króla kier.
       Zbiory informacyjne są ważne z punktu widzenia podejmowania decyzji: w każdym stanie gry należącym do tego
       samego zbioru informacyjnego gracza $p$, gracz $p$ podejmuje decyzje według tej samej strategii.
 \end{definition}
@@ -221,7 +223,7 @@ muszą wyliczyć odpowiednią strategię. Gry różnią się złożonością inf
 Nawet prosta gra, w której graczom przydzielana jest losowo wybrana liczba rzeczywista, mają nieskończenie
 wiele stanów gry. Zazwyczaj jednak informacje można reprezentować przez ograniczone liczby całkowite, przez co
 liczba stanów gry też jest ograniczona. Przedmiotem badań tej pracy jest gra Texas Holdem Poker, która
-należy do gatunku gier z niepełną informacją, z ograniczoną liczbą stanów gry.
+należy do gatunku gier z niepełną informacją,~z~ograniczoną liczbą stanów gry.
 
 \section{Texas Holdem Poker}
 
@@ -234,9 +236,9 @@ za stawkę ustaloną wielkością "small blind" a następny gracz w kolejności 
 \noindent
 W licytacji gracze odzywają się w ustalonej kolejności. Mogą wejść za całą dostępną im kwotę (\textbf{all-in}),
 podbić stawkę (\textbf{raise}), pozostać przy
-obecnej stawce (\textbf{call}) lub zrezygnować z udziału w licytacji (\textbf{fold}). Jeśli nie zrezygnują z licytacji,
+obecnej stawce (\textbf{call}) lub zrezygnować~z~udziału w licytacji (\textbf{fold}). Jeśli nie zrezygnują z licytacji,
 są zobowiązani włożyć do puli stawkę, na którą się zgodzili. Różne wersje gry określają ograniczenia podnoszenia
-stawki. W tej pracy przyjęta jest wersja, w której można podnieść stawkę o dowolną kwotę całkowitą, o ile stawka
+stawki. W tej pracy przyjęta jest wersja, w której można podnieść stawkę o dowolną kwotę całkowitą,~o~ile stawka
 po podniesieniu nie przekracza 128 jednostek. Popularną, ale jednocześnie trudną obliczeniowo wersją,
 jest wersja no-limit, w której nie nakłada się limitu na kwotę przebicia.
 Stawka na zakończenie licytacji zostaje ustalona, gdy
@@ -337,7 +339,7 @@ na uzyskanie ręki z układem jednokolorowym.
 \chapter{Metoda CFR}
 
 Metoda CFR (Counterfactual Regret Minimization) to algorytm, który pozwala znajdować równowagę Nasha
-w grach w postaci ekstensywnej. Jest to obecnie najlepsze rozwiązanie w dziedzinie badań nad
+w grach w postaci ekstensywnej. Jest to obecnie najlepsze rozwiązanie~w~dziedzinie badań nad
 sztuczną inteligencją w Pokerze \cite{cfr}. Choć używane są głównie różne modyfikacje algorytmu,
 przedstawiona zostanie tu jego bazowa wersja. W punkcie \ref{oznaczenia} przedstawię podstawowe oznaczenia i terminologię
 używaną w opisie algorytmu. W punkcie \ref{cfr-opis} zostaną przytoczone definicje i twierdzenia dowodzące skuteczności metody
@@ -351,13 +353,13 @@ CFR. Na końcu rozdziału, w punkcie \ref{impl-cfr}, został zamieszczony opis a
 \item Zbiór graczy oznaczamy przez $N$. Graczy numerujemy od $0$, gracza losowego oznaczamy literą $c$.
 \item Zbiór wszystkich możliwych ciągów akcji (historii) legalnych w grze nazywamy $H$. Ciągi, po których kończy
       się rozgrywka, należą do podzbioru $Z$. Każdej historii jest przyporządkowany stan gry, który
-      jest jej efektem. Historię uzyskaną po wykonaniu akcji $a$ w historii $h$ oznaczamy przez $h \circ a$.
+      jest jej efektem. Historię uzyskaną po wykonaniu akcji $a$~w~historii $h$ oznaczamy przez $h \circ a$.
 \item Dla każdej historii $h$, zbiór akcji dostępnych w odpowiadajacym jej stanie gry oznaczamy przez $A(h)$.
       Każdy stan wyznacza jednoznacznie gracza wykonującego akcję - $P(h)$.
 \item Dla każdego gracza $i$, historie, w których ma on ruch, są pogrupowane w zbiory informacyjne $I_i$. Dla zbioru
       informacyjnego $I_i$ oraz dowolnych dwóch historii $h_1, h_2 \in I_i$, zachodzi $A(h_1) = A(h_2) = A(I_i)$. Do jednego
       zbioru informacyjnego $I_i$ należą historie, które są parami tożsame po usunięciu z nich akcji niewidocznych dla gracza $i$
-      (np. w Pokerze są to akcje przydzielenia kart prywatnych graczom innym niż $i$).
+      (np.~w~Pokerze są to akcje przydzielenia kart prywatnych graczom innym niż $i$).
 \item Funkcja $f_c(h, a)$ oznacza prawdopodobieństwo wykonania przez gracza losowego akcji $a$ przy historii $h$.
 \item Strategię gracza $i$ oznaczamy przez $\sigma_i$. $\sigma_i(I_i, a)$ oznacza prawdopodobieństwo wykonania akcji $a$ przez
       gracza $i$ w zbiorze informacyjnym $I_i$, jeśli gra on strategią $\sigma_i$. Przyjmujemy $\sigma_c(h, a) = f_c(h, a)$.
@@ -691,9 +693,9 @@ EHS = HS \cdot (1 - Npot) + (1 - HS) \cdot Ppot
 \end{align*}
 
 \noindent
-W celu wyliczenia wartości $HS$ dla układu, przeglądane są wszystkie możliwe pary kart u przeciwnika i liczony jest procent
+W celu wyliczenia wartości $HS$ dla układu, przeglądane są wszystkie możliwe pary kart~u~przeciwnika i liczony jest procent
 przypadków, gdy siła układu jest większa niż siła kart przeciwnika, poszerzonych o karty ze stołu występujące w układzie.
-By wyliczyć potencjał układu z rund $1$, $2$, $3$ (dla rundy $4$ liczenie potencjału nie ma sensu) przeglądane są wszystkie
+By wyliczyć potencjał układu~z~rund $1$, $2$, $3$ (dla rundy $4$ liczenie potencjału nie ma sensu) przeglądane są wszystkie
 możliwe kombinacje następnych kart na stole. Jeżeli po dodaniu następnych kart układ zmienił się z przegrywającego w
 wygrywający, rośnie wartość $Ppot$. W odwrotnej sytuacj rośnie $Npot$. \\
 
@@ -734,7 +736,7 @@ Powyższa metoda pozwala nawet stukrotnie zmniejszyć liczbę układów, dla kt�
 \section{Modyfikacja algorytmu CFR}
 
 \noindent
-Algorytm jest podzielony na dwie części. W pierwszej budowany jest graf stanów gry. W drugiej części
+Algorytm jest podzielony na dwie części. W pierwszej budowany jest graf stanów gry.~W~drugiej części
 wykonywane są kolejne iteracje obliczające wartość regretów we wszystkich zbiorach informacyjnych oraz
 modyfikowana jest strategia. \\
 
@@ -755,7 +757,7 @@ zyskach graczy. \\
 \noindent
 Dla każdego stanu $s$ może istnieć wiele ciągów akcji (historii), po których wykonaniu gra
 znajdzie się w stanie $s$. Niech $H(s)$ oznacza zbiór historii $h$, których rezultatem jest stan $s$.
-W algorytmie $\Call{VanillaCfr}{}$ każda historia była przetwarzana osobno, to znaczy aktualizowane były wartości
+~W~algorytmie $\Call{VanillaCfr}{}$ każda historia była przetwarzana osobno, to znaczy aktualizowane były wartości
 regretów w zbiorze informacyjnym jej odpowiadającym. Modyfikacja algorytmu grupuje obliczenia z
 wszystkich historii w $H(s)$ i wykonuje jedną zbiorczą aktualizację w stanie $s$. \\
 
@@ -976,7 +978,7 @@ Pozwala to na przyspieszenie pojedynczej iteracji, ale zwiększa też liczbę it
 zmniejszenia całkowitego regretu. \\
 
 \noindent
-Algorytm CFR został policzony dla zestawu koszyków $\langle6,6,6,6\rangle$ (\emph{cfr-6}). To znaczy, że w każdej rundzie
+Algorytm CFR został policzony dla zestawu koszyków $\langle6,6,6,6\rangle$ (\emph{cfr-6}). To znaczy, że~w~każdej rundzie
 siła kart była określona liczbą od $1$ do $6$. Poniższy wykres przedstawia jak zmieniał się
 błąd (czyli maksymalny regret) w czasie. Oś X pokazuję godzinę obliczeń. 
 
@@ -1054,11 +1056,20 @@ Praca opisała podstawowe pojęcia związane z dziedziną sztucznej inteligencji
 metoda CFR, która pozwala znajdować efektywne strategie do gry Texas Holdem Poker \cite{cfr}. Praca pokazuje, że
 modyfikacja tej metody, algorytm DAG CFR, potrafi znajdować równie efektywne strategie w znacznie krótszym czasie.
 Praca dowodzi, że zrezygnowanie z wykorzystywania informacji o pełnej historii rozgrywki, nie wpływa bardzo negatywnie
-na efektywność strategii. Pozwala to na liczenie strategii dla znacznie dokładniejszych abstrakcji gry,
-czego rezultatem są znacznie lepsze strategie. Dodatkowym wynikiem pracy jest bardziej efektywna metoda liczenia wartości $EHS$ układów kart. Jest to wykorzystywane przy
-grupowaniu układów kart w koszyki. Praca otwiera możliwości eksperymentowania z bardziej dokładnymi
+na efektywność strategii. Praca otwiera możliwości eksperymentowania z bardziej dokładnymi
 abstrakcjami gry. Oprócz grupowania układów kart w większą liczbę koszyków, możliwe jest również wprowadzanie
-mniejszych ograniczeń do licytacji. Metoda DAG CFR może zostać zastosowana również w innych grach. Autor pracy ma nadzieję, że
+mniejszych ograniczeń do licytacji. \\
+
+\noindent
+Szczególnie ważne może się to okazać w wersji No Limit. Liczba historii
+w tej wersji gry jest bardzo duża, dlatego dotychczasowe abstrakcje były bardzo dalekie od oryginalnej gry.~W~rezultacie,
+strategie oparte obliczeniu przybliżonej równowagi Nasha dla tych abstrakcji, nie były zbyt skuteczne.
+W metodzie DAG CFR, możliwe jest dużo lepsze przybliżenie oryginalnej gry No Limit Texas Holdem Poker, bez znaczącego
+zwiększenia liczby stanów. Daje to nadzieję na uzyskanie znacznie lepszych strategii niż dotychczasowe. \\ 
+
+\noindent
+Dodatkowym wynikiem pracy jest bardziej efektywna metoda liczenia wartości $EHS$ układów kart. Jest to wykorzystywane przy
+grupowaniu układów kart w koszyki.  Metoda DAG CFR może zostać zastosowana również w innych grach. Autor pracy ma nadzieję, że
 pozwoli ona poprawić istniejące strategie w grach w postaci ekstensywnej.
 
 
