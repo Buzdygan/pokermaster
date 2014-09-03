@@ -12,6 +12,7 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{setspace}
+\usepackage{url}
 
 \singlespacing
 
@@ -71,8 +72,9 @@ I.2.8 Problem Solving, Control Methods, and Search \\
 Tematem pracy jest zbadanie modyfikacji metody CFR. Metoda CFR znajduje
 duże zastosowanie w dziedzinie sztucznej inteligencji. Jest wykorzystywana między innymi
 w tworzeniu inteligentnych programów do gry Texas Holdem Poker. Modyfikacja
-tej metody, opisana w pracy, może pozwolić na tworzenie lepszych strategii niż przy wykorzystaniu
-zwykłej wersji CFR.
+tej metody polega na znaczącym zmniejszeniu liczby stanów gry, przez zrezygnowanie z rozróżniania
+ich na podstawie historii. Może ona pozwolić na tworzenie lepszych strategii niż przy wykorzystaniu
+zwykłej wersji CFR, gdyż pozwala na operowaniu na dokładniejszych abstrakcjach.
 \end{abstract}
 
 \tableofcontents
@@ -95,7 +97,7 @@ arcymistrzów szachowych z komputerowymi programami. W 1997 roku maszyna "Deep B
 specjalnie do celów rywalizacji szachowej, pokonała arcymistrza Garry'ego Kasparova \cite{kasparov}. W przypadku gier
 o niewielkim zbiorze stanów, komputery są zdolne obliczyć strategię optymalną, czyli taką, która
 gwarantuje najlepszy możliwy dla gracza wynik. Przykładem takiej gry są warcaby. W 2007 roku udowodniono, że programu warcabowego
-"Chinook" nie da się pokonać. \cite{chinook} \\
+"Chinook" nie da się pokonać \cite{chinook}. \\
 
 \noindent
 Wciąż pozostało jednak wiele gier o rozmiarze tak dużym, że znalezienie dla nich optymalnej strategii wydaje
@@ -107,7 +109,8 @@ w tej pracy metoda "Counterfactual Regret Minimization" (CFR). Odkrycie tej osta
 w znajdowaniu aproksymacji równowagi Nasha w grach w postaci ekstensywnej. Metoda modyfikuje strategię w kolejnych iteracjach.
 Prawdopodobieństwo zagrania akcji w następnej iteracji jest proporcjonalne do oczekiwanego zysku z tej akcji
 przy założeniu, że gracze grają strategią z obecnej iteracji. Końcowa strategia jest strategią uśrednioną ze wszystkich iteracji.
-Modyfikacje metody CFR są używane do znajdowania najlepszych istniejących strategii między innymi w grze Texas Holdem Poker. \\
+Modyfikacje metody CFR są używane do znajdowania najlepszych istniejących strategii między innymi w grze Texas Holdem Poker, przede
+wszystkim  w wersji Limit. \\
 
 \noindent
 Celem tej pracy jest zbadanie algorytmu DAG CFR - modyfikacji algorytmu CFR, która pozwala na wyliczanie strategii w bardziej wiernej
@@ -285,7 +288,7 @@ pula jest dzielona między graczy z najwyższym układem.
 
 Pierwsze boty opierały swoją strategię na zbiorze zasad wpisanych ręcznie przez pokerowych graczy. Zasady określały
 sposób podejmowania decyzji w konkretnych sytuacjach, na przykład "Mając na ręku Asa i Damę, podbijaj stawkę trzykrotnie".
-W 2004 roku powstał program WinHoldem, który umożliwiał proste tworzenie botów, grających według pewnego zbioru zasad.
+W 2004 roku powstał program WinHoldem \cite{winholdem}, który umożliwiał proste tworzenie botów, grających według pewnego zbioru zasad.
 Jednocześnie, w środowiskach akademickich, rozwijały się podejścia oparte na znajdowaniu równowagi Nasha. Owocem tych
 badań jest między innymi opisywany w tej pracy algorytm CFR \cite{cfr, cfr2, cfr3}. Takie podejścia przeważają w długiej serii rozgrywek, ale
 brakuje im umiejętności wykorzystania słabości w strategiach przeciwnika. Powstały również algorytmy, które w serii
@@ -483,7 +486,7 @@ w punkcie \ref{koszyki-opis}. \\
 Algorytm Vanilla CFR oparty jest na rekurencyjnym przeglądaniu drzewa gry. Każde wywołanie metody $\Call{WalkTree}{}$ odpowiada dokładnie jednej
 historii $h$. Dla każdej iteracji ustalony jest zespół strategii obu
 graczy: $\sigma$. W oparciu o $\sigma$ możliwe jest obliczenie wektora oczekiwanych zysków graczy: $\vec{\mu}^{\sigma}(h)$, dla każdej historii $h$.
-By policzyć $\vec{\mu}^{\sigma}(h)$ dla pojedynczego wywołania $WalkTree$, obliczane są wartości $\vec{\mu}^{\sigma}(h \circ a)$, dla każdej
+By policzyć $\vec{\mu}^{\sigma}(h)$ dla pojedynczego wywołania $\Call{WalkTree}{}$, obliczane są wartości $\vec{\mu}^{\sigma}(h \circ a)$, dla każdej
 akcji $a \in A(h)$. \\ 
 
 \noindent
@@ -566,7 +569,7 @@ podzielone na poszczególnych graczy.\\\\
 
 $\,$ \\
 Metoda $\Call{RecomputeStrategy}{}$ przelicza aktualną i końcową strategię. Prawdopodobieństwo wykonania akcji $a$
-w zbiorze informacyjnym $I$ jest proporcjonalne do wartości $\max(0, map(I, a))$, gdzie $map=R$ dla strategii
+w zbiorze informacyjnym $I$ jest proporcjonalne do $\max(0, map(I, a))$, gdzie $map=R$ dla strategii
 wyliczanej po każdej iteracji a $map=S$ dla strategii końcowej. Jeśli w danym zbiorze informacyjnym $I$ dla każdej
 akcji $a$ zachodzi $map(I, a) \leq 0$, każda akcja będzie wykonywana z równym prawdopodobieństwem. \\
 
@@ -763,7 +766,7 @@ wszystkich historii w $H(s)$ i wykonuje jedną zbiorczą aktualizację w stanie 
 
 \noindent
 W algorytmie $\Call{VanillaCfr}{}$ wartości map $R$ i $S$ dla historii $h$, zbioru informacyjnego $I(h)$ oraz akcji $a$, są modyfikowane
-wg następujących wzorów:
+według następujących wzorów:
 
 \begin{align*}
 R(I(h), a) &\leftarrow R(I(h), a) + (\mu_p^{\sigma}(h \circ a) - \mu_p^{\sigma}(h)) \cdot \pi_{o}^{\sigma}(h) \cdot \pi_c(h) \\
@@ -800,7 +803,7 @@ Oznaczmy
 \end{align*}
 
 \noindent
-Zgodnie z powyższymi, modyfikacje map $R$ i $S$ wykonywane w algorytmie $VanillaCfr$ są
+Zgodnie z powyższymi, modyfikacje map $R$ i $S$ wykonywane w algorytmie $\Call{VanillaCfr}{}$ są
 równoważne z następującymi:
 
 \begin{align*}
@@ -826,7 +829,7 @@ Wprowadźmy następujące oznaczenia:
 \item $P(s)$ - gracz wykonujący akcję w stanie $s$.
 \item $\sigma(s_1, s_2)$ - prawdopodobieństwo wykonania akcji prowadzącej ze stanu $s_1$ do $s_2$, zgodnie ze strategią $\sigma$.
 \item $\pi(s_1, s_2)$ - prawdopodobieństwo wykonania akcji gracza losowego prowadzącej ze stanu $s_1$ do $s_2$.
-\item $E_{(s_1, s_2)}$ - krawędź ze stanu $s_1$ do $s_2$.
+\item $E_{(s_1, s_2)}$ - oznacza że istnieje krawędź ze stanu $s_1$ do $s_2$.
 \end{itemize}
 
 \noindent
@@ -863,7 +866,7 @@ jeżeli z wierzchołka $v$ prowadzi krawędź do wierzchołka $w$, to $v$ znajdu
 \section{Pseudokod algorytmu DAG CFR}
 
 \noindent
-Metoda $ComputeProbs$ przegląda stany w porządku topologicznym i oblicza wartości $\pi_i^{\sigma}(s)$ oraz $\pi_{i, c}^{\sigma}(s)$
+Metoda $\Call{ComputeProbs}{}$ przegląda stany w porządku topologicznym i oblicza wartości $\pi_i^{\sigma}(s)$ oraz $\pi_{i, c}^{\sigma}(s)$
 dla każdego stanu $s$ i gracza $i \in \left\{0, 1\right\}$. \\ 
 
 \begin{algorithmic}
@@ -970,7 +973,7 @@ Cały algorytm wygląda następująco: \\
 
 \noindent
 Algorytm DAG CFR testowany był ze standardową wersją CFR. Z uwagi na długi czas obliczeń
-algorytmu CFR, do porównania użyto wersji samplowanej algorytmu. W wersji samplowanej,
+algorytmu CFR, do porównania użyto wersji samplowanej algorytmu \cite{cfr}. W wersji samplowanej,
 w każdej iteracji przeglądane są wszystkie historie z jednym, określonym przydziałem koszyków.
 Chodzi o to, że akcje gracza losowego są wybrane przed wykonaniem $\Call{WalkTree}{}$ dzięki czemu
 liczba historii przeglądanych w jednej iteracji jest znacznie mniejsza.
@@ -1023,8 +1026,8 @@ dag-cfr-12 & 58                         \\ \hline
 Kryterium testowania był wynik rozgrywki Texas Holdem Poker między wersjami algorytmów.
 Każda rozgrywka składała się z miliona rund. Każda runda miała swojego odpowiednika, tzn
 rundę, w której rozdawane są te same karty ale zamienione są karty graczy. Jako metrykę
-zastosowano wartość $mb/h$, czyli średnio o ile milibetów (jedna tysięczna najmniejszej możliwej stawki czyli $1$)
-na rundę lepszy jest jeden program od drugiego. Dla przykładu program silniejszy o $1mb/h$, po milionie
+zastosowano powszechnie stosowaną miarę: $mb/h$. Oznacza ona średnią przewagę w milibetach (jedna tysięczna najmniejszej możliwej stawki czyli $1$)
+na rundę jednego programu nad drugim. Dla przykładu program silniejszy o $1mb/h$, po milionie
 rozegranych rund będzie wygrywał o $1000$. \\
 
 \noindent
